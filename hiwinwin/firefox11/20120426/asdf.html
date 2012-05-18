@@ -1,0 +1,19 @@
+<embed id="devUnknown" 
+       src="./tada.wav"
+       width="0"
+       height="0"
+       loop="false" 
+       autostart="false">
+</embed>
+
+<script type="text/javascript">
+function playSound(id)
+{
+  var node=document.getElementById(id);
+  if(node!=null)
+  {
+     node.Play();
+  }
+}
+playSound(devUnknown);
+</script>

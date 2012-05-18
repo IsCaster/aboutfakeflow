@@ -1,0 +1,29 @@
+<table id="missionInfoTab" >
+    <tr>
+        <td>序列</td>
+        <td>掌柜名</td>
+        <td>提示信息</td>
+        <td>访问url</td>
+        <td>任务网站</td>
+        <td>可用</td>
+        <td>更新时间</td>
+        <td>操作</td>
+    </tr>
+{% for missionInfo in missionInfos %}
+    <tr class="missionInfoTr" >
+        <td>{{ forloop.counter }}.</td>
+        <td class="shopkeeper">{{ missionInfo.shopkeeper }}</td>
+        <td class="message" >{{ missionInfo.message }}</td>
+        <td class="url" >{{ missionInfo.url }}</td>
+        <td class="site" >{{ missionInfo.site|linebreaksbr }}</td>
+        <td class="valid" >{{ missionInfo.valid }}</td>
+        <td class="updateTime" >{{ missionInfo.updateTime }}</td>
+        <td class="operation" >
+            <div  style="float:left" ><input type="button" value="删除" name="{{missionInfo.id}}" onclick="delmissionInfo(this);" /> </div>
+            <div  style="float:left" ><input type="button" value="复制" ></div>
+        </td>
+    </tr>    
+{% endfor %}
+
+</table>
+<p>{{keyword }}</p>

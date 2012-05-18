@@ -1,0 +1,17 @@
+<html lang="zh_cn">
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+      <title>测试reload-child</title>
+    </head> 
+    <script>
+        window.opener.location.reload=function(){alert('hehe')}
+        function test_reload()
+        {
+            window.opener.location.reload()
+        }
+    </script>
+    <body id="diveintogreasemonkey-org" >
+    <input type='button' onclick="test_reload()" value="reload father" />
+    </body>
+</html>

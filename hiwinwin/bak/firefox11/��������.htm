@@ -1,0 +1,31 @@
+<html lang="zh_cn">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <title>测试声音</title>
+   </head>
+
+
+   <body id="diveintogreasemonkey-org" >
+	<embed id="devUnknown" 
+       src="file:///F:/kugou/吴雨霏 - 句句我爱你.mp3"
+       
+       loop="false" 
+       autostart="false">
+	</embed>
+<div id="main" width=100 height=100 >
+	sadfsadf
+</div>
+   <script type="text/javascript">
+function playSound(id)
+{
+  var node=document.getElementById(id);
+  if(node!=null)
+  {
+    node.Play();
+  }
+}
+playSound("devUnknown");
+</script>
+   </body>
+</html>

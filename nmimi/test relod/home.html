@@ -1,0 +1,25 @@
+<html lang="zh_cn">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+        <title>测试open window with post</title>
+    </head> 
+    <script>
+        function openWindowWithPost(something, additional, misc) {
+            var f = document.getElementById('TheForm');
+            f.a.value = something;
+            f.b.value = additional;
+            f.c.value = misc;
+            window.open('', 'TheWindow');
+            f.submit();
+        }
+    </script>
+    <body id="diveintogreasemonkey-org" onload="" >
+        <form id="TheForm" method="post" action="child.html" target="TheWindow">
+            <input type="hidden" name="a" value="valuea" />
+            <input type="hidden" name="b" value="valueb" />
+            <input type="hidden" name="c" value="valuec" />
+        </form>
+        <input type='button' onclick="openWindowWithPost('aaa','bbb','ccc')" value="open child page"/>
+    </body>
+</html>

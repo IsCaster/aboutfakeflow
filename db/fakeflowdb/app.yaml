@@ -1,0 +1,15 @@
+application: fakeflowdb
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /js/ZeroClipboard\.swf
+  static_files: js/ZeroClipboard.swf
+  upload: js/ZeroClipboard.swf
+
+- url: /js
+  static_dir: js
+
+- url: .*
+  script: main.py

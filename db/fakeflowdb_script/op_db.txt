@@ -1,0 +1,39 @@
+from fakeflowapp.models import MissionInfo, VerificationCode
+from django.db.models import Q
+import re
+entries = MissionInfo.objects.filter(url__endswith="&")
+for entry in entries:
+    entry.url = re.sub("&$","",entry.url)
+    entry.save()
+
+
+
+
+
+entries = MissionInfo.objects.filter(site="hiwiniwn")
+for entry in entries:
+    entry.site = "hiwinwin"
+    entry.save()
+	
+	
+entries = MissionInfo.objects.filter(site="hiwinwin").exclude(shopkeeper="")
+for entry in entries:
+	entry.message=entry.shopkeeper+";"+entry.message
+	entry.save()
+	
+entries = MissionInfo.objects.filter(site="hiwinwin").exclude(shopkeeper="")
+for entry in entries:
+	entry.message = re.sub(";;",";",entry.message)
+	entry.save()	
+	
+http://detail.tmall.com/item.htm?	
+MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm"))
+
+s=u'http://www.taobao.com/view_image.php?pic=Wx0GGlFDXA1VUwMDWx0SCwkNGRFcVxxQW1UcCxMFRBkDCFdVV1cRRhpVRDhHJXQAC2tXbkExKgkBICAsWmsDC0FQQFVFBgYV&title=zNSxps34teq16sbM17DQ3iDN2NW5sObIq8zX17DQ3sSjsOUgt%2F7XsMrOxrfA4MSjsOUguuzJqw%3D%3D&version=2&c=NGRmNzAwOGIyNzlkMDQ4NzJjMDdmMDNhZDlhMWEzMTc%3D&itemId=16818132105&shopId=71431144&sellerRate=0&dbId=&fv=9'
+s=re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",s)
+
+entries = MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm"))
+for entry in entries:
+	entry.url = re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",entry.url)
+	print entry.url
+	entry.save()	
