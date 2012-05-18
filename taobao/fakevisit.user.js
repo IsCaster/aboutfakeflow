@@ -2,14 +2,14 @@
 // @name          fake visit item url
 // @namespace     http://www.caster.org
 // @description   1. fake visit item url on taobao.com , maybe reduce the chance of being added to blacklist 2. submit the shopkeeper information
-// @include       http://www.fakeflowdb.com/fakevisit
+// @include       http://caster.webfactional.com/fakevisit
 // @include       http://s.taobao.com/search?q=*
 // @include       http://item.taobao.com/item.htm?*
 // @include       http://detail.tmall.com/item.htm?*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 GM_log("enter GM script");
-if(location.href.indexOf("http://www.fakeflowdb.com/fakevisit")!=-1)
+if(location.href.indexOf("http://caster.webfactional.com/fakevisit")!=-1)
 {
 	handleFakeVisitPage()
 }
@@ -17,23 +17,37 @@ else if(location.href.indexOf("http://s.taobao.com/search?q=")!=-1)
 {
 	handleTaobaoSearchPage()
 }
-else if(location.href.indexOf("http://www.16bang.com/returnFlow.asp")!=-1)
+else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1)
 {
 	handleTaobaoItemPage()
 }
 
 function handleFakeVisitPage()
 {
-	GM_setValue("url",$("#url")[0].innerHTML)
+	GM_setValue("url",$("#url")[0].innerHTML.replace(/&amp;/g,"&"))
     keyword=$("#keyword")[0].innerHTML
-    url="http://s.taobao.com/search?q="+encodeURIComponent(keyword)
-    $("#searchpageframe")[0].contentWindow.open(url)
+    url="http://s.taobao.com/search?q="+keyword
+    $("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
+    $("#searchpageframe")[0].contentWindow.open(url)    
+    setTimeout(function(){unsafeWindow.close()},2000)
 }
 
 function handleTaobaoSearchPage()
 {
+    function openItemPage()
+    {
+        var openContainP=document.createElement("p");
+        document.body.insertBefore(openContainP,null);
+
+        openContainP.onclick=function()
+        {
+            unsafeWindow.open(url)
+        }
+        openContainP.click()
+    }
     var tryPageNum=4
     url=GM_getValue("url","")
+    GM_log("handleTaobaoSearchPage,url="+url)
     if(url=="")
     {
         unsafeWindow.close()
@@ -46,29 +60,39 @@ function handleTaobaoSearchPage()
     }
     else
     {
-        pageinfo=$(".page-info")[0].innerHTML.split("/")
-        pageIndex=parseInt(pageinfo[0],10)
-        pageTotalNum=parseInt(pageinfo[1],10)
-        if(pageIndex==pageTotalNum)
+        if($(".page-info").length==0)
         {
-            //last page
-            unsafeWindow.open(url)
+            //only one page
+            openItemPage()
         }
-        else if(pageIndex<tryPageNum)
+        else
         {
-            // go to next page
-            $("button[title='指定页码']")[0].click()
-        }
-        else if(pageIndex==tryPageNum)//go to random page 
-        {
-            randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
-            $("input[title='指定页码']")[0].value=randomPageIndex
-            $("button[title='指定页码']")[0].click()
-        }
-        else if(pageIndex>tryPageNum)
-        {
-            //just jump to item url without finding the item url in search page
-            unsafeWindow.open(url)
+            pageinfo=$(".page-info")[0].innerHTML.split("/")
+            pageIndex=parseInt(pageinfo[0],10)
+            pageTotalNum=parseInt(pageinfo[1],10)
+            GM_log("pageTotalNum="+pageTotalNum)
+            if(pageIndex==pageTotalNum)
+            {
+                //last page
+                openItemPage();
+            }
+            else if(pageIndex<tryPageNum)
+            {
+                // go to next page
+                GM_log($("#jumpto ")[0].nextSibling.nextSibling)
+                $("#jumpto")[0].nextSibling.nextSibling.click()
+            }
+            else if(pageIndex==tryPageNum)//go to random page 
+            {
+                randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
+                $("#jumpto")[0].value=randomPageIndex
+                $("#jumpto")[0].nextSibling.nextSibling.click()
+            }
+            else if(pageIndex>tryPageNum)
+            {
+                //just jump to item url without finding the item url in search page
+                openItemPage()
+            }
         }
         
     }
@@ -76,6 +100,11 @@ function handleTaobaoSearchPage()
 
 function handleTaobaoItemPage()
 {
+    GM_log("handleTaobaoItemPage")
+    if(unsafeWindow.opener)
+    {
+        unsafeWindow.opener.close()
+    }    
     var shopkeeper=""
     if($(".hCard ").length>0)
     {
@@ -89,10 +118,11 @@ function handleTaobaoItemPage()
     }
     
     submitShopkeeper=document.createElement("div")
-    submitShopkeeper.innerHTML="<form id='submitshopkeeper' action='http://www.fakeflowdb.com/submitshopkeeper' method='post' >\
-                                    <input name='url' type='hidden' value='"+document.href+"'/>\
-                                    <input name='shopkeeper' type='hidden' value='"+shopkeeper+"'/>\
+    submitShopkeeper.innerHTML="<form id='submitshopkeeper' action='http://caster.webfactional.com/submitshopkeeper' method='post' >\
+                                    <input name='url' type='hidden' value='"+location.href+"'/>\
+                                    <input name='shopkeeper' type='hidden' value='"+encodeURIComponent(shopkeeper)+"'/>\
                                 </form>"
-    document.body.insertBefore(submitShopkeeper,null)                        
+    document.body.insertBefore(submitShopkeeper,null)
+    GM_log("submitshopkeeper")
     $("#submitshopkeeper")[0].submit()
 }

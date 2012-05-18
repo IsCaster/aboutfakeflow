@@ -5,6 +5,8 @@
 // @include       http://www.hiwinwin.com/Error.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // ==/UserScript==
+//disable log
+GM_log=function(){}
 GM_log("alreadyGot");
 
 

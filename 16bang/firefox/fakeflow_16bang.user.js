@@ -94,7 +94,7 @@ function handleMissionListPage(mean,stdev)
 					{
 						if($("#missionset img[src='images/gettask6.jpg']").length>0)
 						{
-							var randomId=parseInt(Math.random()*$("#missionset img[src='images/gettask6.jpg']").length,10)%$("#missionset img[src='images/gettask6.jpg']").length
+							var randomId=Math.round(Math.random()*$("#missionset img[src='images/gettask6.jpg']").length,10)%$("#missionset img[src='images/gettask6.jpg']").length
 							GM_log("randomId="+randomId+",mission.length="+$("#missionset img[src='images/gettask6.jpg']").length)
 							$("#missionset img[src='images/gettask6.jpg']")[randomId].parentNode.onclick()
 						}
@@ -312,7 +312,7 @@ function handleMyMissonPage()
 												GM_log("input="+input)
 												GM_xmlhttpRequest({
 													method: "POST",
-													url: "http://www.fakeflowdb.com/submitresultsuccess",
+													url: "http://caster.webfactional.com/submitresultsuccess",
 													data: input,
 													headers: {
 													"Accept": "application/json",
@@ -373,7 +373,7 @@ function handleMyMissonPage()
 												';site='+site+
 												';status='+0;
 										
-										// request=$.get("http://www.fakeflowdb.com/queryurl",input,function(data){
+										// request=$.get("http://caster.webfactional.com/queryurl",input,function(data){
 										// GM_log("query return");
 										// },"json")
 										
@@ -381,7 +381,7 @@ function handleMyMissonPage()
 										GM_log(input)
 										GM_xmlhttpRequest({
 											method: "POST",
-											url: "http://www.fakeflowdb.com/queryurl",
+											url: "http://caster.webfactional.com/queryurl",
 											data: input,
 											headers: {
 											"Accept": "application/json",

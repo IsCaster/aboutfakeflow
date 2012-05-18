@@ -18,7 +18,7 @@
 //1: manual 2: auto
 if(GM_getValue("runMode","undefined")=="undefined")
 {
-    GM_setValue("runMode",2)
+    GM_setValue("runMode",1)
 }
 
 if(location.href.indexOf("FMValid.aspx")!=-1) 
@@ -641,7 +641,10 @@ function handleValidPage()
                     data=eval('('+xhr.responseText+')')
                     //GM_log("data.itemId is a "+typeof(data.itemId))
                     if(typeof(data.itemId)!="undefined")
+                    {
                         unsafeWindow.setNmmValue("itemId",data.itemId)
+                        GM_log("data.itemId = "+data.itemId+";data.status = "+data.status)
+                    }    
                     else
                         unsafeWindow.setNmmValue("itemId","")
 
@@ -664,6 +667,10 @@ function handleValidPage()
                         //unsafeWindow.doCut();
                         //location.herf=$(".link_t ")[1].href;
                         unsafeWindow.setNmmValue("fetchResultTime",-1)
+                        if(typeof(data.trace)!="undefined")
+                        {
+                            GM_log(data.trace)
+                        }
 
                     }
                     else if(data.status==40001)
@@ -727,7 +734,8 @@ function handleValidPage()
 	urlsInput=document.createElement("textarea")
 	urlsInput.type="text"
 	urlsInput.id="urlsInput"
-	urlsInput.width=800
+	urlsInput.style.width="400px"
+    urlsInput.style.height="100px"
 	$("#invalidMissionBtn")[0].parentNode.insertBefore(urlsInput,null);
 
 	checkUrlGroupBtn=document.createElement("input")
