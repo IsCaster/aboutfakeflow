@@ -14,12 +14,13 @@
         <td>{{ forloop.counter }}.</td>
         <td class="shopkeeper">{{ missionInfo.shopkeeper }}</td>
         <td class="message" >{{ missionInfo.message }}</td>
-        <td class="url" >{{ missionInfo.url }}</td>
+        <td class="url" onclick="setTdValue(this,'{{missionInfo.url}}')" >{{ missionInfo.url }}</td>
         <td class="site" >{{ missionInfo.site|linebreaksbr }}</td>
         <td class="valid" >{{ missionInfo.valid }}</td>
         <td class="updateTime" >{{ missionInfo.updateTime }}</td>
         <td class="operation" >
             <div  style="float:left" ><input type="button" value="删除" name="{{missionInfo.id}}" onclick="delmissionInfo(this);" /> </div>
+            <div  style="float:left" ><input type="button" value="删除此行" name="{{missionInfo.id}}" onclick="delLine(this);" /> </div>
             <div  style="float:left" ><input type="button" value="复制" ></div>
         </td>
     </tr>    

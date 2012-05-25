@@ -5,7 +5,15 @@
     <style type="text/css">
 		body { font-family:arial,sans-serif; font-size:9pt; }
 		
-
+        .bTried {
+            color: #6F6F6F;
+        }
+        .bTring {
+            color: #0000CD;
+        }
+        .bWaiting {
+            color: #DD0085;
+        }
 		#missionInfoTab { 
             width: 900px; 
             padding: 0; 
@@ -116,6 +124,12 @@
             }
         });
         
+        function setTdValue(td,url)
+        {
+            td.value=url
+        }
+        
+        
         /**
         * 删除左右两端的空格,及中间的空格
         */
@@ -135,6 +149,7 @@
                     for(var i=0 ;i < $(".missionInfoTr").length ;++i)
                     {
                         initClipBtn(i);
+                        $(".url")[i].onclick()
                     }
                 }
                 ,"text");
@@ -153,7 +168,7 @@
     		
     		clip.addEventListener('mouseOver', function (client) {
     			// update the text on mouse over
-    			clip.setText(  $(".missionInfoTr:eq("+index+") > .url:last ")[0].innerHTML );
+    			clip.setText(  $(".missionInfoTr:eq("+index+") > .url:last ")[0].value );
     		});
     		
     		clip.addEventListener('complete', function (client, text) {
@@ -172,59 +187,270 @@
         {
             if(confirm("确定删除这条记录吗?","确定","取消"))
             {
-                $.post("/deletemissioninfo",{"key_id":input.name},function(responseText)
+                key_id=input.name
+                object=input
+                while (object.tagName != 'TR') {
+                    object = object.parentNode;
+                }
+                object.parentNode.removeChild(object);
+                for(var i=0 ;i < $(".missionInfoTr").length ;++i)
+                {
+                    initClipBtn(i);
+                }
+                $.post("/deletemissioninfo",{"key_id":key_id},function(responseText)
                     {
                         alert(responseText)
                     });
             }
         }
         
-        function getMission()
+        function delLine(input)
         {
-            $.post("/getmission",function(data)
+            object=input
+            while (object.tagName != 'TR') {
+                object = object.parentNode;
+            }
+            object.parentNode.removeChild(object);
+            for(var i=0 ;i < $(".missionInfoTr").length ;++i)
+            {
+                initClipBtn(i);
+            }
+        }
+        
+        function showMessage(theMission)
+        {
+            message=theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
+            message_pieces=message.split(";")
+            theMissionDivHtml=  "<p>任务信息:</p><br/>"
+                                "<ul>"
+            for(var i=0;i<message_pieces.length;++i)
+            {        
+                theMissionDivHtml=theMissionDivHtml+
+                                    "<li>"+message_pieces[i]+"</li>"
+            }
+            theMissionDivHtml=theMissionDivHtml+
+                                "</ul>"
+            theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p><br/>"
+                                "<ul>"
+            for(var i=0;i<theMission.urls.length;++i)
+            {   
+                if(theMission.bTried[i])
                 {
-                    if(data.state="waitForUrls")
+                    theMissionDivHtml=theMissionDivHtml+
+                                    "<li class='bTried' value='"+theMission.urls[i]+"'>"+theMission.urls[i]+"</li>"
+                }
+                else if(theMission.fetchResultTimes[i]==0)
+                {
+                    theMissionDivHtml=theMissionDivHtml+
+                                    "<li class='bWaiting'>"+theMission.urls[i]+"</li>"
+                }
+                else 
+                {
+                    theMissionDivHtml=theMissionDivHtml+
+                                    "<li class='bTring'>"+theMission.urls[i]+"</li>"
+                }
+            }
+            theMissionDivHtml=theMissionDivHtml+
+                                "</ul>"
+            if(theMission.url!="")
+            {
+                theMissionDivHtml=theMissionDivHtml+"<br/>配对的url:<p>"+theMission.url+"</p>"
+            }
+            
+            $("#theMission")[0].innerHTML=theMissionDivHtml
+            
+        }
+        
+		function showSubmitUrlDiv(itemId)
+		{
+			submitUrlDivHtml= "<textarea id='urlsInput' style='width: 600px; height: 200px;' ></textarea>"
+			submitUrlDivHtml=submitUrlDivHtml+
+					"<input type='button' value='submit urls' id='submitUrlsBtn' />"
+            submitUrlDivHtml=submitUrlDivHtml+
+					"<input type='button' value='invalid mission' id='invalidMissionBtn' />"
+			$("#submitUrlDiv")[0].innerHTML=submitUrlDivHtml
+			$("#submitUrlsBtn")[0].onclick=function()
+			{
+				var submitData={}
+				submitData["itemId"]=itemId
+				urls_input=$("#urlsInput")[0].value.replace(/\s*$/,"").replace(/\n/g,"").replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"").split(";")
+				urls_query=new Array()
+				submitUrls=new Array()
+				/*for(var i=0;i<$(".url").length;++i)
+				{
+					urls_query[i]=$(".url")[i].value
+				}*/
+				
+				for(var i=0;i<urls_input.length;++i)
+				{
+					submitUrls.push(urls_input[i])
+				}
+				for(var i=0;i<urls_query.length;++i)
+				{
+					submitUrls.push(urls_query[i])
+				}
+				
+				var bConfirm=false
+				var bDuplicate=false
+				submitData["urls"]="["
+				for(var i=0;i<submitUrls.length;i++)
+				{
+					if(bDuplicate==false)
+					{
+						for(var j=0;j<$(".bTried").length;++j)
+						{   
+							if($(".bTried")[j].value==submitUrls[i])
+							{
+								if(bConfirm == false)
+								{
+									bDuplicate = confirm("有曾经提交验证过的url,确定再次提交吗？","提交","不重复提交")
+									bConfirm = true
+								}    
+								if(bDuplicate==true)
+								{
+									break;
+								}
+								else
+								{
+									submitUrls.splice(i,1,"")//replace by empty string
+								}
+							}
+							
+						}
+					}
+					if(submitUrls[i]!="")
+					{
+						if(submitData["urls"]!='[')
+						{
+							submitData["urls"]=submitData["urls"]+","
+						}
+						submitData["urls"]=submitData["urls"]+"\""+submitUrls[i]+"\""
+					}
+				}
+				submitData["urls"]=submitData["urls"]+"]"
+				
+				submitUrl(submitData)
+				
+			}
+            
+            $("#invalidMissionBtn")[0].onclick=function()
+            {
+                $.post("/invalidmissionc",{"itemId":itemId},function(data)
+                {
+                    alert(data)
+                })
+            }
+		}
+		
+        function getMission(itemId)
+        {
+			if(typeof(itemId)=="undefined")
+			{
+				itemId=""
+			}
+            $.post("/getmission",{"itemId":itemId},function(data)
+                {
+                    if(data.status=="waitForUrls" || data.status=="undergo")
                     {
-                        message=data.theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
-                        message_pieces=message.split(";")
-                        triedUrls=data.theMission.triedUrls
-                        theMissionDivHtml=  "<p>任务信息:</p><br/>"
-                                            "<ul>"
-                        for(var i=0;i<message_pieces.length;++i)
-                        {        
-                            theMissionDivHtml=theMissionDivHtml+
-                                                "<li>"+message_pieces[i]+"</li>"
-                        }
-                        theMissionDivHtml=theMissionDivHtml+
-                                            "</ul>"
-                        theMissionDivHtml=theMissionDivHtml+
-                                            "<textarea id='urlsInput' style='width: 600px; height: 200px;' ></textarea>"
-                        theMissionDivHtml=  "<p>尝试过的url:</p><br/>"
-                                            "<ul>"
-                        for(var i=0;i<triedUrls.length;++i)
-                        {        
-                            theMissionDivHtml=theMissionDivHtml+
-                                                "<li>"+triedUrls[i]+"</li>"
-                        }
-                        theMissionDivHtml=theMissionDivHtml+
-                                            "</ul>"
-                        theMissionDivHtml=theMissionDivHtml+
-                                            "<input type='button' value='submit urls' id='submitUrlsBtn' />"
-                        $("#theMission")[0].innerHTML=theMissionDivHtml
-                        $("#submitUrlsBtn")[0].onclick=function()
-                        {
-                            submitData.itemId=data.theMission.itemId
-                            submitData.urls=
-                            $.post("/submiturl",submitData,function(data)
-                                {
-                                }
-                                ,"json")
-                        }
+                        showMessage(data.theMission)
+                        showSubmitUrlDiv(data.theMission.itemId)
+                        $("#getNewMissionBtn")[0].value="get new mission"
                     }
                 }
                 ,"json")
         }
+        
+        function getNewMission()
+        {
+            $("#getNewMissionBtn")[0].value="get new mission ..."
+            getMission()
+            if(typeof($("#switchGetNewMissionBtn")[0].keep)=="undefined"||$("#switchGetNewMissionBtn")[0].keep==1)
+            {
+                setTimeout("getNewMission()",30000)
+            }
+            return 
+        }
+		
+        function switchGetNewMission(input)
+        {
+            if(typeof($("#switchGetNewMissionBtn")[0].keep)=="undefined"||$("#switchGetNewMissionBtn")[0].keep==1)
+            {
+                input.keep=0
+                $("#switchGetNewMissionBtn")[0].value="keep"
+            }
+            else
+            {
+                input.keep=1
+                $("#switchGetNewMissionBtn")[0].value="stop"
+            }
+        }
+		function getMissionList()
+		{
+			$.post("/getmissionlist",function(data)
+                {
+					theMissionListHtml=""
+					if(data.theMissionList.length>0)
+					{
+						for(var i=0 ;i<data.theMissionList.length;++i)
+						{
+							theMissionListHtml=theMissionListHtml+
+								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
+                                "<a href='javascript:getMission("+data.theMissionList[i].itemId+");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
+						}
+                        
+					}
+					else
+					{
+						theMissionListHtml="no undergo mission now"
+					}
+					$("#theMissionList")[0].innerHTML=theMissionListHtml+
+						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
+                        "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
+				}
+				,"json")
+		}
+        
+        function submitUrl(submitData)
+        {
+            $.post("/submiturl",submitData,function(data)
+                {
+                    showMessage(data.theMission)
+                    showSubmitUrlDiv(data.theMission.itemId)
+                    if(data.status!="missionComplete")
+                    {
+                        //submitUrl({"itemId":data.theMission.itemId})
+                    }
+                }
+                ,"json")
+        }
+        
+        function waitForResult(itemId)
+        {
+            $.post("/waitforresult",{"itemId":itemId,"urls":["1","2","3"]},function(data)
+                {
+                    //to do
+                }
+                ,"json")
+        }
+        
+        function upQueryUrls()
+        {
+            urls_query=new Array()
+            for(var i=0;i<$(".url").length;++i)
+            {
+                urls_query[i]=$(".url")[i].value
+            }
+            urls_query_str=urls_query.join(";")
+            $("#urlsInput")[0].value=urls_query_str+";"+$("#urlsInput")[0].value
+        }
 
+        function clearDoneBuffer()
+        {
+            $.post("/cleardonebuffer",function(data)
+                {
+                    alert(data)
+                })
+        }
 	</script>
   </head>
   <body >
@@ -234,16 +460,24 @@
    	{% else %}
     	<div align="right"><a href="{{log_in_out_url}}">Log in</a></div>
     {% endif %}
+	<div id="theMissionList">
+	</div>
+	<div id="theMission">        
+    </div>
+    <div id="submitUrlDiv">
+    </div>
     <div>
         <form action="javascript:queryMissionInfo();">
             {% csrf_token %}
-          <div><input name="keyword" type="text" id="queryText" size="100"></input>
-          <input type="submit" value="query"></div>
+          <div>
+            <input name="keyword" type="text" id="queryText" size="120"></input>
+            <input type="submit" value="query">
+            <input type="button" value="up" onclick="upQueryUrls()">
+          </div>
           未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
-          <input type="button" onclick="getMission();" value="赶紧做任务" />
+          <input type="button" onclick="getMissionList();" value="赶紧做任务" />
+          <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
         </form>    
-    </div>
-    <div id="theMission">        
     </div>
     <div id="missionInfoDiv" style="padding:10px;background-color:white;width:100%; overflow:auto;">
         <table id="missionInfoTab" >

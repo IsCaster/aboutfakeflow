@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'E:/MyDocuments/about fake flow/db/fakeflowdb_script/data/db.data',                      # Or path to database file if using sqlite3.
+        'NAME': 'E:/MyDocuments/aboutfakeflow/db/fakeflowdb_script/data/db.data',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -59,7 +59,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = 'E:/MyDocuments/about fake flow/db/fakeflowdb_script/fakeflowdb/static'
+STATIC_ROOT = 'E:/MyDocuments/aboutfakeflow/db/fakeflowdb_script/fakeflowdb/static'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -68,7 +68,7 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     "C:/Program Files/Django-1.4/Django-1.4/django/contrib/admin/static",
-    "E:/MyDocuments/about fake flow/db/fakeflowdb_script/fakeflowapp/static",
+    "E:/MyDocuments/aboutfakeflow/db/fakeflowdb_script/fakeflowapp/static",
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -111,7 +111,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'E:/MyDocuments/about fake flow/db/fakeflowdb_script/fakeflowapp/templates',
+    'E:/MyDocuments/aboutfakeflow/db/fakeflowdb_script/fakeflowapp/templates',
 )
 
 INSTALLED_APPS = (
@@ -160,11 +160,19 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
+        'simplefile':{
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'fakeflowdb.debug.log',
+            'formatter': 'verbose'
+        },
         'file':{
-	    'level': 'DEBUG',
-	    'class': 'logging.FileHandler',
-        'filename': 'fakeflowdb.debug.log',
-        'formatter': 'verbose'
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'fakeflowdb.debug.log',
+            'maxBytes': 10485760, # 10Mb
+            'backupCount': 5,
+            'formatter': 'verbose'
         }
     },
     'loggers': {

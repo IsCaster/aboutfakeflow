@@ -160,11 +160,19 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
+        'simplefile':{
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'fakeflowdb.debug.log',
+            'formatter': 'verbose'
+        },
         'file':{
-	    'level': 'DEBUG',
-	    'class': 'logging.FileHandler',
-        'filename': 'fakeflowdb.debug.log',
-        'formatter': 'verbose'
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'fakeflowdb.debug.log',
+            'maxBytes': 10485760, # 10Mb
+            'backupCount': 5,
+            'formatter': 'verbose'
         }
     },
     'loggers': {

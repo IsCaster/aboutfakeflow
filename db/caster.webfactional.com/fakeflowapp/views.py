@@ -65,37 +65,7 @@ def missionInfo(request):
         'keyword'   : keyword,  
     };
     return render_to_response('missioninfo.html', template_values);
-
-def observerWait(theMission):
-    with theMission.finish_cond:
-        if not theMission.need2Wait :
-            response_data['status']=20003
-            return HttpResponse(simplejson.dumps(response_data))
-        theMission.finish_cond.wait(30)#wait for the final result until the detector notifyAll and release the lock or timeout
         
-        if not theMission.need2Wait :
-            response_data['status']=20004
-            return HttpResponse(simplejson.dumps(response_data))
-        else:
-            response_data['status']=30002
-            return HttpResponse(simplejson.dumps(response_data))
-
-def detectorWait(theMission):
-    if theMission.wait_c_sema.acquire(60):#wait for mission customer to submit urls
-        theMission.fetchResultTime = time()
-        response_data['status']=10004
-        response_data['urls']=theMission.urls
-        response_data['fetchResultTime']=theMission.fetchResultTime
-        theMission.detector_lock.release()
-        return HttpResponse(simplejson.dumps(response_data))
-    else:
-        response_data['status']=30001
-        response_data['itemId']=str(theMission.itemId)
-        with theMission.finish_cond:
-            #theMission.need2Wait=False
-            theMission.finish_cond.notifyAll()#wake up other mission productors,no need wait for result now
-        theMission.detector_lock.release()
-        return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")   
             
     # response_data['status']  
     # value       meaning
@@ -107,15 +77,15 @@ def detectorWait(theMission):
     # 10006       url not find, try urls with same shopkeeper
     
     # 20001       timeout when wait for mission customer submit urls ,quit mission
-    # 20002       no need to wait ,once timeout when wait for mission customer submit urls 
-    # 20003       same as 20002 ,just for debug to make it different
-    # 20004       same as 20002 ,just for debug to make it different
+
+
     
-    # 30001       detector return ,still need 2 wait ,maybe check again to be a detector or observer
-    # 30002       observer return ,still need 2 wait ,maybe check again to be a detector or observer
+    # 30001       no url producted ,still need 2 wait ,maybe check again 
+    # 30002       there are urls to custom, blocked by other customers
     
     # 40001       invalid mission ,should quit the mission
-
+    
+    # 50001       unkowned error
 @csrf_exempt
 @missionQueueTrace 
 def queryUrl(request):
@@ -155,7 +125,7 @@ def queryUrl(request):
     for entry in entries :
         if entry.valid == False :
             response_data['status']=40001
-            response_data['urls']=""
+            response_data['urls']=[]
             return HttpResponse(simplejson.dumps(response_data))
 
     urls=[]
@@ -166,18 +136,18 @@ def queryUrl(request):
         response_data['status']=10002
         response_data['urls']=urls
         return HttpResponse(simplejson.dumps(response_data))
-    elif shopkeeper != "" :
-        entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:20]
-        if  entries.count() >= 1 : 
-            for entry in entries:
-                if entry.url not in urls:
-                    urls.append(entry.url)
-                    if len(urls) >= 5: #max 5 tries
-                        break
-            response_data['status']=10006
-            response_data['urls']=urls
-            response_data['fetchResultTime']=int(time())
-            return HttpResponse(simplejson.dumps(response_data))
+    # elif shopkeeper != "" :
+        # entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:20]
+        # if  entries.count() >= 1 : 
+            # for entry in entries:
+                # if entry.url not in urls:
+                    # urls.append(entry.url)
+                    # if len(urls) >= 5: #max 5 tries
+                        # break
+            # response_data['status']=10006
+            # response_data['urls']=urls
+            # response_data['fetchResultTime']=int(time())
+            # return HttpResponse(simplejson.dumps(response_data))
     
     # urls not in the database
     newMission=MissionItem(message,site,shopkeeper);
@@ -185,68 +155,158 @@ def queryUrl(request):
     #whether GetMissionQueue().push return success or fail ,if mission is not finished
     #thread still need to acquire lock to be the only detector of the mission
     #push function is a push_or_get function
-
-    location,theMission=GetMissionQueue().push(newMission)
+    
+    with GetMissionQueue().bufferLock:
+        location,theMission=GetMissionQueue().push(newMission)
+    
+    logger.debug("push new Mission Item")
 
     if location == "doneBuffer" :
-        response_data['status']=10003
-        response_data['urls']=theMission.urls
-        return HttpResponse(simplejson.dumps(response_data))
-        
-    else : 
-
-        if theMission.detector_lock.acquire(False):
-            # be the only detector               
-            if not theMission.need2Wait :
-                response_data['status']=20002
-                response_data['itemId']=str(theMission.itemId)
-                theMission.detector_lock.release()
-                return HttpResponse( simplejson.dumps(response_data),mimetype="application/json")
-               
-            if theMission.fetchResultTime == 0 : 
-                return detectorWait(theMission)
-            else:
-                #i only need one detector (others are observers)
-                #see if the only detector is timeout of submit result       
-                if time() > theMission.fetchResultTime+2*60 :#wait for 2 [why 2 ? to do] minutes for the detector submit result #or the mission customer
-                    return detectorWait(theMission)
-                else:
-                    theMission.detector_lock.release()
-                    return observerWait(theMission)                          
+        if theMission.url != "":
+            response_data['status']=10003
+            response_data['urls']=[theMission.url]
         else:
-            # wait for a result
-            return observerWait(theMission)
+            response_data['status']=40001
+            response_data['urls']=[]
+        return HttpResponse(simplejson.dumps(response_data))
+    else : 
+        if not theMission.urls_sema.acquire(60): # wait for url customer to product urls
+            response_data['status']=30001
+            response_data['itemId']=str(theMission.itemId)
+            return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
+        else:
+            theMission.urls_sema.release()
+            response_data['urls']=[]
+            with theMission.itemLock:
+                newFetchResultTime = time() 
+                for index,url in enumerate(theMission.urls):
+                    if not theMission.bTried[index] :
+                        if newFetchResultTime > theMission.fetchResultTimes[index]+theMission.fetchResultTimeouts[index]:#timeout or unfetched url
+                            theMission.fetchResultTimes[index]=newFetchResultTime
+                            if theMission.urls[index] not in response_data['urls']:
+                                response_data['urls'].append(theMission.urls[index])
+                                if theMission.split!=0 and len(response_data['urls']) >= theMission.split:
+                                    break;
+                if len(response_data['urls']) == 0:
+                    response_data['status']=30002
+                    response_data['itemId']=str(theMission.itemId)
+                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
+                else:
+                    response_data['status']=10004
+                    response_data['fetchResultTime']=newFetchResultTime
+                    response_data['itemId']=str(theMission.itemId)
+                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
 
 
     #won't run to here comment it
     response_data={}
     return HttpResponse(simplejson.dumps(response_data));
-
+        
+@login_required()
+def getMissionList(request):
+    with GetMissionQueue().bufferLock:
+        theMissionList = GetMissionQueue().getCustomerMission(request.user)
+    theMissionListJson=[]
+    for theMission in theMissionList:
+        theMissionListJson.append(theMission.toJson())
+    response_data={
+            "status":"undergo",
+            "theMissionList":theMissionListJson,
+        } 
+    #to do  
+    return HttpResponse(simplejson.dumps(response_data));
+        
 @login_required()
 def getMission(request):
-    logger.debug("i'm here .getMission page")
-    theMission = GetMissionQueue().getCustomerMission(request.user)
-    if theMission != None :
+    itemId = request.POST["itemId"]
+    if itemId != "" :
+        with GetMissionQueue().bufferLock:
+            theMission = GetMissionQueue().getUndergoMission(int(itemId))
+            if theMission != None :
+                response_data={
+                        "status":"undergo",
+                        "theMission":theMission.toJson(),
+                    } 
+                return HttpResponse(simplejson.dumps(response_data));
+            else:
+                response_data={
+                        "status":"missionNotExist",
+                    } 
+                return HttpResponse(simplejson.dumps(response_data));
+
+    theMission = GetMissionQueue().pop()
+    if theMission != None:
+        theMission.customer=request.user
         response_data={
-                "state":"undergo"
-                "theMission":theMission,
-            } 
-    else: 
-        theMission = GetMissionQueue().pop()
-        if theMission != None:
-            theMission.customer=request.user
+            "status":"waitForUrls",
+            "theMission":theMission.toJson(),
+        }
+        return HttpResponse(simplejson.dumps(response_data));
+    else:
+        response_data={
+            "status":"waitForMissions",
+        }
+        return HttpResponse(simplejson.dumps(response_data))
+        
+def submitUrl(request):
+    itemId = request.POST["itemId"]
+    urls =[]
+    if request.POST.has_key("urls"):
+        raw_urls=request.POST['urls']
+        logger.debug("raw_urls=%s"%raw_urls)
+        urls=simplejson.loads(raw_urls)
+   
+    theMission = None
+    with GetMissionQueue().bufferLock :
+        theMission = GetMissionQueue().getUndergoMission(int(itemId))
+    logger.debug("len(urls)=%d"%(len(urls)))        
+    if len(urls) >=1 :
+        logger.debug("urls[0]=%s"%(urls[0]))    
+    if theMission != None:
+        if str(theMission.customer) != str(request.user) :
+            logger.debug("theMission.customer=%s,request.user=%s"%(theMission.customer,request.user))
             response_data={
-                "state":"waitForUrls"
-                "theMission":theMission,
+                "status":"missionCustomerChanged",
             }
+            # to do
             return HttpResponse(simplejson.dumps(response_data));
         else:
+            if len(urls) >=1 :
+                logger.debug("urls[0]=%s"%(urls[0]))
+                with theMission.itemLock :
+                    for new_url in urls:
+                        bAdd=True
+                        for index,url in enumerate(theMission.urls):
+                            if new_url== url and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
+                                bAdd = False
+                                break
+                        if bAdd :
+                            logger.debug("add new url:%s"%(new_url))
+                            theMission.urls.append(new_url)
+                            theMission.bTried.append(False)
+                            theMission.fetchResultTimes.append(0)
+                            theMission.fetchResultTimeouts.append(60)
+                            theMission.urls_sema.release()
+            if not theMission.wait_success_sema.acquire(10):
+                #return the mission process
+                response_data={
+                    "status":"missionUndergo",
+                    "theMission":theMission.toJson(),
+                }
+                return HttpResponse(simplejson.dumps(response_data))
+            else :
+                response_data={
+                    "status":"missionComplete",
+                    "theMission":theMission.toJson(),
+                }
+                return HttpResponse(simplejson.dumps(response_data));
             
-    
-    return HttpResponse(simplejson.dumps(response_data));
-    
-def submitUrl(request):
-    raw_itemId = request.POST["itemId"]
+    else:
+        response_data={
+                "status":"missionNotExist",
+            }
+        #to do
+        return HttpResponse(simplejson.dumps(response_data));
 
 @csrf_exempt
 @missionQueueTrace
@@ -287,9 +347,6 @@ def submitResultSuccess(request):
                     # entry.delete()
             # return HttpResponse("insert result success temp code for nmimi ");            
 
-    trace="itemId="+itemId+";hash(message+site)="+str(hash(message+site))+"\n"
-    trace=trace+"message="+message+"  site="+site+";before insert url\n"
-    trace=trace+GetMissionQueue().toString()
     # insert url to db
     if itemId == "" :
         #not in the missionqueue ,maybe one mission with more than one url
@@ -318,10 +375,12 @@ def submitResultSuccess(request):
                     newMissionInfo.site=theMission.site
                     newMissionInfo.save()
                     # move theMission to doneBuffer ,after pop theMission can only in the undergoBuffer
+                    with theMission.itemLock:
+                        theMission.url=url
+                        theMission.wait_success_sema.release()
                     del GetMissionQueue().undergoBuffer[theMission.itemId]
                     GetMissionQueue().doneBuffer[theMission.itemId]=theMission
-                    trace=trace+"after insert url\n"+GetMissionQueue().toString()
-                    return HttpResponse("insert result success .\n"+trace);    
+                    return HttpResponse("insert result success .");    
                 else:
                     # shouldn't be here,wrong itemId
                     return HttpResponse("abandon result theMission.message=%s,message=%s"%(theMission.message,message));          
@@ -334,9 +393,8 @@ def submitResultSuccess(request):
                     newMissionInfo.site=site
                     newMissionInfo.shopkeeper=shopkeeper
                     newMissionInfo.save()
-                trace=trace+"after insert url\n"+GetMissionQueue().toString() 
                 logger.debug("mission don't exist ,should abandon result ,but save first ")    
-                return HttpResponse("mission don't exist ,should abandon result ,but save first \n"+trace);  
+                return HttpResponse("mission don't exist ,should abandon result ,but save first ");  
 
 @csrf_exempt            
 def submitCode(request):
@@ -382,11 +440,56 @@ def invalidMission(request):
         return HttpResponse(" invalidMission: success ")
     else:
         return HttpResponse(" invalidMission: wrong mission info ")
+        
+def invalidMissionC(request):
+    itemId = request.POST["itemId"]
+    message=""
+    site=""
+    if len(itemId) != 0 :
+        # move theMission to doneBuffer with .urls empty , it means it's a invalid mission
+        with GetMissionQueue().bufferLock:
+            theMission=GetMissionQueue().getUndergoMission(int(itemId))
+            if theMission != None :
+                del GetMissionQueue().undergoBuffer[theMission.itemId]
+                GetMissionQueue().doneBuffer[theMission.itemId]=theMission
+                theMission.urls=[]
+                theMission.urls_sema.release()
+                message=theMission.message
+                site=theMission.site
+    if message != "" :
+        entries = MissionInfo.objects.filter(message=message,site=site)
+        if entries.count() >= 1:
+            for entry in entries:
+                entry.valid=False
+                entry.save()
+        else :
+            newMissionInfo = MissionInfo()
+            newMissionInfo.message=message
+            newMissionInfo.site=site
+            newMissionInfo.valid=False
+            newMissionInfo.save()
+        return HttpResponse(" invalidMission: success ")            
+    else:
+        return HttpResponse(" invalidMission: wrong mission info ")        
 
 
 @csrf_exempt 
 def submitResultFail(request):
-    return
+    message = request.POST["message"]
+    itemId = request.POST["itemId"]
+    site = request.POST["site"]
+    fail_url = request.POST["url"]
+    fetchResultTime = request.POST["fetchResultTime"]
+    
+    if len(itemId) != 0 :
+        with GetMissionQueue().bufferLock:
+            theMission=GetMissionQueue().getUndergoMission(int(itemId))
+            if theMission != None :
+                for i,url in enumerate(theMission.urls):
+                    if fail_url==url and str(fetchResultTime)==str(theMission.fetchResultTimes[i]) :
+                        theMission.bTried[i]=True
+                return HttpResponse(" submitResultFail :success ")
+    return HttpResponse(" submitResultFail :fail ")
 
 def close(request):
     return HttpResponse("<script> window.close(); </script>")
@@ -428,7 +531,7 @@ def queryCode(request):
     decoded_code=decodeVerificaton(code_img)
     response_data={"code":decoded_code}
     return HttpResponse(simplejson.dumps(response_data));
-	
+    
 # def fuckmudooo(request):
     # return HttpResponse("ok");
 
@@ -443,7 +546,7 @@ def fakeVisit(request):
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
     })
     return render_to_response('fakevisit.html',template_values)
-	
+    
 @csrf_exempt
 def submitShopkeeper(request):
     url=request.POST["url"]
@@ -460,3 +563,9 @@ def submitShopkeeper(request):
         return HttpResponse("<script> window.close(); </script>")
     else:    
         return HttpResponse("something wrong there ,url no exist")
+
+@login_required()        
+def clearDoneBuffer(request):        
+    with GetMissionQueue().bufferLock:
+        GetMissionQueue().doneBuffer={}
+    return HttpResponse("success")
