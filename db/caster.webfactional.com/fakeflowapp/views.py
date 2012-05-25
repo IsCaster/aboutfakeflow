@@ -287,7 +287,7 @@ def submitUrl(request):
                             theMission.fetchResultTimes.append(0)
                             theMission.fetchResultTimeouts.append(60)
                             theMission.urls_sema.release()
-            if not theMission.wait_success_sema.acquire(10):
+            if not theMission.wait_success_sema.acquire(0):
                 #return the mission process
                 response_data={
                     "status":"missionUndergo",
