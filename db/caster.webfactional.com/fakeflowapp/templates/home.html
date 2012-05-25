@@ -389,7 +389,33 @@
         }
 		function getMissionList()
 		{
-			$.post("/getmissionlist",function(data)
+			$.post("/getmissionlist",{"filter":"0"},function(data)
+                {
+					theMissionListHtml=""
+					if(data.theMissionList.length>0)
+					{
+						for(var i=0 ;i<data.theMissionList.length;++i)
+						{
+							theMissionListHtml=theMissionListHtml+
+								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
+                                "<a href='javascript:getMission(\""+data.theMissionList[i].itemId+"\");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
+						}
+                        
+					}
+					else
+					{
+						theMissionListHtml="no undergo mission now"
+					}
+					$("#theMissionList")[0].innerHTML=theMissionListHtml+
+						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
+                        "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
+				}
+				,"json")
+		}
+        
+        function getMissionListA()
+		{
+			$.post("/getmissionlist",{"filter":"1"},function(data)
                 {
 					theMissionListHtml=""
 					if(data.theMissionList.length>0)
@@ -479,6 +505,7 @@
           </div>
           未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
           <input type="button" onclick="getMissionList();" value="赶紧做任务" />
+           <input type="button" onclick="getMissionListA();" value="过滤任务" />
           <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
         </form>    
     </div>

@@ -204,11 +204,22 @@ def queryUrl(request):
         
 @login_required()
 def getMissionList(request):
+    bFilter = request.POST["filter"]
+
     with GetMissionQueue().bufferLock:
         theMissionList = GetMissionQueue().getCustomerMission(request.user)
     theMissionListJson=[]
     for theMission in theMissionList:
-        theMissionListJson.append(theMission.toJson())
+        if bFilter == "1" :
+            bNeed = True
+            for fetchResultTime in theMission.fetchResultTimes :
+                if fetchResultTime == 0 :
+                    bNeed= False
+                    break;
+            if bNeed:
+                theMissionListJson.append(theMission.toJson())
+        else:
+            theMissionListJson.append(theMission.toJson())
     response_data={
             "status":"undergo",
             "theMissionList":theMissionListJson,
