@@ -352,8 +352,11 @@
                 {
                     if(data.status=="waitForUrls" || data.status=="undergo")
                     {
-                        showMessage(data.theMission)
-                        showSubmitUrlDiv(data.theMission.itemId)
+                        if(itemId!="")
+                        {
+                            showMessage(data.theMission)
+                            showSubmitUrlDiv(data.theMission.itemId)
+                        }
                         $("#getNewMissionBtn")[0].value="get new mission"
                     }
                 }
