@@ -20,12 +20,19 @@ unsafeWindow.gaussianGenerate = function (mean, stdev)
 }
 
 
+//set run mode
+//1: local 2: remote
+if(GM_getValue("bLocal","undefined")=="undefined")
+{
+    GM_setValue("bLocal",90002)
+}
+
 if(location.href=="http://www.hiwinwin.com/task/count/" 
 	|| location.href=="http://www.hiwinwin.com/task/count/index.aspx" )
 {
 	if(document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!=-1)
 	{
-        location.href="http://caster.webfactional.com/close"
+        location.href="javascript:window.close()"
 		return;
 	}
     else if(document.referrer=="")
@@ -655,7 +662,9 @@ function handleMission()
                     }
                 })
             
-            if(this.loadtime<=1)
+            
+            
+            unsafeWindow.getUrls=function()
             {
                 //get messages
                 var message="";
@@ -683,7 +692,7 @@ function handleMission()
                 input=	'message='+encodeURIComponent(message.replace(/\s*/g,""))+
                         ';shopkeeper='+encodeURIComponent(shopkeeper)+
                         ';site='+site+
-                        ';status='+0;
+                        ';local='+GM_getValue("bLocal","90002");
                 
 				// request=$.get("http://caster.webfactional.com/queryurl",input,function(data){
                 // GM_log("query return");
@@ -733,6 +742,7 @@ function handleMission()
                         {
                             //GM_log("data.urls.length="+data.urls.length)
                             $("iframe")[0].urls=data.urls
+                            $("iframe")[0].loadtime=1
                             GM_log("$('iframe')[0].urls.length="+$('iframe')[0].urls.length)
                             $("iframe").contents().find("#itemurl")[0].value=data.urls[0];
                             GM_log('$("iframe").contents().find("#code")[0].value='+$("iframe").contents().find("#code")[0].value)
@@ -785,6 +795,15 @@ function handleMission()
                             }
                             
                         }
+                        else if (data.status>=30001&&data.status<40000)
+                        {
+                            setTimeout(unsafeWindow.getUrls(),20000)
+                            $("#playAudioGot")[0].play()
+                        }
+                        else if (data.status==40001)
+                        {
+                            setTimeout($("#quitMissionBtn")[0].click(),2124)
+                        }
                         else
                         {
                             $("iframe")[0].fetchResultTime=-1
@@ -800,6 +819,10 @@ function handleMission()
                 });
                 
                 //GM_log("after post message")
+            }
+            if(this.loadtime<=1)
+            {
+                unsafeWindow.getUrls()
             }
             else if(this.loadtime<=this.urls.length)//loadtime >= 2 && loadtime <= urls.length
 			{

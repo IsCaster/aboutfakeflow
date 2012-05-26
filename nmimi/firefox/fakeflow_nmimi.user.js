@@ -24,6 +24,14 @@ if(GM_getValue("runMode","undefined")=="undefined")
     GM_setValue("runMode",1)
 }
 
+//set run mode
+//1: local 2: remote
+if(GM_getValue("bLocal","undefined")=="undefined")
+{
+    GM_setValue("bLocal",90002)
+}
+
+
 if(location.href.indexOf("FMDating.aspx")!=-1)
 {
     handleGetMissionPage()
@@ -344,12 +352,12 @@ function handleMyMissonPage()
     if(GM_getValue("runMode",2)==2)
     {
 		
-        setInterval("RefTask(1, pageSize, 1);",40000)
+        setInterval("RefTask(1, pageSize, 1);",60000)
     }
     else
     {
 		//for debug
-        setInterval("RefTask(1, pageSize, 2);",60000)
+        setInterval("RefTask(1, pageSize, 2);",40000)
     }
     GM_log("handleMyMissionPage end")
 }
@@ -452,9 +460,9 @@ function handleValidPage()
             if(this.location.href=="http://wwww.nmimi.com/AlarmMsg.aspx")
             {
                 //mission expired
-                this.location.href="http://www.fakeflowdb.com/close"
+                this.location.href="javascript:window.close()"
 				GM_log("mission expired")
-				unsafeWindow.location.href="http://www.fakeflowdb.com/close"
+				unsafeWindow.location.href="javascript:window.close()"
             }
 			//check if mission completed
 			if(this.document.scripts[0].innerHTML=="window.opener.location.reload();alert('恭喜已验证成功！本页将关闭！');window.close();")
@@ -475,7 +483,7 @@ function handleValidPage()
 					var validResultWindow=this
 					GM_xmlhttpRequest({
 						method: "POST",
-						url: "http://www.fakeflowdb.com/submitresultsuccess",
+						url: "http://caster.webfactional.com/submitresultsuccess",
 						data: input,
 						headers: {
 						"Accept": "application/json",
@@ -486,24 +494,27 @@ function handleValidPage()
 							//GM_log('validResultWindow : '+validResultWindow)
 							
 							//close validResult page
-							validResultWindow.location.href="http://www.fakeflowdb.com/close"
+							validResultWindow.location.href="javascript:window.close()"
 							
 							//close valid page
-							location.href="http://www.fakeflowdb.com/close"
+							location.href="javascript:window.close()"
 						}
 					})
 				}
 				else
 				{	
 					//close validResult page
-					this.location.href="http://www.fakeflowdb.com/close"
+					this.location.href="javascript:window.close()"
 					//close valid page
-					location.href="http://www.fakeflowdb.com/close"
+					location.href="javascript:window.close()"
 				}
 
 			}
 			else
 			{
+                GM_log("mission uncomplete")
+				unsafeWindow.checkUrl()
+                this.location.href="javascript:window.close()"
                 //send fail message
                 message=unsafeWindow.getNmmValue("message")//it's already encodeURIComponent
                 itemId=unsafeWindow.getNmmValue("itemId")
@@ -517,7 +528,7 @@ function handleValidPage()
                 var validResultWindow=this
 				GM_xmlhttpRequest({
 						method: "POST",
-						url: "http://www.fakeflowdb.com/submitresultfail",
+						url: "http://caster.webfactional.com/submitresultfail",
 						data: input,
 						headers: {
 						"Accept": "application/json",
@@ -528,11 +539,10 @@ function handleValidPage()
 							//GM_log('validResultWindow : '+validResultWindow)
 							
 							//close validResult page
-							validResultWindow.location.href="http://www.fakeflowdb.com/close"
+							validResultWindow.location.href="javascript:window.close()"
 						}
 					})
-				GM_log("mission uncomplete")
-				unsafeWindow.checkUrl()
+				
 			}
 		}
 	}
@@ -572,7 +582,7 @@ function handleValidPage()
         GM_log(input)
         GM_xmlhttpRequest({
             method: "POST",
-            url: "http://www.fakeflowdb.com/invalidmission",
+            url: "http://caster.webfactional.com/invalidmission",
             data: input,
             headers: {
             "Accept": "application/json",
@@ -582,7 +592,7 @@ function handleValidPage()
                 GM_log('submit invalid mission return: response='+xhr.responseText)
                 
                 unsafeWindow.setNmmValue("invalid","1")
-                location.href="http://www.fakeflowdb.com/close"
+                location.href="javascript:window.close()"
             }});
 
     }
@@ -651,16 +661,18 @@ function handleValidPage()
                 message=message+$(".step + div")[i].innerHTML+";"
             }
             unsafeWindow.setNmmValue("message",encodeURIComponent(message.replace(/\s*/g,"")))
+            bLocal=GM_getValue("bLocal","90002")
             //GM_log("message="+message)
             shopkeeper=""
             site="nmimi"
             input = 'message='+encodeURIComponent(message.replace(/\s*/g,""))+
                     ';shopkeeper='+encodeURIComponent(shopkeeper)+
-                    ';site='+site;
+                    ';site='+site
+                    ';local='+bLocal;
             GM_log(input)
             GM_xmlhttpRequest({
                 method: "POST",
-                url: "http://www.fakeflowdb.com/queryurl",
+                url: "http://caster.webfactional.com/queryurl",
                 data: input,
                 headers: {
                 "Accept": "application/json",
@@ -720,12 +732,13 @@ function handleValidPage()
                     }
                     else if(data.status>=30001&&data.status<40000)
                     {
-                        setTimeout(unsafeWindow.getUrls(),0)
+                        unsafeWindow.setNmmValue("fetchResultTime",-1)
+                        setTimeout(unsafeWindow.getUrls(),30000)
                     }
                     else if(data.status==40001)
                     {
                         unsafeWindow.setNmmValue("invalid","1")
-                        location.href="http://www.fakeflowdb.com/close"
+                        location.href="javascript:window.close()"
                     }
                     else if(data.status=80000)
                     {
@@ -780,11 +793,11 @@ function handleValidPage()
     //$(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
     if(GM_getValue("runMode",2)==2)
     {
-        $('#linkValid')[0].closeTimeoutId=setTimeout("location.href='http://www.fakeflowdb.com/close'",56000)
+        $('#linkValid')[0].closeTimeoutId=setTimeout("location.href='http://caster.webfactional.com/close'",56000)
     }
     else
     {
-        setTimeout("location.href='http://www.fakeflowdb.com/close'",901000)
+        setTimeout("location.href='http://caster.webfactional.com/close'",901000)
     }
     //GM_log("handleValidPage end")
 	

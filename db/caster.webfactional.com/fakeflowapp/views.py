@@ -107,7 +107,12 @@ def queryUrl(request):
     elif request.method == "GET":
         raw_shopkeeper = request.GET["shopkeeper"]
         raw_site = request.GET["site"]
-        raw_message = request.GET["message"]    
+        raw_message = request.GET["message"]
+        
+    if request.POST.has_key("local"):
+        local=request.POST["local"]
+    else:
+        local="90002"
         
     # shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     # site=unquote(raw_site.encode('ascii','ignore')).decode('utf8')
@@ -149,6 +154,11 @@ def queryUrl(request):
             # response_data['fetchResultTime']=int(time())
             # return HttpResponse(simplejson.dumps(response_data))
     
+    if local == "90001" :
+        #no need to continue
+        response_data['status']=20001
+        return HttpResponse(simplejson.dumps(response_data))
+    
     # urls not in the database
     newMission=MissionItem(message,site,shopkeeper);
 
@@ -170,7 +180,7 @@ def queryUrl(request):
             response_data['urls']=[]
         return HttpResponse(simplejson.dumps(response_data))
     else : 
-        if not theMission.urls_sema.acquire(60): # wait for url customer to product urls
+        if not theMission.urls_sema.acquire(30): # wait for url customer to product urls
             response_data['status']=30001
             response_data['itemId']=str(theMission.itemId)
             return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
