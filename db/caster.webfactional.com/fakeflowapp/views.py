@@ -253,7 +253,7 @@ def getMission(request):
                 if GetMissionQueue().doneBuffer.has_key(int(itemId)):
                     response_data={
                             "status":"missionCompleted",
-                            #"theMission":GetMissionQueue().doneBuffer[int(itemId)].toJson(),
+                            "theMission":GetMissionQueue().doneBuffer[int(itemId)].toJson(),
                         } 
                     return HttpResponse(simplejson.dumps(response_data));
                 else:
