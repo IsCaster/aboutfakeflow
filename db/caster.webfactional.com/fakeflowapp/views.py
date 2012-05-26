@@ -250,10 +250,17 @@ def getMission(request):
                     } 
                 return HttpResponse(simplejson.dumps(response_data));
             else:
-                response_data={
-                        "status":"missionNotExist",
-                    } 
-                return HttpResponse(simplejson.dumps(response_data));
+                if GetMissionQueue().doneBuffer.has_key(int(itemId)):
+                    response_data={
+                            "status":"missionCompleted",
+                            #"theMission":GetMissionQueue().doneBuffer[int(itemId)].toJson(),
+                        } 
+                    return HttpResponse(simplejson.dumps(response_data));
+                else:
+                    response_data={
+                            "status":"missionNotExist",
+                        } 
+                    return HttpResponse(simplejson.dumps(response_data));
 
     theMission = GetMissionQueue().pop()
     if theMission != None:

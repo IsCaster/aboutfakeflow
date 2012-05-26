@@ -357,7 +357,19 @@
                             showMessage(data.theMission)
                             showSubmitUrlDiv(data.theMission.itemId)
                         }
+                        else if (data.status=="waitForUrls" )
+                        {
+                            alert("got new mission")
+                        }
                         $("#getNewMissionBtn")[0].value="get new mission"
+                    }
+                    else if(data.status=="missionCompleted")
+                    {
+                        if(itemId!="")
+                        {
+                            showMessage(data.theMission)
+                            $("#theMission")[0].innerHTML='mission completed&nbsp;'+$("#theMission")[0].innerHTML
+                        }
                     }
                 }
                 ,"json")
@@ -470,7 +482,7 @@
                 urls_query[i]=$(".url")[i].value
             }
             urls_query_str=urls_query.join(";")
-            $("#urlsInput")[0].value=urls_query_str+";"+$("#urlsInput")[0].value
+            $("#urlsInput")[0].value=$("#urlsInput")[0].value
         }
 
         function clearDoneBuffer()
