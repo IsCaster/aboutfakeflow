@@ -369,7 +369,7 @@
                         if(itemId!="")
                         {
                             showMessage(data.theMission)
-                            $("#theMission")[0].innerHTML='mission completed&nbsp;'+$("#theMission")[0].innerHTML
+                            $("#theMission")[0].innerHTML='<p style="color:#FF1111">mission completed</p>&nbsp;'+$("#theMission")[0].innerHTML
                         }
                     }
                 }
@@ -382,7 +382,7 @@
             getMission()
             if(typeof($("#switchGetNewMissionBtn")[0].keep)=="undefined"||$("#switchGetNewMissionBtn")[0].keep==1)
             {
-                setTimeout("getNewMission()",30000)
+                setTimeout("getNewMission()",15000)
             }
             return 
         }
@@ -483,7 +483,7 @@
                 urls_query[i]=$(".url")[i].value
             }
             urls_query_str=urls_query.join(";")
-            $("#urlsInput")[0].value=$("#urlsInput")[0].value
+            $("#urlsInput")[0].value=urls_query_str
         }
 
         function clearDoneBuffer()
