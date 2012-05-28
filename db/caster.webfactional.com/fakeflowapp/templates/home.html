@@ -360,6 +360,8 @@
                         else if (data.status=="waitForUrls" )
                         {
                             getMissionList();
+                            $("#playAudioGot")[0].volume=0.3;
+                            $("#playAudioGot")[0].play()
                             alert("got new mission")
                         }
                         $("#getNewMissionBtn")[0].value="get new mission"
@@ -538,5 +540,8 @@
         </table>
      
 	</div>
+    <div>
+        <audio id=\"playAudioGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> 
+    </div>
   </body>
 </html>

@@ -203,7 +203,7 @@ def queryUrl(request):
                     return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
                 else:
                     response_data['status']=10004
-                    response_data['fetchResultTime']=newFetchResultTime
+                    response_data['fetchResultTime']=str(newFetchResultTime)
                     response_data['itemId']=str(theMission.itemId)
                     return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
 
@@ -516,6 +516,8 @@ def submitResultFail(request):
                 for i,url in enumerate(theMission.urls):
                     if fail_url==url and str(fetchResultTime)==str(theMission.fetchResultTimes[i]) :
                         theMission.bTried[i]=True
+                    if  str(fetchResultTime)==str(theMission.fetchResultTimes[i]):
+                        theMission.fetchResultTimeouts[i]=time()-theMission.fetchResultTimes[i]+60
                 return HttpResponse(" submitResultFail :success ")
     return HttpResponse(" submitResultFail :fail ")
 
