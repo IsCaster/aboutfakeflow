@@ -67,7 +67,8 @@ def missionInfo(request):
     return render_to_response('missioninfo.html', template_values);
 
 
-def handleInBufferMission(location,theMission):    
+def handleInBufferMission(location,theMission):
+    response_data={}
     if location == "doneBuffer" :
         if theMission.url != "":
             response_data['status']=10003
