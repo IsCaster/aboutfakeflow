@@ -126,7 +126,7 @@
         
         function setTdValue(td,url)
         {
-            td.value=url
+            td.value=url.replace(/^\s*/,"").replace(/\s*$/,"")
         }
         
         
@@ -482,7 +482,19 @@
             urls_query=new Array()
             for(var i=0;i<$(".url").length;++i)
             {
-                urls_query[i]=$(".url")[i].value
+                bAdd=true
+                for(var j=0;j<urls_query.length;++j)
+                {
+                    if(urls_query[j]==$(".url")[i].value)
+                    {
+                        bAdd=false;
+                        break;
+                    }
+                }
+                if(bAdd==true)
+                {
+                    urls_query.push($(".url")[i].value)
+                }
             }
             urls_query_str=urls_query.join(";")
             $("#urlsInput")[0].value=urls_query_str
