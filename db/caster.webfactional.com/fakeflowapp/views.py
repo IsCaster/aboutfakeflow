@@ -65,8 +65,45 @@ def missionInfo(request):
         'keyword'   : keyword,  
     };
     return render_to_response('missioninfo.html', template_values);
-        
-            
+
+
+def handleInBufferMission(location,theMission):    
+    if location == "doneBuffer" :
+        if theMission.url != "":
+            response_data['status']=10003
+            response_data['urls']=theMission.urls
+            response_data['fetchResultTime']="0"
+        else:
+            response_data['status']=40001
+            response_data['urls']=[]
+        return HttpResponse(simplejson.dumps(response_data))
+    else : 
+        if not theMission.urls_sema.acquire(0): # wait for url customer to product urls
+            response_data['status']=30001
+            response_data['itemId']=str(theMission.itemId)
+            return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
+        else:
+            theMission.urls_sema.release()
+            response_data['urls']=[]
+            with theMission.itemLock:
+                newFetchResultTime = time() 
+                for index,url in enumerate(theMission.urls):
+                    if not theMission.bTried[index] :
+                        if newFetchResultTime > theMission.fetchResultTimes[index]+theMission.fetchResultTimeouts[index]:#timeout or unfetched url
+                            theMission.fetchResultTimes[index]=newFetchResultTime
+                            if theMission.urls[index] not in response_data['urls']:
+                                response_data['urls'].append(theMission.urls[index])
+                                if theMission.split!=0 and len(response_data['urls']) >= theMission.split:
+                                    break;
+                if len(response_data['urls']) == 0:
+                    response_data['status']=30002
+                    response_data['itemId']=str(theMission.itemId)
+                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
+                else:
+                    response_data['status']=10004
+                    response_data['fetchResultTime']=str(newFetchResultTime)
+                    response_data['itemId']=str(theMission.itemId)
+                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
     # response_data['status']  
     # value       meaning
     # 10001       find url in urlCache
@@ -121,6 +158,13 @@ def queryUrl(request):
     site=raw_site
     message=raw_message
     
+    # query cache first 
+    newMission=MissionItem(message,site,shopkeeper);
+    with GetMissionQueue().bufferLock:
+        location,theMission=GetMissionQueue().query(newMission)
+    if location != "none":
+        handleInBufferMission(location,theMission)
+    
     entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
 
     count = entries.count()
@@ -139,6 +183,7 @@ def queryUrl(request):
             if entry.url not in urls:
                 urls.append(entry.url)
         response_data['status']=10002
+        response_data['fetchResultTime']="0"
         response_data['urls']=urls
         return HttpResponse(simplejson.dumps(response_data))
     # elif shopkeeper != "" :
@@ -160,7 +205,7 @@ def queryUrl(request):
         return HttpResponse(simplejson.dumps(response_data))
     
     # urls not in the database
-    newMission=MissionItem(message,site,shopkeeper);
+    #newMission=MissionItem(message,site,shopkeeper);
 
     #whether GetMissionQueue().push return success or fail ,if mission is not finished
     #thread still need to acquire lock to be the only detector of the mission
@@ -170,47 +215,7 @@ def queryUrl(request):
         location,theMission=GetMissionQueue().push(newMission)
     
     logger.debug("push new Mission Item")
-
-    if location == "doneBuffer" :
-        if theMission.url != "":
-            response_data['status']=10003
-            response_data['urls']=[theMission.url]
-        else:
-            response_data['status']=40001
-            response_data['urls']=[]
-        return HttpResponse(simplejson.dumps(response_data))
-    else : 
-        if not theMission.urls_sema.acquire(30): # wait for url customer to product urls
-            response_data['status']=30001
-            response_data['itemId']=str(theMission.itemId)
-            return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
-        else:
-            theMission.urls_sema.release()
-            response_data['urls']=[]
-            with theMission.itemLock:
-                newFetchResultTime = time() 
-                for index,url in enumerate(theMission.urls):
-                    if not theMission.bTried[index] :
-                        if newFetchResultTime > theMission.fetchResultTimes[index]+theMission.fetchResultTimeouts[index]:#timeout or unfetched url
-                            theMission.fetchResultTimes[index]=newFetchResultTime
-                            if theMission.urls[index] not in response_data['urls']:
-                                response_data['urls'].append(theMission.urls[index])
-                                if theMission.split!=0 and len(response_data['urls']) >= theMission.split:
-                                    break;
-                if len(response_data['urls']) == 0:
-                    response_data['status']=30002
-                    response_data['itemId']=str(theMission.itemId)
-                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
-                else:
-                    response_data['status']=10004
-                    response_data['fetchResultTime']=str(newFetchResultTime)
-                    response_data['itemId']=str(theMission.itemId)
-                    return HttpResponse(simplejson.dumps(response_data),mimetype="application/json")
-
-
-    #won't run to here comment it
-    response_data={}
-    return HttpResponse(simplejson.dumps(response_data));
+    handleInBufferMission(location,theMission)
         
 @login_required()
 def getMissionList(request):
@@ -403,8 +408,18 @@ def submitResultSuccess(request):
                     newMissionInfo.site=theMission.site
                     newMissionInfo.save()
                     # move theMission to doneBuffer ,after pop theMission can only in the undergoBuffer
+                    entries=MissionInfo.objects.filter(message=message,site=theMission.site).order_by("-updateTime")[:20]#retrieve max :20
+
+                    count = entries.count()
+
+                    urls=[url]
+                    if  entries.count() >= 1 : 
+                        for entry in entries:
+                            if entry.valid ==True and entry.url not in urls:
+                                urls.append(entry.url)
                     with theMission.itemLock:
                         theMission.url=url
+                        theMission.urls=urls
                         theMission.wait_success_sema.release()
                     del GetMissionQueue().undergoBuffer[theMission.itemId]
                     GetMissionQueue().doneBuffer[theMission.itemId]=theMission
@@ -519,7 +534,21 @@ def submitResultFail(request):
                     if  str(fetchResultTime)==str(theMission.fetchResultTimes[i]):
                         theMission.fetchResultTimeouts[i]=time()-theMission.fetchResultTimes[i]+60
                 return HttpResponse(" submitResultFail :success ")
-    return HttpResponse(" submitResultFail :fail ")
+            else:
+                return HttpResponse(" submitResultFail :fail ")
+    else:
+        #error url in db or doneBuffer 
+        newMission=MissionItem(message,site);
+        with GetMissionQueue().bufferLock:
+            location,theMission=GetMissionQueue().push(newMission)
+            if location == "doneBuffer" :
+                theMission.init()
+                del GetMissionQueue().doneBuffer[theMission.itemId]
+                GetMissionQueue().unhandledBuffer[theMission.itemId]=theMission
+                return HttpResponse(" submitResultFail :success ,move the mission from doneBuffer to unhandleBuffer")
+            else:
+                return HttpResponse(" submitResultFail :success ,new one mission ")
+    
 
 def close(request):
     return HttpResponse("<script> window.close(); </script>")

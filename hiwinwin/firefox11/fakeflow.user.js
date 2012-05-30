@@ -472,7 +472,11 @@ function handleMission()
                     {
                         message=GM_getValue("message")
                         shopkeeper=GM_getValue("shopkeeper","")
-                        itemId=this.itemId
+                        itemId=""
+                        if(typeof(this.itemId)!="undefined")
+                        {
+                            itemId=this.itemId
+                        }
                         code=GM_getValue("code")
                         codeImg=GM_getValue("codeImg")
                         url=GM_getValue("url")
@@ -551,6 +555,40 @@ function handleMission()
                     preUrlLink.innerHTML="之前尝试的url"
                     preUrlLink.href=GM_getValue("url","")
                     $("iframe").contents().find(".bar_dl")[0].insertBefore(preUrlLink,null)
+                    
+                    //fail before
+                    //send fail message
+                    if($("iframe").contents().find(".error_panel").length>=1&&$("iframe").contents().find(".error_panel")[0].innerHTML.indexOf("验证码不正确")==-1)
+                    {
+                        // not code error
+                        message=GM_getValue("message")
+                        shopkeeper=GM_getValue("shopkeeper","")
+                        itemId=""
+                        url=preUrlLink.href
+                        if(typeof(this.itemId)!="undefined")
+                        {
+                            itemId=this.itemId
+                        }
+                        site="hiwinwin"
+                        
+                        fetchResultTime=this.fetchResultTime
+                        //submit success url
+                        input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                        GM_log("submitresultfail:"+input)
+                        GM_xmlhttpRequest({
+                                method: "POST",
+                                url: "http://caster.webfactional.com/submitresultfail",
+                                data: input,
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                },
+                                onload: function(xhr) {
+                                    GM_log('submit fail return: response='+xhr.responseText)
+                                    //GM_log('validResultWindow : '+validResultWindow)
+                                }
+                            })
+                    }
                 }    
             }
             
@@ -624,6 +662,14 @@ function handleMission()
                         GM_log("data.code="+data.code)
                         $("iframe").contents().find("#code")[0].value=data.code;
                         
+                        var bCodeErr=false
+                        if($("iframe").contents().find(".error_panel").length>=1&&$("iframe").contents().find(".error_panel")[0].innerHTML.indexOf("验证码不正确")!=-1)
+                        {
+                            //try again
+                            $("iframe")[0].loadtime=$("iframe")[0].loadtime-1
+                            bCodeErr=true
+                        }
+                        
                         while($("iframe")[0].loadtime<=$("iframe")[0].urls.length)
                         {
                             if($("iframe")[0].urls[$("iframe")[0].loadtime-1].indexOf('http://')==0)
@@ -633,7 +679,7 @@ function handleMission()
 
                                 
                                 var checkUrlTimeout=0
-                                if($("iframe")[0].loadtime<=1)
+                                if($("iframe")[0].loadtime<=1&&bCodeErr==false)
                                 {
                                     // to do assume code will return soon.
                                     // checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(25000,10000))
@@ -658,6 +704,11 @@ function handleMission()
                             {
                                 $("iframe")[0].loadtime=$("iframe")[0].loadtime+1
                             }
+                        }
+                        if($("iframe")[0].loadtime>$("iframe")[0].urls.length)
+                        {
+                            //no more urls
+                            unsafeWindow.getUrls()
                         }
                     }
                 })
@@ -749,7 +800,7 @@ function handleMission()
                             if(typeof(data.fetchResultTime)!="undefined")
                             {
 
-                                $("iframe")[0].fetchResultTime=parseInt(data.fetchResultTime,10)
+                                $("iframe")[0].fetchResultTime=data.fetchResultTime
                             }
                             else
                             {
@@ -783,7 +834,7 @@ function handleMission()
                             //location.herf=$(".link_t ")[1].href;
                             $("iframe")[0].fetchResultTime=-1
                             //playmusic	
-                            $("#playAudioGot")[0].play()
+                            //$("#playAudioGot")[0].play()
                             if(GM_getValue("runMode",1)==2)
                             {
                                 //$("iframe").contents().find("#quitMissionBtn")[0].click()
@@ -797,18 +848,18 @@ function handleMission()
                         }
                         else if (data.status>=30001&&data.status<40000)
                         {
-                            setTimeout(unsafeWindow.getUrls(),20000)
-                            $("#playAudioGot")[0].play()
+                            setTimeout(unsafeWindow.getUrls(),10000)
+                            //$("#playAudioGot")[0].play()
                         }
                         else if (data.status==40001)
                         {
-                            setTimeout($("#quitMissionBtn")[0].click(),2124)
+                            setTimeout($("iframe").contents().find("#quitMissionBtn")[0].click(),2124)
                         }
                         else
                         {
                             $("iframe")[0].fetchResultTime=-1
                             //playmusic	
-                            $("#playAudioGot")[0].play()
+                            //$("#playAudioGot")[0].play()
                             if(GM_getValue("runMode",1)==2)
                             {
                                 //$("iframe").contents().find("#quitMissionBtn")[0].click()
@@ -822,7 +873,7 @@ function handleMission()
             }
             if(this.loadtime<=1)
             {
-                unsafeWindow.getUrls()
+                //unsafeWindow.getUrls()
             }
             else if(this.loadtime<=this.urls.length)//loadtime >= 2 && loadtime <= urls.length
 			{
@@ -841,7 +892,7 @@ function handleMission()
                 //$("iframe").contents().find("#itemurl")[0].value=GM_getValue("url","")
                 
                 //playmusic	
-                $("#playAudioGot")[0].play()
+                //$("#playAudioGot")[0].play()
 				
 				if(GM_getValue("runMode",1)==2)
 				{

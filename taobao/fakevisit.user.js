@@ -111,6 +111,11 @@ function handleTaobaoItemPage()
         shopkeeper=$(".hCard ")[0].title
         
     }
+    else if($(".shop-title a").length>0)
+    {
+        shopkeeper=$(".shop-title a")[0].innerHTML
+        
+    }
     else
     {
         //invalid shopkeeper, wrong page ?

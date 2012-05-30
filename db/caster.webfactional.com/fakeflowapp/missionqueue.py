@@ -67,6 +67,26 @@ class MissionQueue:
         self.missionQueueSema.release()
         return "unhandled",item
     
+    def query(self,item):        
+        sumBuffer={}
+        sumBuffer.update(self.unhandledBuffer)
+        sumBuffer.update(self.undergoBuffer)
+        sumBuffer.update(self.doneBuffer)
+        while sumBuffer.has_key(item.itemId) :
+            if sumBuffer[item.itemId].message == item.message and sumBuffer[item.itemId].site == item.site:
+                if self.unhandledBuffer.has_key(item.itemId):
+                    return "unhandled",self.unhandledBuffer[item.itemId]
+                elif self.undergoBuffer.has_key(item.itemId):
+                    return "undergoBuffer",self.undergoBuffer[item.itemId]
+                else:
+                    # item in doneBuffer
+                    return "doneBuffer",self.doneBuffer[item.itemId]
+                    
+            else:
+                item.itemId=item.itemId+1    
+        # item not exist in MissionQueue
+        return "none",item
+    
     def toString(self):
         trace="unhandledBuffer:\n"
         for id,item in GetMissionQueue().unhandledBuffer.items():
@@ -106,6 +126,17 @@ class MissionItem:
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
         return jsonData
+    def init():
+        self.wait_success_sema=TimeOutWrapper(Semaphore(0))#used when wait for mission complete
+        self.urls_sema=TimeOutWrapper(Semaphore(0))#mark urls buffer to tried
+        self.urls=[] # if urls is umpty when the MissionItem is in the doneBuffer ,it means the mission is invalid
+        self.fetchResultTimes=[] #time to fetch url and wait for result
+        self.customer="" # url custmoer's user ID
+        self.bTried=[] # tried urls , return result fail
+        self.fetchResultTimeouts=[] #timeout to wait for result
+        self.itemLock=Lock() #used to assure atom operator to item data
+        self.url="" # the checked correct url
+        self.split=1 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
   
 
 class TimeOutWrapper:

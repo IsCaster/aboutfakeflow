@@ -510,11 +510,19 @@ function handleValidPage()
 				}
 
 			}
+            else if(this.document.body.innerHTML.indexOf("此任务已完成地址验证！")!=-1)
+            {
+                //mission complete already
+                //close validResult page
+                this.location.href="javascript:window.close()"
+                //close valid page
+                location.href="javascript:window.close()"
+            }
 			else
 			{
                 GM_log("mission uncomplete")
-				unsafeWindow.checkUrl()
-                this.location.href="javascript:window.close()"
+				
+                //this.location.href="javascript:window.close()"
                 //send fail message
                 message=unsafeWindow.getNmmValue("message")//it's already encodeURIComponent
                 itemId=unsafeWindow.getNmmValue("itemId")
@@ -525,6 +533,7 @@ function handleValidPage()
                 //submit success url
                 input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
                 
+                GM_log(input)
                 var validResultWindow=this
 				GM_xmlhttpRequest({
 						method: "POST",
@@ -542,7 +551,7 @@ function handleValidPage()
 							validResultWindow.location.href="javascript:window.close()"
 						}
 					})
-				
+				unsafeWindow.checkUrl()
 			}
 		}
 	}
@@ -667,7 +676,7 @@ function handleValidPage()
             site="nmimi"
             input = 'message='+encodeURIComponent(message.replace(/\s*/g,""))+
                     ';shopkeeper='+encodeURIComponent(shopkeeper)+
-                    ';site='+site
+                    ';site='+site+
                     ';local='+bLocal;
             GM_log(input)
             GM_xmlhttpRequest({
