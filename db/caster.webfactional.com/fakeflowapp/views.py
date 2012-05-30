@@ -164,7 +164,7 @@ def queryUrl(request):
     with GetMissionQueue().bufferLock:
         location,theMission=GetMissionQueue().query(newMission)
     if location != "none":
-        handleInBufferMission(location,theMission)
+        return handleInBufferMission(location,theMission)
     
     entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
 
@@ -216,7 +216,7 @@ def queryUrl(request):
         location,theMission=GetMissionQueue().push(newMission)
     
     logger.debug("push new Mission Item")
-    handleInBufferMission(location,theMission)
+    return handleInBufferMission(location,theMission)
         
 @login_required()
 def getMissionList(request):
