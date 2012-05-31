@@ -37,4 +37,5 @@ urlpatterns = patterns('',
     url(r'^submitshopkeeper', 'fakeflowapp.views.submitShopkeeper'),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'redirect_field_name': 'home'}),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login'),
+    url(r'^deletemissionc$', 'fakeflowapp.views.deleteMissionC'),
 )

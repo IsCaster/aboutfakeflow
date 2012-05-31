@@ -268,6 +268,8 @@
 					"<input type='button' value='submit urls' id='submitUrlsBtn' />"
             submitUrlDivHtml=submitUrlDivHtml+
 					"<input type='button' value='invalid mission' id='invalidMissionBtn' />"
+            submitUrlDivHtml=submitUrlDivHtml+
+					"<input type='button' value='delete mission' id='deleteMissionBtn' />"        
 			$("#submitUrlDiv")[0].innerHTML=submitUrlDivHtml
 			$("#submitUrlsBtn")[0].onclick=function()
 			{
@@ -340,6 +342,14 @@
                     alert(data)
                 })
             }
+            
+            $("#deleteMissionBtn")[0].onclick=function()
+            {
+                $.post("/deletemissionc",{"itemId":itemId},function(data)
+                {
+                    alert(data)
+                })
+            }
 		}
 		
         function getMission(itemId)
@@ -373,6 +383,12 @@
                             showMessage(data.theMission)
                             $("#theMission")[0].innerHTML='<p style="color:#FF1111">mission completed</p>&nbsp;'+$("#theMission")[0].innerHTML
                         }
+                    }
+                    else if(data.status=="warnMissionNeed2Handle")
+                    {
+                        $("#playAudioGot")[0].volume=0.3;
+                        $("#playAudioGot")[0].play()
+                        alert("there are missions need to handle")
                     }
                 }
                 ,"json")

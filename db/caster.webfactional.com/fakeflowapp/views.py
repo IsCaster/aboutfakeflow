@@ -277,6 +277,20 @@ def getMission(request):
         }
         return HttpResponse(simplejson.dumps(response_data));
     else:
+        with GetMissionQueue().bufferLock:
+            theMissionList = GetMissionQueue().getCustomerMission(request.user)
+        for theMission in theMissionList:
+            bWarn=True
+            for theTried in theMission.bTried :
+                if theTried == False:
+                    bWarn=False
+            if len(theMission.bTried) == 0:
+                bWarn =False
+            if bWarn :
+                response_data={
+                    "status":"warnMissionNeed2Handle",
+                }
+                return HttpResponse(simplejson.dumps(response_data))
         response_data={
             "status":"waitForMissions",
         }
@@ -512,10 +526,24 @@ def invalidMissionC(request):
             newMissionInfo.site=site
             newMissionInfo.valid=False
             newMissionInfo.save()
-        return HttpResponse(" invalidMission: success ")            
+        return HttpResponse(" invalidMissionC: success ")            
     else:
-        return HttpResponse(" invalidMission: wrong mission info ")        
+        return HttpResponse(" invalidMissionC: wrong mission info ")        
 
+def deleteMissionC(request):
+    itemId = request.POST["itemId"]
+    message=""
+    site=""
+    if len(itemId) != 0 :
+        # move theMission to doneBuffer with .urls empty , it means it's a invalid mission
+        with GetMissionQueue().bufferLock:
+            theMission=GetMissionQueue().getUndergoMission(int(itemId))
+            if theMission != None :
+                del GetMissionQueue().undergoBuffer[theMission.itemId]
+                theMission.urls_sema.release()
+                return HttpResponse(" deleteMissionC: success ")
+    return HttpResponse(" deleteMissionC: fail ")   
+        
 
 @csrf_exempt 
 def submitResultFail(request):
