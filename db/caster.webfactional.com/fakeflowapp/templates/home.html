@@ -386,9 +386,9 @@
                     }
                     else if(data.status=="warnMissionNeed2Handle")
                     {
-                        $("#playAudioGot")[0].volume=0.3;
-                        $("#playAudioGot")[0].play()
-                        alert("there are missions need to handle")
+                        $("#playAudioNeed2Handle")[0].volume=0.3;
+                        $("#playAudioNeed2Handle")[0].play()
+                       
                     }
                 }
                 ,"json")
@@ -570,6 +570,7 @@
 	</div>
     <div>
         <audio id="playAudioGot"  preload="auto" src="http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
+        <audio id="playAudioNeed2Handle"  preload="auto" src="/static/sound/need2handle.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
     </div>
   </body>
 </html>

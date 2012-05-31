@@ -206,21 +206,21 @@ function inshop_search()
 		
 		var resultUrls=""
 		
-		if(anchor>=0 && anchor<=$(".permalink").length-1)
+		if(anchor>=0 && anchor<=$(".shop-hesper-bd .permalink").length-1)
 		{
-			resultUrls=resultUrls+$(".permalink")[anchor].href+";"
+			resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor].href+";"
 		}
 		
 		
 		for(var i=1;i<44;i++)
 		{
-			if( anchor+i >=0 && anchor+i <= $(".permalink").length-1)
+			if( anchor+i >=0 && anchor+i <= $(".shop-hesper-bd .permalink").length-1)
 			{
-				resultUrls=resultUrls+$(".permalink")[anchor+i].href+";"
+				resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor+i].href+";"
 			}
-			if( anchor-i >=0 && anchor-i <= $(".permalink").length-1)
+			if( anchor-i >=0 && anchor-i <= $(".shop-hesper-bd .permalink").length-1)
 			{
-				resultUrls=resultUrls+$(".permalink")[anchor-i].href+";"
+				resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor-i].href+";"
 			}
 		}
         resultUrls=resultUrls.replace(/;$/,"")
