@@ -467,9 +467,9 @@ function handleValidPage()
 			//check if mission completed
 			if(this.document.scripts[0].innerHTML=="window.opener.location.reload();alert('恭喜已验证成功！本页将关闭！');window.close();")
 			{
-				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime",0))
+				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime","0"))
 				
-				if(unsafeWindow.getNmmValue("fetchResultTime",0)!=0)//need to send result
+				if(unsafeWindow.getNmmValue("fetchResultTime","0")!="0")//need to send result
 				{
 					message=unsafeWindow.getNmmValue("message")//it's already encodeURIComponent
 					itemId=unsafeWindow.getNmmValue("itemId")
@@ -529,28 +529,33 @@ function handleValidPage()
                 url=unsafeWindow.getNmmValue("url")
                 site="nmimi"
                 
-                fetchResultTime=unsafeWindow.getNmmValue("fetchResultTime",0)
-                //submit success url
-                input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                fetchResultTime=unsafeWindow.getNmmValue("fetchResultTime","0")
                 
-                GM_log(input)
-                var validResultWindow=this
-				GM_xmlhttpRequest({
-						method: "POST",
-						url: "http://caster.webfactional.com/submitresultfail",
-						data: input,
-						headers: {
-						"Accept": "application/json",
-						"Content-Type": "application/x-www-form-urlencoded",
-						},
-						onload: function(xhr) {
-							GM_log('submit fail return: response='+xhr.responseText)
-							//GM_log('validResultWindow : '+validResultWindow)
-							
-							//close validResult page
-							validResultWindow.location.href="javascript:window.close()"
-						}
-					})
+                if(fetchResultTime!="0" || $('#linkValid')[0].url_index>=$('#linkValid')[0].urls.length )
+                {
+                    //if fetchResultTime == "0" && url_index<=urls.length don't send fail message
+                    //submit fail url
+                    input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                    
+                    GM_log(input)
+                    var validResultWindow=this
+                    GM_xmlhttpRequest({
+                            method: "POST",
+                            url: "http://caster.webfactional.com/submitresultfail",
+                            data: input,
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            onload: function(xhr) {
+                                GM_log('submit fail return: response='+xhr.responseText)
+                                //GM_log('validResultWindow : '+validResultWindow)
+                                
+                                //close validResult page
+                                validResultWindow.location.href="javascript:window.close()"
+                            }
+                        })
+                }    
 				unsafeWindow.checkUrl()
 			}
 		}
@@ -723,7 +728,7 @@ function handleValidPage()
                         }
                         else
                         {
-                            unsafeWindow.setNmmValue("fetchResultTime",0)
+                            unsafeWindow.setNmmValue("fetchResultTime","0")
                         }
                         unsafeWindow.checkUrl()
 
@@ -732,7 +737,7 @@ function handleValidPage()
                     {
                         //unsafeWindow.doCut();
                         //location.herf=$(".link_t ")[1].href;
-                        unsafeWindow.setNmmValue("fetchResultTime",-1)
+                        unsafeWindow.setNmmValue("fetchResultTime","-1")
                         if(typeof(data.trace)!="undefined")
                         {
                             GM_log(data.trace)
@@ -741,8 +746,8 @@ function handleValidPage()
                     }
                     else if(data.status>=30001&&data.status<40000)
                     {
-                        unsafeWindow.setNmmValue("fetchResultTime",-1)
-                        setTimeout(unsafeWindow.getUrls(),30000)
+                        unsafeWindow.setNmmValue("fetchResultTime","-1")
+                        setTimeout(unsafeWindow.getUrls(),10000)
                     }
                     else if(data.status==40001)
                     {
@@ -761,7 +766,7 @@ function handleValidPage()
                     }
                     else
                     {
-                        unsafeWindow.setNmmValue("fetchResultTime",-1)
+                        unsafeWindow.setNmmValue("fetchResultTime","-1")
                     }
 					//GM_log("fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime",0))
 					
@@ -830,7 +835,7 @@ function handleValidPage()
 	{
 		$('#linkValid')[0].url_index=0
 		$('#linkValid')[0].urls=$("#urlsInput")[0].value.split(";")
-		unsafeWindow.setNmmValue("fetchResultTime",-1)
+		unsafeWindow.setNmmValue("fetchResultTime","-1")
 		
 		if(typeof($('#linkValid')[0].closeTimeoutId)!="undefined")
 		{
@@ -1009,7 +1014,7 @@ function handleGetMissionPage()
             var refreshTimeout=0
             if($(".tcolor").length!=0)
             {
-                refreshTimeout=1500+Math.random()*1500
+                refreshTimeout=3500+Math.random()*2000
             }
             else//没有刷出来,被加黑名单?
             {

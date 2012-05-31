@@ -435,7 +435,7 @@ function handleMission()
             {
                 $("iframe")[0].loadtime=1
                 $("iframe")[0].urls=$("iframe").contents().find("#urlsInput")[0].value.split(";")
-                $("iframe")[0].fetchResultTime=-1
+                $("iframe")[0].fetchResultTime="-1"
                 GM_log("checkUrlGroupBtn set fetchResultTime="+$("iframe")[0].fetchResultTime)
                 
                 if($("iframe").contents().find("#code")[0].value!="")
@@ -468,7 +468,7 @@ function handleMission()
                     // success
                     GM_log("mission completed ,fetchResultTime="+this.fetchResultTime)
                     
-                    if(this.fetchResultTime!=0)//need 2 submit result
+                    if(this.fetchResultTime!="0")//need 2 submit result
                     {
                         message=GM_getValue("message")
                         shopkeeper=GM_getValue("shopkeeper","")
@@ -561,33 +561,37 @@ function handleMission()
                     if($("iframe").contents().find(".error_panel").length>=1&&$("iframe").contents().find(".error_panel")[0].innerHTML.indexOf("验证码不正确")==-1)
                     {
                         // not code error
-                        message=GM_getValue("message")
-                        shopkeeper=GM_getValue("shopkeeper","")
-                        itemId=""
-                        url=preUrlLink.href
-                        if(typeof(this.itemId)!="undefined")
+                        if(this.fetchResultTime!="0" || this.loadtime>this.urls.length)
                         {
-                            itemId=this.itemId
+                            //if fetchResultTime == "0" && this.loadtime<=this.urls.length don't send fail message
+                            message=GM_getValue("message")
+                            shopkeeper=GM_getValue("shopkeeper","")
+                            itemId=""
+                            url=preUrlLink.href
+                            if(typeof(this.itemId)!="undefined")
+                            {
+                                itemId=this.itemId
+                            }
+                            site="hiwinwin"
+                            
+                            fetchResultTime=this.fetchResultTime
+                            //submit success url
+                            input = "message="+encodeURIComponent(message.replace(/\s*/g,""))+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                            GM_log("submitresultfail:"+input)
+                            GM_xmlhttpRequest({
+                                    method: "POST",
+                                    url: "http://caster.webfactional.com/submitresultfail",
+                                    data: input,
+                                    headers: {
+                                    "Accept": "application/json",
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                    },
+                                    onload: function(xhr) {
+                                        GM_log('submit fail return: response='+xhr.responseText)
+                                        //GM_log('validResultWindow : '+validResultWindow)
+                                    }
+                                })
                         }
-                        site="hiwinwin"
-                        
-                        fetchResultTime=this.fetchResultTime
-                        //submit success url
-                        input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
-                        GM_log("submitresultfail:"+input)
-                        GM_xmlhttpRequest({
-                                method: "POST",
-                                url: "http://caster.webfactional.com/submitresultfail",
-                                data: input,
-                                headers: {
-                                "Accept": "application/json",
-                                "Content-Type": "application/x-www-form-urlencoded",
-                                },
-                                onload: function(xhr) {
-                                    GM_log('submit fail return: response='+xhr.responseText)
-                                    //GM_log('validResultWindow : '+validResultWindow)
-                                }
-                            })
                     }
                 }    
             }
@@ -804,7 +808,7 @@ function handleMission()
                             }
                             else
                             {
-                                $("iframe")[0].fetchResultTime=0
+                                $("iframe")[0].fetchResultTime="0"
                             }
                             /*
                             if(typeof(data.code)!="undefined")
@@ -832,7 +836,7 @@ function handleMission()
                         {
                             //unsafeWindow.doCut();
                             //location.herf=$(".link_t ")[1].href;
-                            $("iframe")[0].fetchResultTime=-1
+                            $("iframe")[0].fetchResultTime="-1"
                             //playmusic	
                             //$("#playAudioGot")[0].play()
                             if(GM_getValue("runMode",1)==2)
@@ -849,6 +853,7 @@ function handleMission()
                         else if (data.status>=30001&&data.status<40000)
                         {
                             setTimeout(unsafeWindow.getUrls(),10000)
+                            $("iframe")[0].fetchResultTime="-1"
                             //$("#playAudioGot")[0].play()
                         }
                         else if (data.status==40001)
@@ -857,7 +862,7 @@ function handleMission()
                         }
                         else
                         {
-                            $("iframe")[0].fetchResultTime=-1
+                            $("iframe")[0].fetchResultTime="-1"
                             //playmusic	
                             //$("#playAudioGot")[0].play()
                             if(GM_getValue("runMode",1)==2)
@@ -888,7 +893,7 @@ function handleMission()
 			}
 			else
             {
-                $("iframe")[0].fetchResultTime=-1
+                $("iframe")[0].fetchResultTime="-1"
                 //$("iframe").contents().find("#itemurl")[0].value=GM_getValue("url","")
                 
                 //playmusic	
