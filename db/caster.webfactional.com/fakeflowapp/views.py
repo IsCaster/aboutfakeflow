@@ -27,10 +27,10 @@ logger = logging.getLogger(__name__)
 def missionQueueTrace(fn):
     def wrapped(*arg):
         logger.debug("enter "+fn.__name__)
-        logger.debug(GetMissionQueue().toString()) 
+        #logger.debug(GetMissionQueue().toString()) 
         rlt=fn(*arg)
         logger.debug("leave "+fn.__name__)
-        logger.debug(GetMissionQueue().toString()) 
+        #logger.debug(GetMissionQueue().toString()) 
         return rlt
     return wrapped
 
