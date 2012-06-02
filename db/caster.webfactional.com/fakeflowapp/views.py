@@ -574,6 +574,7 @@ def submitResultFail(request):
                 theMission.init()
                 del GetMissionQueue().doneBuffer[theMission.itemId]
                 GetMissionQueue().unhandledBuffer[theMission.itemId]=theMission
+                GetMissionQueue().missionQueueSema.release()
                 return HttpResponse(" submitResultFail :success ,move the mission from doneBuffer to unhandleBuffer")
             else:
                 return HttpResponse(" submitResultFail :success ,new one mission ")
