@@ -260,9 +260,13 @@
             $("#theMission")[0].innerHTML=theMissionDivHtml
             
             
-            for(var i=0;i<theMission.urls.length;++i)
+            for(var i=0,j=0;i<theMission.urls.length;++i)
             {
-                $("#theMission li")[i].value = theMission.urls[i]
+                if(theMission.bTried[i])
+                {
+                    $("#theMission .bTried")[j].value = theMission.urls[i]
+                    ++j;
+                }    
             }
         }
         
