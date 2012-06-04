@@ -237,7 +237,7 @@
                 if(theMission.bTried[i])
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTried' value='"+theMission.urls[i]+"'>"+theMission.urls[i]+"</li>"
+                                    "<li class='bTried' >"+theMission.urls[i]+"</li>"
                 }
                 else if(theMission.fetchResultTimes[i]==0)
                 {
@@ -259,6 +259,11 @@
             
             $("#theMission")[0].innerHTML=theMissionDivHtml
             
+            
+            for(var i=0;i<theMission.urls.length;++i)
+            {
+                $("#theMission li")[i].value = theMission.urls[i]
+            }
         }
         
 		function showSubmitUrlDiv(itemId)
