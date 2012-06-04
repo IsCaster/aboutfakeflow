@@ -312,7 +312,7 @@
 					{
 						for(var j=0;j<$(".bTried").length;++j)
 						{   
-							if($(".bTried")[j].url==submitUrls[i])
+							if($(".bTried")[j].url.replace(/&$/,"")==submitUrls[i].replace(/&$/,""))
 							{
 								if(bConfirm == false)
 								{
