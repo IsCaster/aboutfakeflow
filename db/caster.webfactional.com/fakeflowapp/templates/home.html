@@ -266,7 +266,7 @@
                 {
                     
                     $("#theMission .bTried")[j].url = theMission.urls[i]
-                    alert($("#theMission .bTried")[j].url)
+                    //alert($("#theMission .bTried")[j].url)
                     ++j;
                 }    
             }
@@ -312,7 +312,7 @@
 					{
 						for(var j=0;j<$(".bTried").length;++j)
 						{   
-							if($(".bTried")[j].value==submitUrls[i])
+							if($(".bTried")[j].url==submitUrls[i])
 							{
 								if(bConfirm == false)
 								{
