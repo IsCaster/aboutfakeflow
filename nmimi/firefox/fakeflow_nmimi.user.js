@@ -8,6 +8,8 @@
 // @include       http://www.nmimi.com/Mission/FMValid.aspx?id=*
 // @include       http://wwww.nmimi.com/Mission/FMDating.aspx*
 // @include       http://www.nmimi.com/Mission/FMDating.aspx*
+// @include       http://wwww.nmimi.com/Member/RecoverG.aspx*
+// @include       http://www.nmimi.com/Member/RecoverG.aspx*
 // @include       http://www.nmimi.com/AlarmMsg.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
@@ -50,6 +52,10 @@ else if(location.href.indexOf("FMValid.aspx")!=-1)
 else if(location.href.indexOf("MyAcceptFlowMission.aspx")!=-1)
 {
     handleMyMissonPage();
+}
+else if(location.href.indexOf("RecoverG.aspx")!=-1)
+{
+    handleRecoverGoldPage()
 }
 
 function handleMyMissonPage()
@@ -531,7 +537,7 @@ function handleValidPage()
                 
                 fetchResultTime=unsafeWindow.getNmmValue("fetchResultTime","0")
                 
-                if(fetchResultTime!="0" || $('#linkValid')[0].url_index>=$('#linkValid')[0].urls.length )
+                if(fetchResultTime!="-1" && (fetchResultTime!="0" || $('#linkValid')[0].url_index>=$('#linkValid')[0].urls.length ))
                 {
                     //if fetchResultTime == "0" && url_index<=urls.length don't send fail message
                     //submit fail url
@@ -555,7 +561,11 @@ function handleValidPage()
                                 validResultWindow.location.href="javascript:window.close()"
                             }
                         })
-                }    
+                }
+                else
+                {
+                    this.location.href="javascript:window.close()"
+                }
 				unsafeWindow.checkUrl()
 			}
 		}
@@ -659,7 +669,7 @@ function handleValidPage()
 		else
 		{
 			//unsafeWindow.setNmmValue("fetchResultTime",-1)
-            setTimeout(unsafeWindow.getUrls(),0)
+            setTimeout(function(){unsafeWindow.getUrls()},0)
 		}
 	}
 	
@@ -747,7 +757,7 @@ function handleValidPage()
                     else if(data.status>=30001&&data.status<40000)
                     {
                         unsafeWindow.setNmmValue("fetchResultTime","-1")
-                        setTimeout(unsafeWindow.getUrls(),10000)
+                        setTimeout(function(){unsafeWindow.getUrls()},3000)
                     }
                     else if(data.status==40001)
                     {
@@ -757,12 +767,12 @@ function handleValidPage()
                     else if(data.status=80000)
                     {
                         GM_setValue("keepRefresh",0)
-                        setTimeout(unsafeWindow.getUrls(),0)
+                        setTimeout(function(){unsafeWindow.getUrls()},0)
                     }
                     else if(data.status=80001)
                     {
                         GM_setValue("keepRefresh",1)
-                        setTimeout(unsafeWindow.getUrls(),0)
+                        setTimeout(function(){unsafeWindow.getUrls()},0)
                     }
                     else
                     {
@@ -1014,7 +1024,7 @@ function handleGetMissionPage()
             var refreshTimeout=0
             if($(".tcolor").length!=0)
             {
-                refreshTimeout=3500+Math.random()*2000
+                refreshTimeout=3000+Math.random()*2000
             }
             else//没有刷出来,被加黑名单?
             {
@@ -1080,4 +1090,13 @@ function handleGetMissionPage()
 
     //GM_log("refreshMission");
     refreshMission();
+}
+
+
+function handleRecoverGoldPage()
+{
+    if($("#div0 b")[0].innerHTML!="1个金币=0.4元")
+    {
+        alert("caster提醒您,您的金币收回价格不是0.4,可能您的vip已过期,建议您申请vip后再来回收金币")
+    }
 }

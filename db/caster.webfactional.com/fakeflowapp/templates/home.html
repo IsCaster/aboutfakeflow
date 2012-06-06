@@ -274,7 +274,7 @@
         
 		function showSubmitUrlDiv(itemId)
 		{
-			submitUrlDivHtml= "<textarea id='urlsInput' style='width: 600px; height: 200px;' ></textarea>"
+			submitUrlDivHtml= "<textarea id='urlsInput' style='width: 600px; height: 100px;' ></textarea>"
 			submitUrlDivHtml=submitUrlDivHtml+
 					"<input type='button' value='submit urls' id='submitUrlsBtn' />"
             submitUrlDivHtml=submitUrlDivHtml+
@@ -303,7 +303,8 @@
 					submitUrls.push(urls_query[i])
 				}
 				
-				var bConfirm=false
+                // not ask now
+				var bConfirm=true
 				var bDuplicate=false
 				submitData["urls"]="["
 				for(var i=0;i<submitUrls.length;i++)
