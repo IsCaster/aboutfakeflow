@@ -248,12 +248,12 @@
                     if(i==0)
                     {
                         theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"</li>"
+                                    "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"</li>"
                     }
                     else if(i==1)
                     {
                         theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"<input value='快速搜索' type='button ' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
+                                    "<li>"+message_pieces[i]+"&nbsp;<input value='快速搜索' type='button' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
                     }
                     else
                     {
@@ -279,17 +279,17 @@
                 if(theMission.bTried[i])
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTried' >"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                                    "<li class='bTried' >"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
                 else if(theMission.fetchResultTimes[i]==0)
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bWaiting'>"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                                    "<li class='bWaiting'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
                 else 
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTring'>"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                                    "<li class='bTring'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
             }
             theMissionDivHtml=theMissionDivHtml+

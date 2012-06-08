@@ -14,7 +14,7 @@
         <td>{{ forloop.counter }}.</td>
         <td class="shopkeeper">{{ missionInfo.shopkeeper }}</td>
         <td class="message" >{{ missionInfo.message }}</td>
-        <td class="url" onclick="setTdValue(this,'{{missionInfo.url}}')" >{{ missionInfo.url }}<input value='Go' type='button' onclick='openItemPage(\"" +{{ missionInfo.url }}+"\")' /></td>
+        <td class="url" onclick="setTdValue(this,'{{missionInfo.url}}')" >{{ missionInfo.url }}&nbsp;<input value='Go' type='button' onclick='openItemPage("{{ missionInfo.url }}")' /></td>
         <td class="site" >{{ missionInfo.site|linebreaksbr }}</td>
         <td class="valid" >{{ missionInfo.valid }}</td>
         <td class="updateTime" >{{ missionInfo.updateTime }}</td>
