@@ -227,12 +227,16 @@
         {
             $("#openNewPage")[0].href="http://s.taobao.com/search?q="+encodeURIComponent(word)
             $("#openNewPage")[0].click()
+            window.blur();
+            setTimeout(window.focus, 0);
         }
         
         function openItemPage(url)
         {
             $("#openNewPage")[0].href=url
             $("#openNewPage")[0].click()
+            window.blur();
+            setTimeout(window.focus, 0);
         }
         
         function showMessage(theMission)
