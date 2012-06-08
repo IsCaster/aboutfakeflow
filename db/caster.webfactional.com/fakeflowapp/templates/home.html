@@ -138,7 +138,7 @@
              return this.replace(/\s*/g,"")
         }
         
-        function queryMissionInfo(form)
+        function queryMissionInfo()
         {
             //downloadUrl("/getmissioninfo", "POST", "content=" + encodeURI(document.getElementById("keyword").value), onQueryReturned);
             
@@ -217,16 +217,58 @@
             }
         }
         
+        function quickQuery(word)
+        {
+            $("#queryText")[0].value=word
+            queryMissionInfo()
+        }
+        
+        function quickSearch(word)
+        {
+            $("#openNewPage")[0].href="http://s.taobao.com/search?q="+encodeURIComponent(word)
+            $("#openNewPage")[0].click()
+        }
+        
+        function openItemPage(url)
+        {
+            $("#openNewPage")[0].href=url
+            $("#openNewPage")[0].click()
+        }
+        
         function showMessage(theMission)
         {
             message=theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
             message_pieces=message.split(";")
             theMissionDivHtml=  "<p>任务信息:</p><br/>"
                                 "<ul>"
-            for(var i=0;i<message_pieces.length;++i)
-            {        
-                theMissionDivHtml=theMissionDivHtml+
+            if(theMission.site=="hiwinwin")
+            {
+                for(var i=0;i<message_pieces.length;++i)
+                {   
+                    if(i==0)
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
+                                    "<li>"+message_pieces[i]+"<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"</li>"
+                    }
+                    else if(i==1)
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
+                                    "<li>"+message_pieces[i]+"<input value='快速搜索' type='button ' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
+                    }
+                    else
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
                                     "<li>"+message_pieces[i]+"</li>"
+                    }
+                }
+            }
+            else
+            {
+                for(var i=0;i<message_pieces.length;++i)
+                {        
+                    theMissionDivHtml=theMissionDivHtml+
+                                    "<li>"+message_pieces[i]+"</li>"
+                }
             }
             theMissionDivHtml=theMissionDivHtml+
                                 "</ul>"
@@ -237,17 +279,17 @@
                 if(theMission.bTried[i])
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTried' >"+theMission.urls[i]+"</li>"
+                                    "<li class='bTried' >"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
                 else if(theMission.fetchResultTimes[i]==0)
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bWaiting'>"+theMission.urls[i]+"</li>"
+                                    "<li class='bWaiting'>"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
                 else 
                 {
                     theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTring'>"+theMission.urls[i]+"</li>"
+                                    "<li class='bTring'>"+theMission.urls[i]+"<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
                 }
             }
             theMissionDivHtml=theMissionDivHtml+
@@ -584,6 +626,9 @@
         <!--audio id="playAudioGot"  preload="auto" src="http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio--> 
         <audio id="playAudioGot"  preload="auto" src="/static/sound/alreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
         <audio id="playAudioNeed2Handle"  preload="auto" src="/static/sound/need2handle.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
+    </div>
+    <div>
+        <a id="openNewPage" target="_blank" rel="noreferrer"></a>
     </div>
   </body>
 </html>

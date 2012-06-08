@@ -99,17 +99,19 @@ function main_search() {
     console.info($(".seller > a").length)
     
     var shopkeepers=";"
-    
+    var shopkeepersHtml=";"
     for(var i=0 ;i<$(".seller > a").length;++i )
     {
         if(shopkeepers.indexOf(";"+$(".seller > a")[i].innerHTML+";")==-1)
         {
             shopkeepers=shopkeepers+$(".seller > a")[i].innerHTML+";"
+            shopkeepersHtml=shopkeepersHtml+"<a href='javascript:showShopkeeperUrls(\""+$(".seller > a")[i].innerHTML +"\")'>"+$(".seller > a")[i].innerHTML+"</a>"+";"
         }
     }
     
     resultDiv=document.createElement("div")
-    resultDiv.innerHTML=shopkeepers
+    resultDiv.innerHTML=shopkeepersHtml
+    unsafeWindow.shopkeepers=shopkeepers
     $("#page")[0].insertBefore(resultDiv,$("#W-Content")[0]);
 	
 	resultUrlsDiv=document.createElement("p")
@@ -121,22 +123,76 @@ function main_search() {
 	anchorInput.id="anchorOfUrls"
 	
 	$("#page")[0].insertBefore(anchorInput,$("#W-Content")[0])
-	
+	anchorInput.onkeydown =  function (event)
+    {
+        event = event||window.event;
+        //console.info("press key ="+event.keyCode);
+        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        {
+            $("#getUrlsBtn")[0].click()
+            //console.info("invalid keepReflash");
+        }
+    }
+    
+    unsafeWindow.showShopkeeperUrls=function(shopkeeper)
+    {
+        //query by the shopkeeper
+        var resultUrls=""
+        for(var i=0 ;i<$(".list-item .seller > a:first-child").length;++i )
+        {
+            if($(".list-item .seller > a:first-child")[i].innerHTML==shopkeeper)
+            {
+                resultUrls=resultUrls+$(".list-item .EventCanSelect")[i].href+";"
+            }
+        }
+        resultUrls=resultUrls.replace(/;$/,"")
+		$("#resultUrls")[0].innerHTML=resultUrls
+    }
+    
 	getUrlsBtn=document.createElement("input")
 	getUrlsBtn.type="button"
 	getUrlsBtn.value="获取urls"
+    getUrlsBtn.id="getUrlsBtn"
 	getUrlsBtn.onclick=function()
 	{
-		var anchor=$("#anchorOfUrls")[0].value
-		if(anchor=="")
+		var anchor=$("#anchorOfUrls")[0].value.replace(/\s*$/,"").replace(/^\s*/,"")
+        if(anchor!=""&&anchor.indexOf("***")!=-1)
+        {
+            //part1***part2
+            parts=anchor.split("***")
+            shopkeeperArray=unsafeWindow.shopkeepers.split(";")
+            
+            for(var i=0;i<shopkeeperArray.length;++i)
+            {
+                //start with part1 and end with part2
+                if(shopkeeperArray[i].indexOf(parts[0])==0&&shopkeeperArray[i].indexOf(parts[1])==(shopkeeperArray[i].length-parts[1].length))
+                {
+                    unsafeWindow.showShopkeeperUrls(shopkeeperArray[i])
+                    return;
+                }
+            }
+            $("#resultUrls")[0].innerHTML="不存在的掌柜名"
+            return;
+        }
+		else if(anchor!=""&&unsafeWindow.shopkeepers.indexOf(";"+anchor+";")!=-1)
 		{
-			anchor=0
+            unsafeWindow.showShopkeeperUrls(anchor)
+			return;
 		}
+        else if(anchor=="")
+        {
+            anchor=0
+        }
 		else
 		{
 			anchor=parseInt(anchor,10)-1
 		}
 		
+        if(isNaN(anchor))
+        {
+            $("#resultUrls")[0].innerHTML="不存在的掌柜名"
+            return;
+        }
 		var resultUrls=""
 		
 		if(anchor>=0 && anchor<=$(".EventCanSelect").length-1)
@@ -186,12 +242,22 @@ function inshop_search()
 	anchorInput=document.createElement("input")
 	anchorInput.type="text"
 	anchorInput.id="anchorOfUrls"
-	
+	anchorInput.onkeydown =  function (event)
+    {
+        event = event||window.event;
+        //console.info("press key ="+event.keyCode);
+        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        {
+            $("#getUrlsBtn")[0].click()
+            //console.info("invalid keepReflash");
+        }
+    }
 	$(".shop-hesper-bd ")[0].parentNode.insertBefore(anchorInput,$(".shop-hesper-bd ")[0])
 	
 	getUrlsBtn=document.createElement("input")
 	getUrlsBtn.type="button"
 	getUrlsBtn.value="获取urls"
+    getUrlsBtn.id="getUrlsBtn"
 	getUrlsBtn.onclick=function()
 	{
 		var anchor=$("#anchorOfUrls")[0].value
