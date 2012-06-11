@@ -34,7 +34,7 @@ def missionQueueTrace(fn):
         return rlt
     return wrapped
 
-#@login_required()
+@login_required()
 def home(request):
     if request.user.is_authenticated():
         log_in_out_url='accounts/logout/'
