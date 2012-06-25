@@ -1,5 +1,5 @@
 from threading import Semaphore,Lock,Condition,RLock
-import time
+from time import time
 
 
 class MissionQueue:
