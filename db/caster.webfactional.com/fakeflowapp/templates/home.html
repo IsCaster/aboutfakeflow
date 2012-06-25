@@ -138,6 +138,8 @@
              return this.replace(/\s*/g,"")
         }
         
+        var g_bFocus="0"
+        
         function queryMissionInfo()
         {
             //downloadUrl("/getmissioninfo", "POST", "content=" + encodeURI(document.getElementById("keyword").value), onQueryReturned);
@@ -416,7 +418,7 @@
 			{
 				itemId=""
 			}
-            $.post("/getmission",{"itemId":itemId},function(data)
+            $.post("/getmission",{"itemId":itemId , "bFocus":g_bFocus},function(data)
                 {
                     if(data.status=="waitForUrls" || data.status=="undergo")
                     {
@@ -476,8 +478,19 @@
                 $("#switchGetNewMissionBtn")[0].value="stop"
             }
         }
-		function getMissionList()
+		function getMissionList(bFocus)
 		{
+            if(typeof(bFocus)!="undefined")
+            {
+                if (bFocus == 0)
+                {
+                    g_bFocus = "0"
+                }
+                else
+                {
+                    g_bFocus = "1"
+                }
+            }
 			$.post("/getmissionlist",{"filter":"0"},function(data)
                 {
 					theMissionListHtml=""
@@ -605,7 +618,8 @@
             <input type="button" value="up" onclick="upQueryUrls()">
           </div>
           未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
-          <input type="button" onclick="getMissionList();" value="赶紧做任务" />
+          <input type="button" onclick="getMissionList(0);" value="赶紧做任务" />
+          <input type="button" onclick="getMissionList(1);" value="集中做任务" />
            <input type="button" onclick="getMissionListA();" value="过滤任务" />
           <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
         </form>    

@@ -37,3 +37,14 @@ for entry in entries:
 	entry.url = re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",entry.url)
 	print entry.url
 	entry.save()	
+    
+    
+entries = MissionInfo.objects.filter(valid=False).filter(url="")
+for entry in entries:
+    entry.delete() 
+    
+    
+entries = MissionInfo.objects.filter(valid=False).exclude(url="")
+for entry in entries:
+    entry.valid=True
+    entry.save()

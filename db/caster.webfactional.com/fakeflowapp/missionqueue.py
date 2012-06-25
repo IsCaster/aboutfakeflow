@@ -114,7 +114,9 @@ class MissionItem:
         self.fetchResultTimeouts=[] #timeout to wait for result
         self.itemLock=Lock() #used to assure atom operator to item data
         self.url="" # the checked correct url
-        self.split=1 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
+        self.split=2 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
+        self.createTime=time()
+        
     def toJson(self):
         jsonData={}
         jsonData["message"]=self.message
@@ -136,8 +138,8 @@ class MissionItem:
         self.fetchResultTimeouts=[] #timeout to wait for result
         self.itemLock=Lock() #used to assure atom operator to item data
         self.url="" # the checked correct url
-        self.split=1 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
-  
+        self.split=2 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
+        self.createTime=time()
 
 class TimeOutWrapper:
     def __init__(self,obj):

@@ -4,11 +4,16 @@
 // @description   Better to search in taobao 
 // @include       http://s.taobao.com/search?q=*
 // @include       http://*.taobao.com/?q=*
+// @include       http://*.taobao.com/?*
+// @include       http://*.taobao.com/?order=*
+// @include       http://*.taobao.com/?pageNum=*
 // @include       http://*.taobao.com/search.htm*
 // @include       http://*.taobao.com/?search=*
 // @include       http://*.tmall.com/?q=*
+// @include       http://*.tmall.com/?*
 // @include       http://*.tmall.com/search.htm*
 // @include       http://*.tmall.com/?search=*
+// @include       http://*.tmall.com/shop/view_shop.htm?q=*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 
@@ -155,11 +160,11 @@ function main_search() {
     getUrlsBtn.id="getUrlsBtn"
 	getUrlsBtn.onclick=function()
 	{
-		var anchor=$("#anchorOfUrls")[0].value.replace(/\s*$/,"").replace(/^\s*/,"")
-        if(anchor!=""&&anchor.indexOf("***")!=-1)
+		var anchor=$("#anchorOfUrls")[0].value.replace(/\s*$/,"").replace(/^\s*/,"").replace(/\*+/,"*")
+        if(anchor!=""&&anchor.indexOf("*")!=-1)
         {
             //part1***part2
-            parts=anchor.split("***")
+            parts=anchor.split("*")
             shopkeeperArray=unsafeWindow.shopkeepers.split(";")
             
             for(var i=0;i<shopkeeperArray.length;++i)
@@ -227,6 +232,7 @@ function main_search() {
 
 function inshop_search()
 {
+    console.info('inshop_search'); 
 	window.unsafeWindow || (
         unsafeWindow = (function() {
             var el = document.createElement('p');
@@ -237,63 +243,124 @@ function inshop_search()
 	
 	resultUrlsDiv=document.createElement("p")
     resultUrlsDiv.id="resultUrls"
-    $(".shop-hesper-bd ")[0].parentNode.insertBefore(resultUrlsDiv,$(".shop-hesper-bd ")[0]);
-	
-	anchorInput=document.createElement("input")
-	anchorInput.type="text"
-	anchorInput.id="anchorOfUrls"
-	anchorInput.onkeydown =  function (event)
+    if($(".shop-hesper-bd ").length>=1)
     {
-        event = event||window.event;
-        //console.info("press key ="+event.keyCode);
-        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        $(".shop-hesper-bd ")[0].parentNode.insertBefore(resultUrlsDiv,$(".shop-hesper-bd ")[0]);
+        
+        anchorInput=document.createElement("input")
+        anchorInput.type="text"
+        anchorInput.id="anchorOfUrls"
+        anchorInput.onkeydown =  function (event)
         {
-            $("#getUrlsBtn")[0].click()
-            //console.info("invalid keepReflash");
+            event = event||window.event;
+            //console.info("press key ="+event.keyCode);
+            if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+            {
+                $("#getUrlsBtn")[0].click()
+                //console.info("invalid keepReflash");
+            }
         }
-    }
-	$(".shop-hesper-bd ")[0].parentNode.insertBefore(anchorInput,$(".shop-hesper-bd ")[0])
-	
-	getUrlsBtn=document.createElement("input")
-	getUrlsBtn.type="button"
-	getUrlsBtn.value="获取urls"
-    getUrlsBtn.id="getUrlsBtn"
-	getUrlsBtn.onclick=function()
-	{
-		var anchor=$("#anchorOfUrls")[0].value
-		if(anchor=="")
-		{
-			anchor=0
-		}
-		else
-		{
-			anchor=parseInt(anchor,10)-1
-		}
-		
-		var resultUrls=""
-		
-		if(anchor>=0 && anchor<=$(".shop-hesper-bd .permalink").length-1)
-		{
-			resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor].href+";"
-		}
-		
-		
-		for(var i=1;i<44;i++)
-		{
-			if( anchor+i >=0 && anchor+i <= $(".shop-hesper-bd .permalink").length-1)
-			{
-				resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor+i].href+";"
-			}
-			if( anchor-i >=0 && anchor-i <= $(".shop-hesper-bd .permalink").length-1)
-			{
-				resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor-i].href+";"
-			}
-		}
-        resultUrls=resultUrls.replace(/;$/,"")
-		$("#resultUrls")[0].innerHTML=resultUrls
+        $(".shop-hesper-bd ")[0].parentNode.insertBefore(anchorInput,$(".shop-hesper-bd ")[0])
+        
+        getUrlsBtn=document.createElement("input")
+        getUrlsBtn.type="button"
+        getUrlsBtn.value="获取urls"
+        getUrlsBtn.id="getUrlsBtn"
+        getUrlsBtn.onclick=function()
+        {
+            var anchor=$("#anchorOfUrls")[0].value
+            if(anchor=="")
+            {
+                anchor=0
+            }
+            else
+            {
+                anchor=parseInt(anchor,10)-1
+            }
+            
+            var resultUrls=""
+            
+            if(anchor>=0 && anchor<=$(".shop-hesper-bd .permalink").length-1)
+            {
+                resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor].href+";"
+            }
+            
+            
+            for(var i=1;i<44;i++)
+            {
+                if( anchor+i >=0 && anchor+i <= $(".shop-hesper-bd .permalink").length-1)
+                {
+                    resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor+i].href+";"
+                }
+                if( anchor-i >=0 && anchor-i <= $(".shop-hesper-bd .permalink").length-1)
+                {
+                    resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor-i].href+";"
+                }
+            }
+            resultUrls=resultUrls.replace(/;$/,"")
+            $("#resultUrls")[0].innerHTML=resultUrls
+        }
+        $(".shop-hesper-bd ")[0].parentNode.insertBefore(getUrlsBtn,$(".shop-hesper-bd ")[0])
 	}
-	$(".shop-hesper-bd ")[0].parentNode.insertBefore(getUrlsBtn,$(".shop-hesper-bd ")[0])
-	
+    else
+    {
+        $(".shop-list ")[1].parentNode.insertBefore(resultUrlsDiv,$(".shop-list ")[1]);
+        
+        anchorInput=document.createElement("input")
+        anchorInput.type="text"
+        anchorInput.id="anchorOfUrls"
+        anchorInput.onkeydown =  function (event)
+        {
+            event = event||window.event;
+            //console.info("press key ="+event.keyCode);
+            if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+            {
+                $("#getUrlsBtn")[0].click()
+                //console.info("invalid keepReflash");
+            }
+        }
+        $(".shop-list ")[1].parentNode.insertBefore(anchorInput,$(".shop-list ")[1])
+        
+        getUrlsBtn=document.createElement("input")
+        getUrlsBtn.type="button"
+        getUrlsBtn.value="获取urls"
+        getUrlsBtn.id="getUrlsBtn"
+        getUrlsBtn.onclick=function()
+        {
+            var anchor=$("#anchorOfUrls")[0].value
+            if(anchor=="")
+            {
+                anchor=0
+            }
+            else
+            {
+                anchor=parseInt(anchor,10)-1
+            }
+            
+            var resultUrls=""
+            
+            if(anchor>=0 && anchor<=$(".shop-list .permalink").length-1)
+            {
+                resultUrls=resultUrls+$(".shop-list .permalink")[anchor].href+";"
+            }
+            
+            
+            for(var i=1;i<44;i++)
+            {
+                if( anchor+i >=0 && anchor+i <= $(".shop-list .permalink").length-1)
+                {
+                    resultUrls=resultUrls+$(".shop-list .permalink")[anchor+i].href+";"
+                }
+                if( anchor-i >=0 && anchor-i <= $(".shop-list .permalink").length-1)
+                {
+                    resultUrls=resultUrls+$(".shop-list .permalink")[anchor-i].href+";"
+                }
+            }
+            resultUrls=resultUrls.replace(/;$/,"")
+            $("#resultUrls")[0].innerHTML=resultUrls
+        }
+        $(".shop-list ")[1].parentNode.insertBefore(getUrlsBtn,$(".shop-list ")[1])
+    }
 	
 }
 
@@ -308,6 +375,10 @@ else if(location.href.indexOf(".taobao.com/?q=")!=-1
 	||location.href.indexOf(".tmall.com/?q=")!=-1 
 	|| location.href.indexOf(".tmall.com/search.htm")!=-1 
 	||location.href.indexOf(".tmall.com/?search=")!=-1  
+    ||location.href.indexOf(".taobao.com/?order=")!=-1  
+    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?q=")!=-1  
+    ||location.href.indexOf(".tmall.com/?")!=-1  
+    || location.href.indexOf(".taobao.com/?")!=-1 
 	)
 {
 	addJQuery(inshop_search);

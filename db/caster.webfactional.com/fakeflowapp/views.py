@@ -246,6 +246,9 @@ def getMissionList(request):
 @login_required()
 def getMission(request):
     itemId = request.POST["itemId"]
+    bFocus = "0"
+    if request.POST.has_key("bFocus") :
+        bFocus = request.POST["bFocus"]
     if itemId != "" :
         with GetMissionQueue().bufferLock:
             theMission = GetMissionQueue().getUndergoMission(int(itemId))
@@ -267,15 +270,29 @@ def getMission(request):
                             "status":"missionNotExist",
                         } 
                     return HttpResponse(simplejson.dumps(response_data));
-
-    theMission = GetMissionQueue().pop()
-    if theMission != None:
-        theMission.customer=request.user
-        response_data={
-            "status":"waitForUrls",
-            "theMission":theMission.toJson(),
-        }
-        return HttpResponse(simplejson.dumps(response_data));
+    bAlert = True 
+    if bFocus == "1" :
+        bAlert = False
+        with GetMissionQueue().bufferLock:
+            if len(GetMissionQueue().unhandledBuffer) >= 5 : # alert when unhandled missions count more than 5
+                bAlert = True
+            else :
+                for id,theUnhandleMission in GetMissionQueue().unhandledBuffer.items():
+                    if theUnhandleMission.site == "hiwinwin" :
+                        bAlert = True 
+                        break
+                    elif time()-theUnhandleMission.createTime > 600 : # wait 10 minutes to alert
+                        bAlert = True 
+                        break
+    if bAlert :                    
+        theMission = GetMissionQueue().pop()
+        if theMission != None:
+            theMission.customer=request.user
+            response_data={
+                "status":"waitForUrls",
+                "theMission":theMission.toJson(),
+            }
+            return HttpResponse(simplejson.dumps(response_data));
     else:
         with GetMissionQueue().bufferLock:
             theMissionList = GetMissionQueue().getCustomerMission(request.user)
