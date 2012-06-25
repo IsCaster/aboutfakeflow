@@ -148,13 +148,13 @@ class TimeOutWrapper:
 
     def acquire(self,timeout):
         with self.cond:
-            current_time = start_time = time.time()
+            current_time = start_time = time()
             while current_time <= start_time + timeout:
                 if self.obj.acquire(False):
                     return True
                 else:
                     self.cond.wait(timeout - current_time + start_time)
-                    current_time = time.time()   
+                    current_time = time()   
         return False
 
     def release(self):
