@@ -293,25 +293,25 @@ def getMission(request):
                 "theMission":theMission.toJson(),
             }
             return HttpResponse(simplejson.dumps(response_data));
-    else:
-        with GetMissionQueue().bufferLock:
-            theMissionList = GetMissionQueue().getCustomerMission(request.user)
-        for theMission in theMissionList:
-            bWarn=True
-            for theTried in theMission.bTried :
-                if theTried == False:
-                    bWarn=False
-            if len(theMission.bTried) == 0:
-                bWarn =False
-            if bWarn :
-                response_data={
-                    "status":"warnMissionNeed2Handle",
-                }
-                return HttpResponse(simplejson.dumps(response_data))
-        response_data={
-            "status":"waitForMissions",
-        }
-        return HttpResponse(simplejson.dumps(response_data))
+
+    with GetMissionQueue().bufferLock:
+        theMissionList = GetMissionQueue().getCustomerMission(request.user)
+    for theMission in theMissionList:
+        bWarn=True
+        for theTried in theMission.bTried :
+            if theTried == False:
+                bWarn=False
+        if len(theMission.bTried) == 0:
+            bWarn =False
+        if bWarn :
+            response_data={
+                "status":"warnMissionNeed2Handle",
+            }
+            return HttpResponse(simplejson.dumps(response_data))
+    response_data={
+        "status":"waitForMissions",
+    }
+    return HttpResponse(simplejson.dumps(response_data))
         
 def submitUrl(request):
     itemId = request.POST["itemId"]
