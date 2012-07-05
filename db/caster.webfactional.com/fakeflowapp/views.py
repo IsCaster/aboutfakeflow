@@ -157,10 +157,10 @@ def queryUrl(request):
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     shopkeeper=raw_shopkeeper
     site=raw_site
-    message=raw_message
+    message=re.sub(r"\s*","",raw_message)
     
     # query cache first 
-    newMission=MissionItem(message,site,shopkeeper);
+    newMission=MissionItem(raw_message,site,shopkeeper);
     with GetMissionQueue().bufferLock:
         location,theMission=GetMissionQueue().query(newMission)
     if location != "none":
@@ -388,7 +388,7 @@ def submitResultSuccess(request):
     # codeImg=unquote(raw_codeImg.encode('ascii','ignore')).decode('utf8')
     # url=unquote(raw_url.encode('ascii','ignore')).decode('utf8')
     
-    message=raw_message
+    message=re.sub(r"\s*","",raw_message)
     itemId=raw_itemId
     url=raw_url
     
@@ -486,9 +486,11 @@ def submitCode(request):
 
 @csrf_exempt 
 def invalidMission(request):
-    message = request.POST["message"]
+    raw_message = request.POST["message"]
     itemId = request.POST["itemId"]
     site = request.POST["site"]
+    
+    message=re.sub(r"\s*","",raw_message)
     if len(itemId) != 0 :
         # move theMission to doneBuffer with .urls empty , it means it's a invalid mission
         with GetMissionQueue().bufferLock:
@@ -564,11 +566,13 @@ def deleteMissionC(request):
 
 @csrf_exempt 
 def submitResultFail(request):
-    message = request.POST["message"]
+    raw_message = request.POST["message"]
     itemId = request.POST["itemId"]
     site = request.POST["site"]
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
+    
+    message=re.sub(r"\s*","",raw_message)
     
     if len(itemId) != 0 :
         with GetMissionQueue().bufferLock:

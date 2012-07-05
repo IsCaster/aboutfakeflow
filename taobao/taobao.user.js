@@ -2,17 +2,21 @@
 // @name          Better to search in taobao
 // @namespace     http://www.caster.org
 // @description   Better to search in taobao 
-// @include       http://s.taobao.com/search?q=*
+// @include       http://s.taobao.com/search?*
 // @include       http://*.taobao.com/?q=*
 // @include       http://*.taobao.com/?*
 // @include       http://*.taobao.com/?order=*
 // @include       http://*.taobao.com/?pageNum=*
 // @include       http://*.taobao.com/search.htm*
+// @include       http://*.taobao.com//search.htm*
 // @include       http://*.taobao.com/?search=*
+// @include       http://*.taobao.com//?search=*
 // @include       http://*.tmall.com/?q=*
 // @include       http://*.tmall.com/?*
 // @include       http://*.tmall.com/search.htm*
+// @include       http://*.tmall.com//search.htm*
 // @include       http://*.tmall.com/?search=*
+// @include       http://*.tmall.com//?search=*
 // @include       http://*.tmall.com/shop/view_shop.htm?q=*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
@@ -29,7 +33,21 @@ function addJQuery(callback) {
     document.body.appendChild(script);
 }
 
+// unsafeWindow.GM_getValue = function(key, defValue) {
+    // var retval = window.localStorage.getItem(keyPrefix + key);
+    // if (retval == null || typeof(retval) == "undefined") {
+        // return defValue;
+    // }
+    // return retval;
+// }
 
+// unsafeWindow.GM_setValue = function(key, value) {
+    // try {
+        // window.localStorage.setItem(keyPrefix + key, value);
+    // } catch (e) {
+        // console.info("error setting value: " + e);
+    // }
+// }
 
 // the guts of this userscript
 function main_search() {
@@ -47,17 +65,8 @@ function main_search() {
     // }
     // );
 
-    var isBuggedChrome=false;
-    if(typeof(GM_setValue)!='undefined') 
-    {
-        var gsv=GM_setValue.toString();
-        if(gsv.indexOf('staticArgs')>0) { isBuggedChrome=false; console.info('GreaseMonkey Api detected...'); } 
-        else if(gsv.match(/not\s+supported/)) { isBuggedChrome=true;  console.info('Bugged Chrome GM Api detected...'); }
-    } 
-    else 
-    { 
-        isBuggedChrome=true; console.info('No GM Api detected...'); 
-    }
+    var isBuggedChrome=true;
+
 
     if(isBuggedChrome)
     { 
@@ -101,16 +110,16 @@ function main_search() {
         }
     };
 
-    console.info($(".seller > a").length)
+    console.info($(".list-item .seller > a:first-child").length)
     
     var shopkeepers=";"
     var shopkeepersHtml=";"
-    for(var i=0 ;i<$(".seller > a").length;++i )
+    for(var i=0 ;i<$(".list-item .seller > a:first-child").length;++i )
     {
-        if(shopkeepers.indexOf(";"+$(".seller > a")[i].innerHTML+";")==-1)
+        if(shopkeepers.indexOf(";"+$(".seller > a:first-child")[i].innerHTML+";")==-1)
         {
-            shopkeepers=shopkeepers+$(".seller > a")[i].innerHTML+";"
-            shopkeepersHtml=shopkeepersHtml+"<a href='javascript:showShopkeeperUrls(\""+$(".seller > a")[i].innerHTML +"\")'>"+$(".seller > a")[i].innerHTML+"</a>"+";"
+            shopkeepers=shopkeepers+$(".seller > a:first-child")[i].innerHTML+";"
+            shopkeepersHtml=shopkeepersHtml+"<a href='javascript:showShopkeeperUrls(\""+$(".seller > a:first-child")[i].innerHTML +"\")'>"+$(".seller > a:first-child")[i].innerHTML+"</a>"+";"
         }
     }
     
@@ -170,7 +179,8 @@ function main_search() {
             for(var i=0;i<shopkeeperArray.length;++i)
             {
                 //start with part1 and end with part2
-                if(shopkeeperArray[i].indexOf(parts[0])==0&&shopkeeperArray[i].indexOf(parts[1])==(shopkeeperArray[i].length-parts[1].length))
+                //console.info("index="+ shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length))
+                if(shopkeeperArray[i].indexOf(parts[0])==0&&shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length)==shopkeeperArray[i].length-parts[1].length)
                 {
                     unsafeWindow.showShopkeeperUrls(shopkeeperArray[i])
                     return;
@@ -232,6 +242,50 @@ function main_search() {
 
 function inshop_search()
 {
+    var isBuggedChrome=true;
+    if(isBuggedChrome)
+    { 
+        var keyPrefix = "my_own_script_keyprefix."; // I also use a '.' for seperation
+        
+        GM_getValue = function(key, defValue) {
+            var retval = window.localStorage.getItem(keyPrefix + key);
+            if (retval == null || typeof(retval) == "undefined") {
+                return defValue;
+            }
+            return retval;
+        }
+        
+        GM_setValue = function(key, value) {
+            try {
+                window.localStorage.setItem(keyPrefix + key, value);
+            } catch (e) {
+                console.info("error setting value: " + e);
+            }
+        }
+        
+        GM_deleteValue = function(key) {
+            try {
+                window.localStorage.removeItem(keyPrefix + key);
+            } catch (e) {
+                console.info("error removing value: " + e);
+            }
+        }
+        
+        GM_listValues = function() {
+            var list = [];
+            var reKey = new RegExp("^" + keyPrefix);
+            for (var i = 0, il = window.localStorage.length; i < il; i++) {
+                // only use the script's own keys
+                var key = window.localStorage.key(i);
+                if (key.match(reKey)) {
+                    list.push(key.replace(keyPrefix, ''));
+                }
+            }
+            return list;
+        }
+    };
+
+
     console.info('inshop_search'); 
 	window.unsafeWindow || (
         unsafeWindow = (function() {
@@ -243,138 +297,192 @@ function inshop_search()
 	
 	resultUrlsDiv=document.createElement("p")
     resultUrlsDiv.id="resultUrls"
+    var itemListElements
+    var addBeforeElement
     if($(".shop-hesper-bd ").length>=1)
     {
-        $(".shop-hesper-bd ")[0].parentNode.insertBefore(resultUrlsDiv,$(".shop-hesper-bd ")[0]);
-        
-        anchorInput=document.createElement("input")
-        anchorInput.type="text"
-        anchorInput.id="anchorOfUrls"
-        anchorInput.onkeydown =  function (event)
-        {
-            event = event||window.event;
-            //console.info("press key ="+event.keyCode);
-            if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
-            {
-                $("#getUrlsBtn")[0].click()
-                //console.info("invalid keepReflash");
-            }
-        }
-        $(".shop-hesper-bd ")[0].parentNode.insertBefore(anchorInput,$(".shop-hesper-bd ")[0])
-        
-        getUrlsBtn=document.createElement("input")
-        getUrlsBtn.type="button"
-        getUrlsBtn.value="获取urls"
-        getUrlsBtn.id="getUrlsBtn"
-        getUrlsBtn.onclick=function()
-        {
-            var anchor=$("#anchorOfUrls")[0].value
-            if(anchor=="")
-            {
-                anchor=0
-            }
-            else
-            {
-                anchor=parseInt(anchor,10)-1
-            }
-            
-            var resultUrls=""
-            
-            if(anchor>=0 && anchor<=$(".shop-hesper-bd .permalink").length-1)
-            {
-                resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor].href+";"
-            }
-            
-            
-            for(var i=1;i<44;i++)
-            {
-                if( anchor+i >=0 && anchor+i <= $(".shop-hesper-bd .permalink").length-1)
-                {
-                    resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor+i].href+";"
-                }
-                if( anchor-i >=0 && anchor-i <= $(".shop-hesper-bd .permalink").length-1)
-                {
-                    resultUrls=resultUrls+$(".shop-hesper-bd .permalink")[anchor-i].href+";"
-                }
-            }
-            resultUrls=resultUrls.replace(/;$/,"")
-            $("#resultUrls")[0].innerHTML=resultUrls
-        }
-        $(".shop-hesper-bd ")[0].parentNode.insertBefore(getUrlsBtn,$(".shop-hesper-bd ")[0])
+        itemListElements=$(".shop-hesper-bd ")
+        addBeforeElement=itemListElements[0]
 	}
     else
     {
-        $(".shop-list ")[1].parentNode.insertBefore(resultUrlsDiv,$(".shop-list ")[1]);
-        
-        anchorInput=document.createElement("input")
-        anchorInput.type="text"
-        anchorInput.id="anchorOfUrls"
-        anchorInput.onkeydown =  function (event)
-        {
-            event = event||window.event;
-            //console.info("press key ="+event.keyCode);
-            if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
-            {
-                $("#getUrlsBtn")[0].click()
-                //console.info("invalid keepReflash");
-            }
-        }
-        $(".shop-list ")[1].parentNode.insertBefore(anchorInput,$(".shop-list ")[1])
-        
-        getUrlsBtn=document.createElement("input")
-        getUrlsBtn.type="button"
-        getUrlsBtn.value="获取urls"
-        getUrlsBtn.id="getUrlsBtn"
-        getUrlsBtn.onclick=function()
-        {
-            var anchor=$("#anchorOfUrls")[0].value
-            if(anchor=="")
-            {
-                anchor=0
-            }
-            else
-            {
-                anchor=parseInt(anchor,10)-1
-            }
-            
-            var resultUrls=""
-            
-            if(anchor>=0 && anchor<=$(".shop-list .permalink").length-1)
-            {
-                resultUrls=resultUrls+$(".shop-list .permalink")[anchor].href+";"
-            }
-            
-            
-            for(var i=1;i<44;i++)
-            {
-                if( anchor+i >=0 && anchor+i <= $(".shop-list .permalink").length-1)
-                {
-                    resultUrls=resultUrls+$(".shop-list .permalink")[anchor+i].href+";"
-                }
-                if( anchor-i >=0 && anchor-i <= $(".shop-list .permalink").length-1)
-                {
-                    resultUrls=resultUrls+$(".shop-list .permalink")[anchor-i].href+";"
-                }
-            }
-            resultUrls=resultUrls.replace(/;$/,"")
-            $("#resultUrls")[0].innerHTML=resultUrls
-        }
-        $(".shop-list ")[1].parentNode.insertBefore(getUrlsBtn,$(".shop-list ")[1])
+        itemListElements=$(".shop-list ")
+        addBeforeElement=itemListElements[1]
     }
-	
+    
+
+    addBeforeElement.parentNode.insertBefore(resultUrlsDiv,addBeforeElement);
+    
+    anchorInput=document.createElement("input")
+    anchorInput.type="text"
+    anchorInput.id="anchorOfUrls"
+    anchorInput.onkeydown =  function (event)
+    {
+        event = event||window.event;
+        //console.info("press key ="+event.keyCode);
+        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        {
+            $("#getUrlsBtn")[0].click()
+            //console.info("invalid keepReflash");
+        }
+    }
+    addBeforeElement.parentNode.insertBefore(anchorInput,addBeforeElement)
+    
+
+    getUrlsBtn=document.createElement("input")
+    getUrlsBtn.type="button"
+    getUrlsBtn.value="获取urls"
+    getUrlsBtn.id="getUrlsBtn"
+    getUrlsBtn.onclick=function()
+    {
+        var anchor=$("#anchorOfUrls")[0].value
+        if(anchor=="")
+        {
+            anchor=0
+        }
+        else
+        {
+            anchor=parseInt(anchor,10)-1
+        }
+        
+        var resultUrls=""
+        
+        if(anchor>=0 && anchor<=itemListElements.find(".permalink").length-1)
+        {
+            resultUrls=resultUrls+itemListElements.find(".permalink")[anchor].href+";"
+        }
+        
+        
+        for(var i=1;i<itemListElements.find(".permalink").length;i++)
+        {
+            if( anchor+i >=0 && anchor+i <= itemListElements.find(".permalink").length-1)
+            {
+                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor+i].href+";"
+            }
+            if( anchor-i >=0 && anchor-i <= itemListElements.find(".permalink").length-1)
+            {
+                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor-i].href+";"
+            }
+        }
+        resultUrls=resultUrls.replace(/;$/,"")
+        $("#resultUrls")[0].innerHTML=resultUrls
+    }
+    addBeforeElement.parentNode.insertBefore(getUrlsBtn,addBeforeElement)
+
+
+    
+    getAllUrlsBtn=document.createElement("input")
+    getAllUrlsBtn.type="button"
+    getAllUrlsBtn.value="获取所有urls"
+    getAllUrlsBtn.id="getAllUrlsBtn"
+    getAllUrlsBtn.onclick=function()
+    {
+        GM_setValue("bGetAllUrls","1")
+        var anchor=$("#anchorOfUrls")[0].value
+        if(anchor=="")
+        {
+            anchor=0
+        }
+        else
+        {
+            anchor=parseInt(anchor,10)-1
+        }
+        
+        var resultUrls=""
+        
+        if(anchor>=0 && anchor<=itemListElements.find(".permalink").length-1)
+        {
+            resultUrls=resultUrls+itemListElements.find(".permalink")[anchor].href+";"
+        }
+        
+        
+        for(var i=1;i<itemListElements.find(".permalink").length;i++)
+        {
+            if( anchor+i >=0 && anchor+i <= itemListElements.find(".permalink").length-1)
+            {
+                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor+i].href+";"
+            }
+            if( anchor-i >=0 && anchor-i <= itemListElements.find(".permalink").length-1)
+            {
+                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor-i].href+";"
+            }
+        }
+        resultUrls=resultUrls.replace(/;$/,"")
+        GM_setValue("allUrls",resultUrls)
+            
+        if(itemListElements.find(".next").length>=1)
+        {
+            itemListElements.find(".next")[0].click()
+        }
+        else if($(".page-next").length>=1)
+        {
+            $(".page-next")[0].click()
+        }
+        else
+        {
+            $("#resultUrls")[0].innerHTML=resultUrls
+            GM_setValue("bGetAllUrls","0")
+            GM_setValue("allUrls","")
+        }
+    }
+    addBeforeElement.parentNode.insertBefore(getAllUrlsBtn,addBeforeElement)
+    stopGetAllUrlsBtn=document.createElement("input")
+    stopGetAllUrlsBtn.type="button"
+    stopGetAllUrlsBtn.value="stop"
+    stopGetAllUrlsBtn.id="stopGetAllUrlsBtn"
+    stopGetAllUrlsBtn.onclick=function()
+    {
+        GM_setValue("bGetAllUrls","0")
+    }
+    addBeforeElement.parentNode.insertBefore(stopGetAllUrlsBtn,addBeforeElement)
+
+	if(GM_getValue("bGetAllUrls","0")=="1")
+    {
+        resultUrls=";"
+        for(var i=0;i<itemListElements.find(".permalink").length;i++)
+        {
+            resultUrls=resultUrls+itemListElements.find(".permalink")[i].href+";"
+        }
+        resultUrls=resultUrls.replace(/;$/,"")
+        
+        preAllUrls=GM_getValue("allUrls","")
+        resultUrls=preAllUrls+resultUrls
+        
+        GM_setValue("allUrls",resultUrls)
+        
+        if(itemListElements.find(".next").length>=1)
+        {
+            itemListElements.find(".next")[0].click()
+        }
+        else if($(".page-next").length>=1)
+        {
+            $(".page-next")[0].click()
+        }
+        else
+        {
+            $("#resultUrls")[0].innerHTML=resultUrls
+            GM_setValue("bGetAllUrls","0")            
+            GM_setValue("allUrls","")
+        }
+    }
+
 }
 
 // load jQuery and execute the main function
-if(location.href.indexOf("http://s.taobao.com/search?q=")!=-1)
+if(location.href.indexOf("http://s.taobao.com/search?")!=-1)
 {
 	addJQuery(main_search);
 }	
 else if(location.href.indexOf(".taobao.com/?q=")!=-1 
 	|| location.href.indexOf(".taobao.com/search.htm")!=-1 
+    || location.href.indexOf(".taobao.com//search.htm")!=-1 
 	||location.href.indexOf(".taobao.com/?search=")!=-1  
+    ||location.href.indexOf(".taobao.com//?search=")!=-1  
 	||location.href.indexOf(".tmall.com/?q=")!=-1 
 	|| location.href.indexOf(".tmall.com/search.htm")!=-1 
+    || location.href.indexOf(".tmall.com//search.htm")!=-1 
 	||location.href.indexOf(".tmall.com/?search=")!=-1  
+    ||location.href.indexOf(".tmall.com//?search=")!=-1  
     ||location.href.indexOf(".taobao.com/?order=")!=-1  
     ||location.href.indexOf(".tmall.com/shop/view_shop.htm?q=")!=-1  
     ||location.href.indexOf(".tmall.com/?")!=-1  

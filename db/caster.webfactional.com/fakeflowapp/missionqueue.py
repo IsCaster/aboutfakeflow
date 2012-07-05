@@ -1,6 +1,6 @@
 from threading import Semaphore,Lock,Condition,RLock
 from time import time
-
+import re
 
 class MissionQueue:
     # some MissionQueue function must occupy bufferLock before been provoked
@@ -101,7 +101,8 @@ class MissionQueue:
   
 class MissionItem:
     def __init__(self, message, site ,shopkeeper=""):
-        self.message=message
+        self.raw_message=message
+        self.message=re.sub(r"\s*","",raw_message)
         self.site=site
         self.shopkeeper=shopkeeper
         self.itemId=hash(message+site)
@@ -119,7 +120,7 @@ class MissionItem:
         
     def toJson(self):
         jsonData={}
-        jsonData["message"]=self.message
+        jsonData["message"]=self.raw_message
         jsonData["itemId"]=str(self.itemId)
         jsonData["url"]=self.url
         jsonData["site"]=self.site
