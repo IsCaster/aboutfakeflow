@@ -102,7 +102,7 @@ class MissionQueue:
 class MissionItem:
     def __init__(self, message, site ,shopkeeper=""):
         self.raw_message=message
-        self.message=re.sub(r"\s*","",raw_message)
+        self.message=re.sub(r"\s*","",message)
         self.site=site
         self.shopkeeper=shopkeeper
         self.itemId=hash(message+site)
