@@ -588,7 +588,7 @@ def submitResultFail(request):
                 return HttpResponse(" submitResultFail :fail ")
     else:
         #error url in db or doneBuffer 
-        newMission=MissionItem(message,site);
+        newMission=MissionItem(raw_message,site);
         with GetMissionQueue().bufferLock:
             location,theMission=GetMissionQueue().push(newMission)
             if location == "doneBuffer" :
