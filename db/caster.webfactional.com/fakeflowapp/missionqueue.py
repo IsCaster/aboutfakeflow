@@ -105,7 +105,7 @@ class MissionItem:
         self.message=re.sub(r"\s*","",message)
         self.site=site
         self.shopkeeper=shopkeeper
-        self.itemId=hash(message+site)
+        self.itemId=hash(self.message+site)
         self.wait_success_sema=TimeOutWrapper(Semaphore(0))#used when wait for mission complete
         self.urls_sema=TimeOutWrapper(Semaphore(0))#mark urls buffer to tried
         self.urls=[] # if urls is umpty when the MissionItem is in the doneBuffer ,it means the mission is invalid

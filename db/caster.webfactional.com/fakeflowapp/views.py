@@ -342,7 +342,9 @@ def submitUrl(request):
                     for new_url in urls:
                         bAdd=True
                         for index,url in enumerate(theMission.urls):
-                            if new_url== url and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
+                            new_url_trim=re.sub(r"&$","",new_url)
+                            url_trim=re.sub(r"&$","",url)
+                            if new_url_trim== url_trim and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
                                 bAdd = False
                                 break
                         if bAdd :
