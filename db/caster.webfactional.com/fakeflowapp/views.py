@@ -263,8 +263,7 @@ def getMissionList(request):
             if bNeed:
                 theMissionListJson.append(theMission.toJson())
         else:
-            theMissionListJson.append(theMission.toJson())
-            
+            theMissionListJson.append(theMission.toJson())        
     for thePublicMission in thePublicMissionList:
         if bFilter == "1" :
             bNeed = True
@@ -279,7 +278,7 @@ def getMissionList(request):
     response_data={
             "status":"undergo",
             "theMissionList":theMissionListJson,
-            #"thePublicMissionList":thePublicMissionListJson,
+            "thePublicMissionList":thePublicMissionListJson,
         } 
     #to do  
     return HttpResponse(simplejson.dumps(response_data));
