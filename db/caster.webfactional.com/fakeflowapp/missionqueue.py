@@ -148,6 +148,8 @@ class MissionItem:
         self.url="" # the checked correct url
         self.split=2 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
         self.createTime=time()
+        self.lastVisitTime=self.createTime
+        self.clients=[] # to do
 
 class TimeOutWrapper:
     def __init__(self,obj):
