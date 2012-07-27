@@ -548,10 +548,10 @@
 					}
 					else
 					{
-						theMissionListHtml="no undergo public mission"
+						thePublicMissionListHtml="no undergo public mission"
 					}
                     
-					$("#theMissionList")[0].innerHTML=theMissionListHtml+
+					$("#theMissionList")[0].innerHTML=theMissionListHtml+"|"+thePublicMissionListHtml
 						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
                         "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
 				}

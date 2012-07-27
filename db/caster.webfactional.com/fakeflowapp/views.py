@@ -331,6 +331,7 @@ def getMission(request):
             response_data={
                 "status":"waitForUrls",
                 "theMission":theMission.toJson(),
+                
             }
             return HttpResponse(simplejson.dumps(response_data));
 
