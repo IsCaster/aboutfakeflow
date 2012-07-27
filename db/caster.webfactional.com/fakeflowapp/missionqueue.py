@@ -134,9 +134,8 @@ class MissionItem:
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
         jsonData["clients"]=self.clients # new
-
-        
         return jsonData
+        
     def init(self):
         self.wait_success_sema=TimeOutWrapper(Semaphore(0))#used when wait for mission complete
         self.urls_sema=TimeOutWrapper(Semaphore(0))#mark urls buffer to tried
