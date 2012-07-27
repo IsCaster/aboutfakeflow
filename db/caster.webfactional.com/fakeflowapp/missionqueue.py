@@ -127,13 +127,14 @@ class MissionItem:
         jsonData["url"]=self.url
         jsonData["site"]=self.site
         jsonData["shopkeeper"]=self.shopkeeper
+        jsonData["createTime"]=str(self.createTime) # new
+        jsonData["lastVisitTime"]=str(self.lastVisitTime) # new
+        jsonData["customer"]=self.customer # new
         jsonData["urls"]=self.urls
-        jsonData["fetchResultTimes"]=str(self.fetchResultTimes)
+        jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
-        jsonData["createTime"]=str(self.createTime)
-        jsonData["lastVisitTime"]=str(self.lastVisitTime)
-        jsonData["clients"]=self.clients
-        jsonData["customer"]=self.customer
+        jsonData["clients"]=self.clients # new
+
         
         return jsonData
     def init(self):
