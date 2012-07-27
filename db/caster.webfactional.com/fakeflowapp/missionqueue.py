@@ -128,10 +128,10 @@ class MissionItem:
         jsonData["site"]=self.site
         jsonData["shopkeeper"]=self.shopkeeper
         jsonData["urls"]=self.urls
-        jsonData["fetchResultTimes"]=self.fetchResultTimes
+        jsonData["fetchResultTimes"]=str(self.fetchResultTimes)
         jsonData["bTried"]=self.bTried
-        jsonData["createTime"]=self.createTime
-        jsonData["lastVisitTime"]=self.lastVisitTime
+        jsonData["createTime"]=str(self.createTime)
+        jsonData["lastVisitTime"]=str(self.lastVisitTime)
         jsonData["clients"]=self.clients
         jsonData["customer"]=self.customer
         
