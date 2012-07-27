@@ -370,7 +370,7 @@ def submitUrl(request):
     if len(urls) >=1 :
         logger.debug("urls[0]=%s"%(urls[0]))    
     if theMission != None:
-        if str(theMission.customer) != str(request.user) && theMission.customer != "public":
+        if str(theMission.customer) != str(request.user) and theMission.customer != "public":
             logger.debug("theMission.customer=%s,request.user=%s"%(theMission.customer,request.user))
             response_data={
                 "status":"missionCustomerChanged",
