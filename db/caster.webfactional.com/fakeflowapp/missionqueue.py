@@ -133,7 +133,7 @@ class MissionItem:
         jsonData["urls"]=self.urls
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
-        #jsonData["clients"]=self.clients # new
+        jsonData["clients"]=self.clients # new
         return jsonData
         
     def init(self):

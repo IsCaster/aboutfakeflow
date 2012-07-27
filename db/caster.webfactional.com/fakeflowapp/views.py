@@ -327,7 +327,7 @@ def getMission(request):
     if bAlert :                    
         theMission = GetMissionQueue().pop()
         if theMission != None:
-            theMission.customer=request.user
+            theMission.customer=str(request.user)
             response_data={
                 "status":"waitForUrls",
                 "theMission":theMission.toJson(),
