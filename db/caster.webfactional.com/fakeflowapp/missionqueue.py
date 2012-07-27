@@ -129,7 +129,7 @@ class MissionItem:
         jsonData["shopkeeper"]=self.shopkeeper
         jsonData["createTime"]=str(self.createTime) # new
         jsonData["lastVisitTime"]=str(self.lastVisitTime) # new
-        #jsonData["customer"]=self.customer # new
+        jsonData["customer"]=self.customer # new
         jsonData["urls"]=self.urls
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
