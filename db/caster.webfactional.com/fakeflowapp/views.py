@@ -202,7 +202,7 @@ def queryUrl(request):
                     location,theMission=GetMissionQueue().push(newMission)
 
                 # assume no one quicker than this thread        
-                if location == "undergo" || location == "done":
+                if location == "undergo" or location == "done" :
                     return handleInBufferMission(location,theMission)
                 else :
                     theUndergoMission = GetMissionQueue().pop(theMission.itemId)
