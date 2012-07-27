@@ -249,7 +249,7 @@ def getMissionList(request):
     bFilter = request.POST["filter"]
 
     with GetMissionQueue().bufferLock:
-        theMissionList = GetMissionQueue().getCustomerMission(request.user)
+        theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
         thePublicMissionList = GetMissionQueue().getCustomerMission("public")
     theMissionListJson=[]
     thePublicMissionListJson=[]
@@ -336,7 +336,7 @@ def getMission(request):
             return HttpResponse(simplejson.dumps(response_data));
 
     with GetMissionQueue().bufferLock:
-        theMissionList = GetMissionQueue().getCustomerMission(request.user)
+        theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
     for theMission in theMissionList:
         bWarn=True
         for theTried in theMission.bTried :
