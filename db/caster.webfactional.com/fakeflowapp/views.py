@@ -2,7 +2,7 @@
 # coding: gbk
 from django.http import HttpResponse
 from django.template import Context, loader
-from fakeflowapp.models import MissionInfo, VerificationCode
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -69,7 +69,7 @@ def missionInfo(request):
 
 def handleInBufferMission(location,theMission):
     response_data={}
-    if location == "doneBuffer" :
+    if location == "done" :
         if theMission.url != "":
             response_data['status']=10003
             response_data['urls']=theMission.urls
@@ -187,18 +187,44 @@ def queryUrl(request):
         response_data['fetchResultTime']="0"
         response_data['urls']=urls
         return HttpResponse(simplejson.dumps(response_data))
-    # elif shopkeeper != "" :
-        # entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:20]
-        # if  entries.count() >= 1 : 
-            # for entry in entries:
-                # if entry.url not in urls:
-                    # urls.append(entry.url)
-                    # if len(urls) >= 5: #max 5 tries
-                        # break
-            # response_data['status']=10006
-            # response_data['urls']=urls
-            # response_data['fetchResultTime']=int(time())
-            # return HttpResponse(simplejson.dumps(response_data))
+    elif shopkeeper != "" :
+        shopkeeperList=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
+        if shopkeeperList.count() >=1 :
+            entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:30]
+            if  entries.count() >= 1 : 
+                for entry in entries:
+                    if entry.url not in urls:
+                        urls.append(entry.url)
+                        if len(urls) >= 10: #max 10 tries
+                            break
+
+                with GetMissionQueue().bufferLock:
+                    location,theMission=GetMissionQueue().push(newMission)
+
+                # assume no one quicker than this thread        
+                if location == "undergo" || location == "done":
+                    return handleInBufferMission(location,theMission)
+                else :
+                    theUndergoMission = GetMissionQueue().pop(theMission.itemId)
+                    if theUndergoMission != None:
+                        theUndergoMission.customer="public"
+                        fetchResultTime = time() 
+                        for new_url in urls:
+                            theUndergoMission.urls.append(new_url)
+                            theUndergoMission.bTried.append(False)
+                            theUndergoMission.fetchResultTimes.append(fetchResultTime)
+                            theUndergoMission.fetchResultTimeouts.append(60)
+                            theUndergoMission.urls_sema.release()
+                        response_data['status']=10006
+                        response_data['urls']=urls
+                        response_data['fetchResultTime']=fetchResultTime
+                        return HttpResponse(simplejson.dumps(response_data))
+                    else:
+                        #error ,maybe someone got the mission quicker than this thread ,return to try again
+                        response_data['status']=10003
+                        response_data['urls']=[]
+                        response_data['fetchResultTime']="0"
+                        return HttpResponse(simplejson.dumps(response_data))
     
     if local == "90001" :
         #no need to continue
@@ -224,7 +250,9 @@ def getMissionList(request):
 
     with GetMissionQueue().bufferLock:
         theMissionList = GetMissionQueue().getCustomerMission(request.user)
+        thePublicMissionList = GetMissionQueue().getCustomerMission("public")
     theMissionListJson=[]
+    thePublicMissionListJson=[]
     for theMission in theMissionList:
         if bFilter == "1" :
             bNeed = True
@@ -236,9 +264,22 @@ def getMissionList(request):
                 theMissionListJson.append(theMission.toJson())
         else:
             theMissionListJson.append(theMission.toJson())
+            
+    for thePublicMission in thePublicMissionList:
+        if bFilter == "1" :
+            bNeed = True
+            for fetchResultTime in thePublicMission.fetchResultTimes :
+                if fetchResultTime == 0 :
+                    bNeed= False
+                    break;
+            if bNeed:
+                thePublicMissionListJson.append(thePublicMission.toJson())
+        else:
+            thePublicMissionListJson.append(thePublicMission.toJson())        
     response_data={
             "status":"undergo",
             "theMissionList":theMissionListJson,
+            "thePublicMissionList":thePublicMissionListJson,
         } 
     #to do  
     return HttpResponse(simplejson.dumps(response_data));
@@ -593,7 +634,7 @@ def submitResultFail(request):
         newMission=MissionItem(raw_message,site);
         with GetMissionQueue().bufferLock:
             location,theMission=GetMissionQueue().push(newMission)
-            if location == "doneBuffer" :
+            if location == "done" :
                 theMission.init()
                 del GetMissionQueue().doneBuffer[theMission.itemId]
                 GetMissionQueue().unhandledBuffer[theMission.itemId]=theMission
@@ -680,4 +721,32 @@ def submitShopkeeper(request):
 def clearDoneBuffer(request):        
     with GetMissionQueue().bufferLock:
         GetMissionQueue().doneBuffer={}
+    return HttpResponse("success")
+    
+@login_required()
+def addWhiteList(request):
+    #shopkeeper=request.POST["shopkeeper"]
+    raw_shopkeeper = request.POST['shopkeeper']
+    mid_shopkeeper = raw_shopkeeper.encode('ascii','ignore')
+    mid2_shopkeeper = unquote(mid_shopkeeper)
+    shopkeeper = mid2_shopkeeper.decode('utf8')
+    
+    newShopkeeper=ShopkeeperWhiteList()
+    newShopkeeper.shopkeeper=shopkeeper
+    newShopkeeper.save()
+    
+    return HttpResponse("success")
+    
+@login_required()
+def deleteWhiteList(request):
+    #shopkeeper=request.POST["shopkeeper"]
+    raw_shopkeeper = request.POST['shopkeeper']
+    mid_shopkeeper = raw_shopkeeper.encode('ascii','ignore')
+    mid2_shopkeeper = unquote(mid_shopkeeper)
+    shopkeeper = mid2_shopkeeper.decode('utf8')
+    
+    entries=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
+    for entry in entries:
+        entry.delete()
+        
     return HttpResponse("success")

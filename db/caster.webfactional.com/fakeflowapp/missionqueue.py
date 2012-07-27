@@ -54,10 +54,10 @@ class MissionQueue:
                 if self.unhandledBuffer.has_key(item.itemId):
                     return "unhandled",self.unhandledBuffer[item.itemId]
                 elif self.undergoBuffer.has_key(item.itemId):
-                    return "undergoBuffer",self.undergoBuffer[item.itemId]
+                    return "undergo",self.undergoBuffer[item.itemId]
                 else:
                     # item in doneBuffer
-                    return "doneBuffer",self.doneBuffer[item.itemId]
+                    return "done",self.doneBuffer[item.itemId]
                     
             else:
                 item.itemId=item.itemId+1    
@@ -117,6 +117,8 @@ class MissionItem:
         self.url="" # the checked correct url
         self.split=2 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
         self.createTime=time()
+        self.lastVisitTime=self.createTime
+        self.clients=[] # to do
         
     def toJson(self):
         jsonData={}
@@ -128,6 +130,11 @@ class MissionItem:
         jsonData["urls"]=self.urls
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
+        jsonData["createTime"]=self.createTime
+        jsonData["lastVisitTime"]=self.lastVisitTime
+        jsonData["clients"]=self.clients
+        jsonData["customer"]=self.customer
+        
         return jsonData
     def init(self):
         self.wait_success_sema=TimeOutWrapper(Semaphore(0))#used when wait for mission complete

@@ -225,6 +225,22 @@
             queryMissionInfo()
         }
         
+        function addWhiteList(word)
+        {
+            $.post("/addwhitelist",{"shopkeeper":encodeURI(word)},function(data)
+            {
+                alert(data)
+            })
+        }
+
+        function deleteWhiteList(word)
+        {
+            $.post("/deletewhitelist",{"shopkeeper":encodeURI(word)},function(data)
+            {
+                alert(data)
+            })
+        }
+        
         function quickSearch(word)
         {
             $("#openNewPage")[0].href="http://s.taobao.com/search?q="+encodeURIComponent(word)
@@ -253,8 +269,16 @@
                 {   
                     if(i==0)
                     {
-                        theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"</li>"
+                        if(theMission.customer=="public")
+                        {
+                            theMissionDivHtml=theMissionDivHtml+
+                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='加白名单' type='button' onclick='addWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
+                        }
+                        else
+                        {
+                            theMissionDivHtml=theMissionDivHtml+
+                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='移出白名单' type='button' onclick='deleteWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
+                        }            
                     }
                     else if(i==1)
                     {
@@ -498,6 +522,7 @@
 					{
 						for(var i=0 ;i<data.theMissionList.length;++i)
 						{
+                            
 							theMissionListHtml=theMissionListHtml+
 								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
                                 "<a href='javascript:getMission(\""+data.theMissionList[i].itemId+"\");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
@@ -506,8 +531,26 @@
 					}
 					else
 					{
-						theMissionListHtml="no undergo mission now"
+						theMissionListHtml="no undergo mission"
 					}
+                    
+					thePublicMissionListHtml=""
+					if(data.thePublicMissionList.length>0)
+					{
+						for(var i=0 ;i<data.thePublicMissionList.length;++i)
+						{
+                            
+							thePublicMissionListHtml=thePublicMissionListHtml+
+								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
+                                "<a href='javascript:getMission(\""+data.thePublicMissionList[i].itemId+"\");'>"+data.thePublicMissionList[i].itemId+"</a>&nbsp;"
+						}
+                        
+					}
+					else
+					{
+						theMissionListHtml="no undergo public mission"
+					}
+                    
 					$("#theMissionList")[0].innerHTML=theMissionListHtml+
 						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
                         "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
