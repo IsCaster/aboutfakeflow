@@ -155,7 +155,7 @@ def queryUrl(request):
     # shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     # site=unquote(raw_site.encode('ascii','ignore')).decode('utf8')
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
-    shopkeeper=raw_shopkeeper
+    shopkeeper=re.sub(r";$","",raw_shopkeeper)
     site=raw_site
     message=re.sub(r"\s*","",raw_message)
     
@@ -189,7 +189,7 @@ def queryUrl(request):
         return HttpResponse(simplejson.dumps(response_data))
     elif shopkeeper != "" :
         shopkeeperList=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
-        logger.debug("shopkeeperList.count()=%d,shopkeeper=%s"%(shopkeeperList.count(),quote(shopkeeper)))        
+        #logger.debug("shopkeeperList.count()=%d,shopkeeper=%s"%(shopkeeperList.count(),quote(shopkeeper)))        
         if shopkeeperList.count() >=1 :
             entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:30]
             if  entries.count() >= 1 : 
@@ -441,7 +441,7 @@ def submitResultSuccess(request):
     
     shopkeeper=""
     if request.POST.has_key("shopkeeper"):
-        shopkeeper=request.POST["shopkeeper"]
+        shopkeeper=re.sub(r";$","",request.POST["shopkeeper"])
     
     #temp code for nmimi
     # if site == "nmimi" :
