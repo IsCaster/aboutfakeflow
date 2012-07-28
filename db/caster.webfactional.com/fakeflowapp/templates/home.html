@@ -575,12 +575,12 @@
                             }
                             else
                             {
-                                bWarn=1
+                                var bWarn=true
                                 for(var j=0;j<data.theMissionList[i].bTried.length;++j)
                                 {
                                     if(data.theMissionList[i].bTried[j].bTried==false)
                                     {
-                                        bWarn=0
+                                        bWarn=false
                                         break;
                                     }
                                 }
@@ -627,12 +627,12 @@
                             }
                             else
                             {
-                                bWarn=1
+                                bWarn=true
                                 for(var j=0;j<data.thePublicMissionList[i].bTried.length;++j)
                                 {
                                     if(data.thePublicMissionList[i].bTried[j].bTried==false)
                                     {
-                                        bWarn=0
+                                        bWarn=false
                                         break;
                                     }
                                 }
