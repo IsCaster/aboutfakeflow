@@ -77,10 +77,10 @@ class MissionQueue:
                 if self.unhandledBuffer.has_key(item.itemId):
                     return "unhandled",self.unhandledBuffer[item.itemId]
                 elif self.undergoBuffer.has_key(item.itemId):
-                    return "undergoBuffer",self.undergoBuffer[item.itemId]
+                    return "undergo",self.undergoBuffer[item.itemId]
                 else:
                     # item in doneBuffer
-                    return "doneBuffer",self.doneBuffer[item.itemId]
+                    return "done",self.doneBuffer[item.itemId]
                     
             else:
                 item.itemId=item.itemId+1    
