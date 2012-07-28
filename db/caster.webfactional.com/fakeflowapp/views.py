@@ -342,7 +342,7 @@ def getMission(request):
     with GetMissionQueue().bufferLock:
         theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
         thePublicMissionList = GetMissionQueue().getCustomerMission("public")
-    for theMission in theMissionList.update(thePublicMissionList):
+    for theMission in theMissionList + thePublicMissionList :
         bWarn=True
         for theTried in theMission.bTried :
             if theTried == False:
