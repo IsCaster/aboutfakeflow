@@ -219,6 +219,7 @@ def queryUrl(request):
                         response_data['status']=10006
                         response_data['urls']=urls
                         response_data['fetchResultTime']=fetchResultTime
+                        response_data['itemId']=str(theMission.itemId)
                         return HttpResponse(simplejson.dumps(response_data))
                     else:
                         #error ,maybe someone got the mission quicker than this thread ,return to try again
