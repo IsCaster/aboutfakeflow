@@ -164,6 +164,8 @@ def queryUrl(request):
     with GetMissionQueue().bufferLock:
         location,theMission=GetMissionQueue().query(newMission)
     if location != "none":
+        # update the last visit time 
+        theMission.lastVisitTime=time()
         return handleInBufferMission(location,theMission)
     
     entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
@@ -339,7 +341,8 @@ def getMission(request):
 
     with GetMissionQueue().bufferLock:
         theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
-    for theMission in theMissionList:
+        thePublicMissionList = GetMissionQueue().getCustomerMission("public")
+    for theMission in theMissionList.update(thePublicMissionList):
         bWarn=True
         for theTried in theMission.bTried :
             if theTried == False:
@@ -623,6 +626,8 @@ def submitResultFail(request):
         with GetMissionQueue().bufferLock:
             theMission=GetMissionQueue().getUndergoMission(int(itemId))
             if theMission != None :
+                # update the last visit time 
+                theMission.lastVisitTime=time()
                 for i,url in enumerate(theMission.urls):
                     if fail_url==url and str(fetchResultTime)==str(theMission.fetchResultTimes[i]) :
                         theMission.bTried[i]=True

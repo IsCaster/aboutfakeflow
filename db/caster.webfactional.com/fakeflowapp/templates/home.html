@@ -318,7 +318,7 @@
             theMissionDivHtml=theMissionDivHtml+
                                 "</ul>"
             theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p><br/>"
-                                "<ul>"
+                                "<textarea style='width: 600px; height: 100px;' disable=true ><ul>"
             for(var i=0;i<theMission.urls.length;++i)
             {   
                 if(theMission.bTried[i])
@@ -338,7 +338,7 @@
                 }
             }
             theMissionDivHtml=theMissionDivHtml+
-                                "</ul>"
+                                "</ul></textarea>"
             if(theMission.url!="")
             {
                 theMissionDivHtml=theMissionDivHtml+"<br/>配对的url:<p>"+theMission.url+"</p>"
@@ -470,7 +470,7 @@
                         }
                         else if (data.status=="waitForUrls" )
                         {
-                            getMissionList();
+                            getMissionList('0');
                             $("#playAudioGot")[0].volume=0.3;
                             $("#playAudioGot")[0].play()
                             alert("got new mission")
@@ -519,7 +519,7 @@
                 $("#switchGetNewMissionBtn")[0].value="stop"
             }
         }
-		function getMissionList(bFocus)
+		function getMissionList(bFilter,bFocus)
 		{
             if(typeof(bFocus)!="undefined")
             {
@@ -532,17 +532,72 @@
                     g_bFocus = "1"
                 }
             }
-			$.post("/getmissionlist",{"filter":"0"},function(data)
+			$.post("/getmissionlist",{"filter":bFilter},function(data)
                 {
+                    // sort the mission list
+                    function sortMission(a,b)
+                    {
+                        if(a.site=="hiwinwin" && b.site=="nmimi")
+                        {
+                            return -1
+                        }
+                        else if(b.site=="hiwinwin" && a.site=="nmimi")
+                        {
+                            return 1
+                        }
+                        else
+                        {
+                            return parseFloat(b.createTime)-parseFloat(a.createTime))
+                        }
+                    }
+                    data.theMissionList.sort(sortMission)
+                    data.thePublicMissionList.sort(sortMission)
+                    
 					theMissionListHtml=""
+                    var d = new Date();
+                    var time_now = d.getTime()/1000.0
 					if(data.theMissionList.length>0)
 					{
 						for(var i=0 ;i<data.theMissionList.length;++i)
 						{
+                            var d = new Date();
+                            time_now = d.getTime()/1000.0
+                            var markOfflineHtml=""
+                            if(parseFloat(data.theMissionList[i].lastVisitTime)-time_now >= 60)
+                            {
+                                markOfflineHtml="background-color:pink;"
+                            }
+                            var markStateHtml=""
+                            if(data.theMissionList[i].urls.length==0)
+                            {
+                                markStateHtml="color:#DD0085;"
+                            }
+                            else
+                            {
+                                bWarn=1
+                                for(var j=0;j<data.theMissionList[i].bTried.length;++j)
+                                {
+                                    if(data.theMissionList[i].bTried[j].bTried==false)
+                                    {
+                                        bWarn=0
+                                        break;
+                                    }
+                                }
+                                
+                                if(bWarn)
+                                {
+                                    markStateHtml="color:#6F6F6F;"
+                                }
+                                else
+                                {
+                                    markStateHtml="color:#0000CD;"
+                                }
+                            }
                             
 							theMissionListHtml=theMissionListHtml+
-								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
-                                "<a href='javascript:getMission(\""+data.theMissionList[i].itemId+"\");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
+                                "<a style='"+markOfflineHtml+markStateHtml+"' href='javascript:getMission(\""+
+                                data.theMissionList[i].itemId+"\");'>"+
+                                data.theMissionList[i].itemId+"</a>&nbsp;"
 						}
                         
 					}
@@ -557,9 +612,44 @@
 						for(var i=0 ;i<data.thePublicMissionList.length;++i)
 						{
                             
+							var d = new Date();
+                            time_now = d.getTime()/1000.0
+                            var markOfflineHtml=""
+                            if(parseFloat(data.thePublicMissionList[i].lastVisitTime)-time_now >= 60)
+                            {
+                                markOfflineHtml="background-color:pink;"
+                            }
+                            var markStateHtml=""
+                            if(data.thePublicMissionList[i].urls.length==0)
+                            {
+                                markStateHtml="color:#DD0085;"
+                            }
+                            else
+                            {
+                                bWarn=1
+                                for(var j=0;j<data.thePublicMissionList[i].bTried.length;++j)
+                                {
+                                    if(data.thePublicMissionList[i].bTried[j].bTried==false)
+                                    {
+                                        bWarn=0
+                                        break;
+                                    }
+                                }
+                                
+                                if(bWarn)
+                                {
+                                    markStateHtml="color:#6F6F6F;"
+                                }
+                                else
+                                {
+                                    markStateHtml="color:#0000CD;"
+                                }
+                            }
+                            
 							thePublicMissionListHtml=thePublicMissionListHtml+
-								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
-                                "<a href='javascript:getMission(\""+data.thePublicMissionList[i].itemId+"\");'>"+data.thePublicMissionList[i].itemId+"</a>&nbsp;"
+                                "<a style='"+markOfflineHtml+markStateHtml+"' href='javascript:getMission(\""+
+                                data.thePublicMissionList[i].itemId+"\");'>"+
+                                data.thePublicMissionList[i].itemId+"</a>&nbsp;"
 						}
                         
 					}
@@ -588,65 +678,6 @@
 				}
 				,"json")
 		}
-        
-        function getMissionListA()
-		{
-			$.post("/getmissionlist",{"filter":"1"},function(data)
-                {
-                    theMissionListHtml=""
-					if(data.theMissionList.length>0)
-					{
-						for(var i=0 ;i<data.theMissionList.length;++i)
-						{
-                            
-							theMissionListHtml=theMissionListHtml+
-								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
-                                "<a href='javascript:getMission(\""+data.theMissionList[i].itemId+"\");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
-						}
-                        
-					}
-					else
-					{
-						theMissionListHtml="no undergo mission"
-					}
-                    
-					thePublicMissionListHtml=""
-					if(data.thePublicMissionList.length>0)
-					{
-						for(var i=0 ;i<data.thePublicMissionList.length;++i)
-						{
-                            
-							thePublicMissionListHtml=thePublicMissionListHtml+
-								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
-                                "<a href='javascript:getMission(\""+data.thePublicMissionList[i].itemId+"\");'>"+data.thePublicMissionList[i].itemId+"</a>&nbsp;"
-						}
-                        
-					}
-					else
-					{
-						thePublicMissionListHtml="no undergo public mission"
-					}
-                    
-					$("#theMissionList")[0].innerHTML=theMissionListHtml+"&nbsp;||&nbsp;"+thePublicMissionListHtml+
-						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
-                        "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
-                    
-                    //mark the current mission
-                    for(var i=0;i<$("#theMissionList a").length;++i)
-                    {
-                        if($("#theMissionList a")[i].innerHTML==$("#submitUrlDiv")[0].itemId)
-                        {
-                            $("#theMissionList a")[i].style.fontWeight="bold"
-                        }
-                        else
-                        {
-                            $("#theMissionList a")[i].style.fontWeight="normal"
-                        }
-                    }
-				}
-				,"json")
-		}
-        
         function submitUrl(submitData)
         {
             $.post("/submiturl",submitData,function(data)
@@ -724,9 +755,9 @@
             <input type="button" value="up" onclick="upQueryUrls()">
           </div>
           未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
-          <input type="button" onclick="getMissionList(0);" value="赶紧做任务" />
-          <input type="button" onclick="getMissionList(1);" value="集中做任务" />
-           <input type="button" onclick="getMissionListA();" value="过滤任务" />
+          <input type="button" onclick="getMissionList('0',0);" value="赶紧做任务" />
+          <input type="button" onclick="getMissionList('0',1);" value="集中做任务" />
+           <input type="button" onclick="getMissionList('1');" value="过滤任务" />
           <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
         </form>    
     </div>
