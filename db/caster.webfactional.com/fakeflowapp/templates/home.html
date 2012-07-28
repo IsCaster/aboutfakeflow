@@ -578,13 +578,14 @@
                                 var bWarn=true
                                 for(var j=0;j<data.theMissionList[i].bTried.length;++j)
                                 {
-                                    if(data.theMissionList[i].bTried[j].bTried==false)
+                                    if(data.theMissionList[i].bTried[j]==false)
                                     {
                                         bWarn=false
                                         break;
                                     }
                                 }
                                 
+                                alert(bWarn)
                                 if(bWarn)
                                 {
                                     markStateHtml="color:#6F6F6F;"
@@ -630,7 +631,7 @@
                                 bWarn=true
                                 for(var j=0;j<data.thePublicMissionList[i].bTried.length;++j)
                                 {
-                                    if(data.thePublicMissionList[i].bTried[j].bTried==false)
+                                    if(data.thePublicMissionList[i].bTried[j]==false)
                                     {
                                         bWarn=false
                                         break;
