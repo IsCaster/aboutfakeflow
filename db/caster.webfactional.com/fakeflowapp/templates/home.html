@@ -259,6 +259,21 @@
         
         function showMessage(theMission)
         {
+            
+            //mark the current mission
+            for(var i=0;i<$("#theMissionList a").length;++i)
+            {
+                if($("#theMissionList a")[i].innerHTML==""+theMission.itemId)
+                {
+                    $("#theMissionList a")[i].style="font-weight:bold"
+                }
+                else
+                {
+                    $("#theMissionList a")[i].style="font-weight:normal"
+                }
+            }
+            
+        
             message=theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
             message_pieces=message.split(";")
             theMissionDivHtml=  "<p>任务信息:</p><br/>"
@@ -354,6 +369,8 @@
             submitUrlDivHtml=submitUrlDivHtml+
 					"<input type='button' value='delete mission' id='deleteMissionBtn' />"        
 			$("#submitUrlDiv")[0].innerHTML=submitUrlDivHtml
+            
+            $("#submitUrlDiv")[0].itemId=""+itemId
 			$("#submitUrlsBtn")[0].onclick=function()
 			{
 				var submitData={}
@@ -484,7 +501,7 @@
             getMission()
             if(typeof($("#switchGetNewMissionBtn")[0].keep)=="undefined"||$("#switchGetNewMissionBtn")[0].keep==1)
             {
-                setTimeout("getNewMission()",15000)
+                setTimeout("getNewMission()",10000)
             }
             return 
         }
@@ -554,6 +571,20 @@
 					$("#theMissionList")[0].innerHTML=theMissionListHtml+"&nbsp;||&nbsp;"+thePublicMissionListHtml+
 						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
                         "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
+                    
+                    //mark the current mission
+                    for(var i=0;i<$("#theMissionList a").length;++i)
+                    {
+                        if($("#theMissionList a")[i].innerHTML==$("#submitUrlDiv")[0].itemId)
+                        {
+                            $("#theMissionList a")[i].style="font-weight:bold"
+                        }
+                        else
+                        {
+                            $("#theMissionList a")[i].style="font-weight:normal"
+                        }
+                    }
+                    
 				}
 				,"json")
 		}
@@ -562,11 +593,12 @@
 		{
 			$.post("/getmissionlist",{"filter":"1"},function(data)
                 {
-					theMissionListHtml=""
+                    theMissionListHtml=""
 					if(data.theMissionList.length>0)
 					{
 						for(var i=0 ;i<data.theMissionList.length;++i)
 						{
+                            
 							theMissionListHtml=theMissionListHtml+
 								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
                                 "<a href='javascript:getMission(\""+data.theMissionList[i].itemId+"\");'>"+data.theMissionList[i].itemId+"</a>&nbsp;"
@@ -575,11 +607,42 @@
 					}
 					else
 					{
-						theMissionListHtml="no undergo mission now"
+						theMissionListHtml="no undergo mission"
 					}
-					$("#theMissionList")[0].innerHTML=theMissionListHtml+
+                    
+					thePublicMissionListHtml=""
+					if(data.thePublicMissionList.length>0)
+					{
+						for(var i=0 ;i<data.thePublicMissionList.length;++i)
+						{
+                            
+							thePublicMissionListHtml=thePublicMissionListHtml+
+								//"<input type='button' onclick='getMission("+data.theMissionList[i].itemId+");' value='"+data.theMissionList[i].itemId+"' />"
+                                "<a href='javascript:getMission(\""+data.thePublicMissionList[i].itemId+"\");'>"+data.thePublicMissionList[i].itemId+"</a>&nbsp;"
+						}
+                        
+					}
+					else
+					{
+						thePublicMissionListHtml="no undergo public mission"
+					}
+                    
+					$("#theMissionList")[0].innerHTML=theMissionListHtml+"&nbsp;||&nbsp;"+thePublicMissionListHtml+
 						"<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
                         "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
+                    
+                    //mark the current mission
+                    for(var i=0;i<$("#theMissionList a").length;++i)
+                    {
+                        if($("#theMissionList a")[i].innerHTML==$("#submitUrlDiv")[0].itemId)
+                        {
+                            $("#theMissionList a")[i].style="font-weight:bold"
+                        }
+                        else
+                        {
+                            $("#theMissionList a")[i].style="font-weight:normal"
+                        }
+                    }
 				}
 				,"json")
 		}
