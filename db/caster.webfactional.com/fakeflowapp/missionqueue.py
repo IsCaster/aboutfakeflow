@@ -23,7 +23,7 @@ class MissionQueue:
             else:
                 return None
         # no itemId
-        if self.missionQueueSema.acquire(30):# Temporary set timeout 1 minute to wait for mission (and then reconnect )
+        if self.missionQueueSema.acquire(0):# Temporary set timeout 1 minute to wait for mission (and then reconnect )
             with self.bufferLock:
                 key,item=self.unhandledBuffer.popitem()                
                 # move item  to undergoBuffer        
