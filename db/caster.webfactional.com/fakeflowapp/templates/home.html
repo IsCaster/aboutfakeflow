@@ -521,22 +521,6 @@
         }
 		function getMissionList(bFilter,bFocus)
 		{
-            function sortMission(a,b)
-            {
-                if(a.site=="hiwinwin" && b.site=="nmimi")
-                {
-                    return -1
-                }
-                else if(b.site=="hiwinwin" && a.site=="nmimi")
-                {
-                    return 1
-                }
-                else
-                {
-                    return parseFloat(b.createTime)-parseFloat(a.createTime))
-                }
-            }
-            
             if(typeof(bFocus)!="undefined")
             {
                 if (bFocus == 0)
@@ -552,6 +536,21 @@
 			$.post("/getmissionlist",{"filter":bFilter},function(data)
                 {
                     // sort the mission list
+                    function sortMission(a,b)
+                    {
+                        if(a.site=="hiwinwin" && b.site=="nmimi")
+                        {
+                            return -1
+                        }
+                        else if(b.site=="hiwinwin" && a.site=="nmimi")
+                        {
+                            return 1
+                        }
+                        else
+                        {
+                            return parseFloat(b.createTime)-parseFloat(a.createTime)
+                        }
+                    }
                     data.theMissionList.sort(sortMission)
                     data.thePublicMissionList.sort(sortMission)
                     
