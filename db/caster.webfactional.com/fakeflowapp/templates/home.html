@@ -318,7 +318,7 @@
             theMissionDivHtml=theMissionDivHtml+
                                 "</ul>"
             theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p><br/>"+
-                                "<div style='width: 600px; height: 200px;overflow:scroll;overflow-x:hidden' ><ul>"
+                                "<div style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ul>"
             for(var i=0;i<theMission.urls.length;++i)
             {   
                 if(theMission.bTried[i])
@@ -561,10 +561,8 @@
 					{
 						for(var i=0 ;i<data.theMissionList.length;++i)
 						{
-                            var d = new Date();
-                            time_now = d.getTime()/1000.0
                             var markOfflineHtml=""
-                            if(parseFloat(data.theMissionList[i].lastVisitTime)-time_now >= 60)
+                            if(time_now-parseFloat(data.theMissionList[i].lastVisitTime) >= 60)
                             {
                                 markOfflineHtml="background-color:pink;"
                             }

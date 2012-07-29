@@ -193,7 +193,7 @@ def queryUrl(request):
         shopkeeperList=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
         #logger.debug("shopkeeperList.count()=%d,shopkeeper=%s"%(shopkeeperList.count(),quote(shopkeeper)))        
         if shopkeeperList.count() >=1 :
-            entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site).order_by("-updateTime")[:30]
+            entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site,valid=True).order_by("-updateTime")[:30]
             if  entries.count() >= 1 : 
                 for entry in entries:
                     if entry.url not in urls:
