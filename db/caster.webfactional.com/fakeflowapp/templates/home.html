@@ -318,7 +318,7 @@
             theMissionDivHtml=theMissionDivHtml+
                                 "</ul>"
             theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p><br/>"+
-                                "<textarea style='width: 600px; height: 100px;' disable=true ><ul>"
+                                "<div style='width: 600px; height: 100px;' ><ul>"
             for(var i=0;i<theMission.urls.length;++i)
             {   
                 if(theMission.bTried[i])
@@ -338,7 +338,7 @@
                 }
             }
             theMissionDivHtml=theMissionDivHtml+
-                                "</ul></textarea>"
+                                "</ul></div>"
             if(theMission.url!="")
             {
                 theMissionDivHtml=theMissionDivHtml+"<br/>配对的url:<p>"+theMission.url+"</p>"
