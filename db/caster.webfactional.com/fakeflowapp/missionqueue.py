@@ -139,7 +139,7 @@ class MissionItem:
         if self.url!="" :
             bNeed = True
         else:
-            for fetchResultTime in theMission.fetchResultTimes :
+            for fetchResultTime in self.fetchResultTimes :
                 if fetchResultTime == 0 :
                     bNeed= False
                     break
