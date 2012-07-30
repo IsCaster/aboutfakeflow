@@ -248,14 +248,14 @@ def queryUrl(request):
     logger.debug("push new Mission Item")
     return handleInBufferMission(location,theMission)
 
-def getMissionListImplement(itemId=""):
+def getMissionListImplement(userName,itemId=""):
     if itemId == "":
         bContain = True
     else:
         bContain = False
     
     with GetMissionQueue().bufferLock:
-        theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
+        theMissionList = GetMissionQueue().getCustomerMission(userName)
         thePublicMissionList = GetMissionQueue().getCustomerMission("public")
     theMissionListJson=[]
     thePublicMissionListJson=[]
@@ -280,7 +280,7 @@ def getMissionListImplement(itemId=""):
 @login_required()
 def getMissionList(request):
     # bFilter = request.POST["filter"]
-    response_data = getMissionListImplement()
+    response_data = getMissionListImplement(str(request.user))
     response_data["status"]="gotMissionList"
     return HttpResponse(simplejson.dumps(response_data));
         
@@ -291,7 +291,7 @@ def getMission(request):
     if request.POST.has_key("bFocus") :
         bFocus = request.POST["bFocus"]
     if itemId != "" :
-        response_data = getMissionListImplement(itemId)
+        response_data = getMissionListImplement(str(request.user),itemId)
         response_data["status"]="withItemId"
         return HttpResponse(simplejson.dumps(response_data));
     bAlert = True 
@@ -312,7 +312,7 @@ def getMission(request):
         theMission = GetMissionQueue().pop()
         if theMission != None:
             theMission.customer=str(request.user)
-            response_data = getMissionListImplement()
+            response_data = getMissionListImplement(str(request.user))
             response_data["status"]="waitForUrls"
             return HttpResponse(simplejson.dumps(response_data));
 
@@ -327,10 +327,10 @@ def getMission(request):
         if len(theMission.bTried) == 0:
             bWarn =False
         if bWarn :
-            response_data = getMissionListImplement()
+            response_data = getMissionListImplement(str(request.user))
             response_data["status"]="warnMissionNeed2Handle"
             return HttpResponse(simplejson.dumps(response_data))
-    response_data = getMissionListImplement()
+    response_data = getMissionListImplement(str(request.user))
     response_data["status"]="waitForMissions"
     return HttpResponse(simplejson.dumps(response_data))
         
