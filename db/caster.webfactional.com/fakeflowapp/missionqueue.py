@@ -134,6 +134,18 @@ class MissionItem:
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
         jsonData["clients"]=self.clients # new
+        
+        bNeed = True
+        if self.url!="" :
+            bNeed = True
+        else:
+            for fetchResultTime in theMission.fetchResultTimes :
+                if fetchResultTime == 0 :
+                    bNeed= False
+                    break
+            
+        jsonData["bNeed"]=bNeed # new
+        
         return jsonData
         
     def init(self):

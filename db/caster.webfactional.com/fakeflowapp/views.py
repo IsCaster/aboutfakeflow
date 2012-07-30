@@ -247,44 +247,41 @@ def queryUrl(request):
     
     logger.debug("push new Mission Item")
     return handleInBufferMission(location,theMission)
-        
-@login_required()
-def getMissionList(request):
-    bFilter = request.POST["filter"]
 
+def getMissionListImplement(itemId=""):
+    if itemId == "":
+        bContain = True
+    else:
+        bContain = False
+    
     with GetMissionQueue().bufferLock:
         theMissionList = GetMissionQueue().getCustomerMission(str(request.user))
         thePublicMissionList = GetMissionQueue().getCustomerMission("public")
     theMissionListJson=[]
     thePublicMissionListJson=[]
     for theMission in theMissionList:
-        if bFilter == "1" :
-            bNeed = True
-            for fetchResultTime in theMission.fetchResultTimes :
-                if fetchResultTime == 0 :
-                    bNeed= False
-                    break;
-            if bNeed:
-                theMissionListJson.append(theMission.toJson())
-        else:
-            theMissionListJson.append(theMission.toJson())        
+        if str(theMission.itemId) == itemId :
+            bContain = True 
+        theMissionListJson.append(theMission.toJson())        
     for thePublicMission in thePublicMissionList:
-        if bFilter == "1" :
-            bNeed = True
-            for fetchResultTime in thePublicMission.fetchResultTimes :
-                if fetchResultTime == 0 :
-                    bNeed= False
-                    break;
-            if bNeed:
-                thePublicMissionListJson.append(thePublicMission.toJson())
-        else:
-            thePublicMissionListJson.append(thePublicMission.toJson())        
+        if str(thePublicMission.itemId) == itemId :
+            bContain = True 
+        thePublicMissionListJson.append(thePublicMission.toJson())
+    if not bContain :
+        if GetMissionQueue().doneBuffer.has_key(int(itemId)):
+            thePublicMissionListJson.append(GetMissionQueue().doneBuffer[int(itemId)].toJson())
+    
     response_data={
-            "status":"undergo",
             "theMissionList":theMissionListJson,
             "thePublicMissionList":thePublicMissionListJson,
         } 
-    #to do  
+    return response_data
+    
+@login_required()
+def getMissionList(request):
+    # bFilter = request.POST["filter"]
+    response_data = getMissionListImplement()
+    response_data["status"]="gotMissionList"
     return HttpResponse(simplejson.dumps(response_data));
         
 @login_required()
@@ -294,26 +291,9 @@ def getMission(request):
     if request.POST.has_key("bFocus") :
         bFocus = request.POST["bFocus"]
     if itemId != "" :
-        with GetMissionQueue().bufferLock:
-            theMission = GetMissionQueue().getUndergoMission(int(itemId))
-            if theMission != None :
-                response_data={
-                        "status":"undergo",
-                        "theMission":theMission.toJson(),
-                    } 
-                return HttpResponse(simplejson.dumps(response_data));
-            else:
-                if GetMissionQueue().doneBuffer.has_key(int(itemId)):
-                    response_data={
-                            "status":"missionCompleted",
-                            "theMission":GetMissionQueue().doneBuffer[int(itemId)].toJson(),
-                        } 
-                    return HttpResponse(simplejson.dumps(response_data));
-                else:
-                    response_data={
-                            "status":"missionNotExist",
-                        } 
-                    return HttpResponse(simplejson.dumps(response_data));
+        response_data = getMissionListImplement(itemId)
+        response_data["status"]="withItemId"
+        return HttpResponse(simplejson.dumps(response_data));
     bAlert = True 
     if bFocus == "1" :
         bAlert = False
@@ -332,11 +312,8 @@ def getMission(request):
         theMission = GetMissionQueue().pop()
         if theMission != None:
             theMission.customer=str(request.user)
-            response_data={
-                "status":"waitForUrls",
-                "theMission":theMission.toJson(),
-                
-            }
+            response_data = getMissionListImplement()
+            response_data["status"]="waitForUrls"
             return HttpResponse(simplejson.dumps(response_data));
 
     with GetMissionQueue().bufferLock:
@@ -350,13 +327,11 @@ def getMission(request):
         if len(theMission.bTried) == 0:
             bWarn =False
         if bWarn :
-            response_data={
-                "status":"warnMissionNeed2Handle",
-            }
+            response_data = getMissionListImplement()
+            response_data["status"]="warnMissionNeed2Handle"
             return HttpResponse(simplejson.dumps(response_data))
-    response_data={
-        "status":"waitForMissions",
-    }
+    response_data = getMissionListImplement()
+    response_data["status"]="waitForMissions"
     return HttpResponse(simplejson.dumps(response_data))
         
 def submitUrl(request):
