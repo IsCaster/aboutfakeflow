@@ -463,6 +463,10 @@
         {
             if(typeof(itemId)=="undefined" || itemId=="")
             {
+                if(typeof($("#submitUrlDiv")[0].itemId)=="undefined")
+                {
+                    $("#submitUrlDiv")[0].itemId=""
+                }
                 itemId=""+$("#submitUrlDiv")[0].itemId
             }
             var theAllMissionList = data.theMissionList.concat(data.thePublicMissionList); 
