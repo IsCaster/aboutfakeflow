@@ -358,6 +358,7 @@
                         var successMissionInfoDiv=document.createElement("div");
                         successMissionInfoDiv.innerHTML='<p id="success_tip" style="color:#FF1111">mission completed</p>'
                                         +"配对的url:<p>"+theMission.url+"</p>"
+                        $("#theMission")[0].insertBefore(successMissionInfoDiv,$("#theMission")[0].firstChild)
                     }
                 }
                 else
