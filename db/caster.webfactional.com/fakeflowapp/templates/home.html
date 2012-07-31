@@ -273,85 +273,125 @@
             //        $("#theMissionList a")[i].style.fontWeight="normal"
             //    }
             //}
-            
-            theMissionDivHtml=""
-            message=theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
-            message_pieces=message.split(";")
-            if(theMission.url!="")
+            if(""+theMission.itemId!=""+$("#submitUrlDiv")[0].itemId )
             {
-                theMissionDivHtml=theMissionDivHtml+'<p style="color:#FF1111">mission completed</p>'
-            }
-            
-            theMissionDivHtml=  theMissionDivHtml + "<p>任务信息:</p>"+
-                                "<ul>"
-            if(theMission.site=="hiwinwin")
-            {
-                for(var i=0;i<message_pieces.length;++i)
-                {   
-                    if(i==0)
-                    {
-                        if(theMission.customer!="public")
+                theMissionDivHtml=""
+                message=theMission.message.replace(/;;+/g,";").replace(/^;/,"").replace(/;$/,"")
+                message_pieces=message.split(";")
+                if(theMission.url!="")
+                {
+                    theMissionDivHtml=theMissionDivHtml+'<div id="successMissionInfoDiv"><p id="success_tip" style="color:#FF1111">mission completed</p>'
+                                        +"配对的url:<p>"+theMission.url+"</p></div>"
+                }
+                
+                theMissionDivHtml=  theMissionDivHtml + "<p>任务信息:</p>"+
+                                    "<ul>"
+                if(theMission.site=="hiwinwin")
+                {
+                    for(var i=0;i<message_pieces.length;++i)
+                    {   
+                        if(i==0)
+                        {
+                            if(theMission.customer!="public")
+                            {
+                                theMissionDivHtml=theMissionDivHtml+
+                                            "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='加白名单' type='button' onclick='addWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
+                            }
+                            else
+                            {
+                                theMissionDivHtml=theMissionDivHtml+
+                                            "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='移出白名单' type='button' onclick='deleteWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
+                            }            
+                        }
+                        else if(i==1)
                         {
                             theMissionDivHtml=theMissionDivHtml+
-                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='加白名单' type='button' onclick='addWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
+                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速搜索' type='button' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
                         }
                         else
                         {
                             theMissionDivHtml=theMissionDivHtml+
-                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"&nbsp;<input value='移出白名单' type='button' onclick='deleteWhiteList(\""+message_pieces[i]+"\")' />"+"</li>"
-                        }            
-                    }
-                    else if(i==1)
-                    {
-                        theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"&nbsp;<input value='快速搜索' type='button' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
-                    }
-                    else
-                    {
-                        theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"</li>"
+                                        "<li>"+message_pieces[i]+"</li>"
+                        }
                     }
                 }
+                else
+                {
+                    for(var i=0;i<message_pieces.length;++i)
+                    {        
+                        theMissionDivHtml=theMissionDivHtml+
+                                        "<li>"+message_pieces[i]+"</li>"
+                    }
+                }
+                theMissionDivHtml=theMissionDivHtml+
+                                    "</ul>"
+                theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p>"+
+                                    "<div id='submitUrlsDiv' style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ul>"
+                for(var i=0;i<theMission.urls.length;++i)
+                {   
+                    if(theMission.bTried[i])
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
+                                        "<li class='bTried' >"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
+                    else if(theMission.fetchResultTimes[i]==0)
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
+                                        "<li class='bWaiting'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
+                    else 
+                    {
+                        theMissionDivHtml=theMissionDivHtml+
+                                        "<li class='bTring'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
+                }
+                theMissionDivHtml=theMissionDivHtml+
+                                    "</ul></div>"                
+                $("#theMission")[0].innerHTML=theMissionDivHtml
             }
             else
             {
-                for(var i=0;i<message_pieces.length;++i)
-                {        
-                    theMissionDivHtml=theMissionDivHtml+
-                                    "<li>"+message_pieces[i]+"</li>"
-                }
-            }
-            theMissionDivHtml=theMissionDivHtml+
-                                "</ul>"
-            theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p>"+
-                                "<div style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ul>"
-            for(var i=0;i<theMission.urls.length;++i)
-            {   
-                if(theMission.bTried[i])
+                if(theMission.url!="")
                 {
-                    theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTried' >"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    if($("#successMissionInfoDiv").length <= 0)
+                    {
+                        var successMissionInfoDiv=document.createElement("div");
+                        successMissionInfoDiv.innerHTML='<p id="success_tip" style="color:#FF1111">mission completed</p>'
+                                        +"配对的url:<p>"+theMission.url+"</p>"
+                    }
                 }
-                else if(theMission.fetchResultTimes[i]==0)
+                else
                 {
-                    theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bWaiting'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    if($("#successMissionInfoDiv").length == 1)
+                    {
+                        $("#theMission")[0].removeChild($("#successMissionInfoDiv")[0])
+                    }
                 }
-                else 
-                {
-                    theMissionDivHtml=theMissionDivHtml+
-                                    "<li class='bTring'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                
+                var submitUrlsDivInnerHTML="<ul>"
+                for(var i=0;i<theMission.urls.length;++i)
+                {   
+                    if(theMission.bTried[i])
+                    {
+                        submitUrlsDivInnerHTML=submitUrlsDivInnerHTML+
+                                        "<li class='bTried' >"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
+                    else if(theMission.fetchResultTimes[i]==0)
+                    {
+                        submitUrlsDivInnerHTML=submitUrlsDivInnerHTML+
+                                        "<li class='bWaiting'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
+                    else 
+                    {
+                        submitUrlsDivInnerHTML=submitUrlsDivInnerHTML+
+                                        "<li class='bTring'>"+theMission.urls[i]+"&nbsp;<input value='Go' type='button' onclick='openItemPage(\""+theMission.urls[i]+"\")' /></li>"
+                    }
                 }
+                submitUrlsDivInnerHTML=submitUrlsDivInnerHTML+
+                                    "</ul>"
+                                    
+                $("#submitUrlsDiv")[0].innerHTML=submitUrlsDivInnerHTML
             }
-            theMissionDivHtml=theMissionDivHtml+
-                                "</ul></div>"
-            if(theMission.url!="")
-            {
-                theMissionDivHtml=theMissionDivHtml+"<br/>配对的url:<p>"+theMission.url+"</p>"
-            }
-            
-            $("#theMission")[0].innerHTML=theMissionDivHtml
-            
             
             for(var i=0,j=0;i<theMission.urls.length;++i)
             {
@@ -648,7 +688,7 @@
             {
                 for(var i=0 ;i<data.thePublicMissionList.length;++i)
                 {
-                    if(g_bFilter=="1" && data.theMissionList[i].bNeed==false)
+                    if(g_bFilter=="1" && data.thePublicMissionList[i].bNeed==false)
                     {
                         continue
                     }
@@ -659,7 +699,7 @@
                     }
                     
                     var markStateHtml=""
-                    if(data.theMissionList[i].url!="")
+                    if(data.thePublicMissionList[i].url!="")
                     {
                         //success
                         markStateHtml="color:#66FF33;"

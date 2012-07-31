@@ -142,10 +142,8 @@ class MissionItem:
             for fetchResultTime in self.fetchResultTimes :
                 if fetchResultTime == 0 :
                     bNeed= False
-                    break
-            
+                    break    
         jsonData["bNeed"]=bNeed # new
-        
         return jsonData
         
     def init(self):
