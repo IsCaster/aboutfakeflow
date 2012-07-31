@@ -71,6 +71,7 @@ function handleMyMissonPage()
     GM_setValue("message","")
     GM_setValue("missionOpened","")
     GM_setValue("url","")
+    GM_setValue("userName",$(".outerLink a")[0].innerHTML) //set client/userName
     unsafeWindow.keepRefresh=1
     
     var pageSize=15;//defined in http://wwww.nmimi.com/js/MyAFMData.js
@@ -474,7 +475,7 @@ function handleValidPage()
 			if(this.document.scripts[0].innerHTML=="window.opener.location.reload();alert('恭喜已验证成功！本页将关闭！');window.close();")
 			{
 				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime","0"))
-				client=$(".outerLink a")[0].innerHTML // username
+				client=GM_getValue("userName") // username
                 
 				if(unsafeWindow.getNmmValue("fetchResultTime","0")!="0")//need to send result
 				{
@@ -511,7 +512,7 @@ function handleValidPage()
 				else
 				{	
                     //send heart beat packet
-                    site="hiwinwin"                        
+                    site="nmimi"                        
                     input = "site="+site+";client="+encodeURIComponent(client)
                     
                     GM_log("input="+input)
