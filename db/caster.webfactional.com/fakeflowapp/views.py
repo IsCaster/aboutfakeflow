@@ -24,6 +24,8 @@ from time import time
 import logging
 logger = logging.getLogger(__name__)
 
+clientStatusBuffer=[]
+
 def missionQueueTrace(fn):
     def wrapped(*arg):
         logger.debug("enter "+fn.__name__)
@@ -293,6 +295,7 @@ def getMission(request):
     if itemId != "" :
         response_data = getMissionListImplement(str(request.user),itemId)
         response_data["status"]="withItemId"
+        response_data["clientStatusBuffer"]=clientStatusBuffer
         return HttpResponse(simplejson.dumps(response_data));
     bAlert = True 
     if bFocus == "1" :
@@ -314,6 +317,7 @@ def getMission(request):
             theMission.customer=str(request.user)
             response_data = getMissionListImplement(str(request.user))
             response_data["status"]="waitForUrls"
+            response_data["clientStatusBuffer"]=clientStatusBuffer
             return HttpResponse(simplejson.dumps(response_data));
 
     with GetMissionQueue().bufferLock:
@@ -329,9 +333,11 @@ def getMission(request):
         if bWarn :
             response_data = getMissionListImplement(str(request.user))
             response_data["status"]="warnMissionNeed2Handle"
+            response_data["clientStatusBuffer"]=clientStatusBuffer
             return HttpResponse(simplejson.dumps(response_data))
     response_data = getMissionListImplement(str(request.user))
     response_data["status"]="waitForMissions"
+    response_data["clientStatusBuffer"]=clientStatusBuffer
     return HttpResponse(simplejson.dumps(response_data))
         
 def submitUrl(request):
@@ -404,7 +410,10 @@ def submitResultSuccess(request):
     raw_itemId = request.POST["itemId"]
     raw_url = request.POST["url"]
     site = request.POST["site"]
-
+    client=request.POST["client"]
+    
+    updateClientStatus(site,client)
+    
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
     # code=unquote(raw_code.encode('ascii','ignore')).decode('utf8')
@@ -628,7 +637,8 @@ def submitResultFail(request):
 
 def close(request):
     return HttpResponse("<script> window.close(); </script>")
-    
+
+@login_required()    
 def deleteMissionInfo(request):
     raw_key_id = request.POST["key_id"]
     key_id=unquote(raw_key_id.encode('ascii','ignore')).decode('utf8')
@@ -732,3 +742,44 @@ def deleteWhiteList(request):
         entry.delete()
         
     return HttpResponse("success")
+
+def updateClientStatus(site,client):
+    bNewone = True
+    for clientStatus in clientStatusBuffer:
+        if clientStatus["site"]==site and clientStatus["client"]== client :
+            bNewone=False
+            clientStatus["lastVisitTime"]=str(time())
+            break;
+    if bNewone:
+        newClientStatus={}
+        newClientStatus["site"]=site
+        newClientStatus["client"]=client
+        newClientStatus["lastVisitTime"]=str(time())
+        clientStatusBuffer.append(newClientStatus)
+    return
+
+@login_required()
+def removeClient(request):    
+    site=unquote(request.POST["site"].encode('ascii','ignore')).decode('utf8')
+    client=unquote(request.POST["client"].encode('ascii','ignore')).decode('utf8')
+    
+    for index,clientStatus in enumerate(clientStatusBuffer):
+        if clientStatus["site"]==site and clientStatus["client"]== client :
+            del clientStatusBuffer[index]
+    return HttpResponse("success")
+    
+    
+def heartBeat(request):
+    site=request.POST["site"]
+    client=request.POST["client"]
+    
+    updateClientStatus(site,client)
+    return HttpResponse("success")
+
+@login_required()
+def resetClientVisitTime(request):
+    site=unquote(request.POST["site"].encode('ascii','ignore')).decode('utf8')
+    client=unquote(request.POST["client"].encode('ascii','ignore')).decode('utf8')
+    
+    updateClientStatus(site,client)
+    return HttpResponse("success")    

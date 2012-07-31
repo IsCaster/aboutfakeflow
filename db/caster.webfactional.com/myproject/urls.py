@@ -40,4 +40,7 @@ urlpatterns = patterns('',
     url(r'^deletemissionc$', 'fakeflowapp.views.deleteMissionC'),
     url(r'^addwhitelist$', 'fakeflowapp.views.addWhiteList'),
     url(r'^deletewhitelist$', 'fakeflowapp.views.deleteWhiteList'),    
+    url(r'^heartbeat$', 'fakeflowapp.views.heartBeat'),
+    url(r'^removeclient$', 'fakeflowapp.views.removeClient'),
+    url(r'^resetclientvisittime$', 'fakeflowapp.views.resetClientVisitTime'),
 )
