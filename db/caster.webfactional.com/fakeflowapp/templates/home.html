@@ -538,6 +538,7 @@
         
         function resetClientVisitTime(input)
         {
+            $("#playAudioClientOffline")[0].pause()
             values=input.name.split(":")
             site=values[0]
             client=values[1]
@@ -551,6 +552,7 @@
         
         function removeClient(input)
         {
+            $("#playAudioClientOffline")[0].pause()
             values=input.name.split(":")
             site=values[0]
             client=values[1]
@@ -568,17 +570,37 @@
             
             var d = new Date();
             var time_now = d.getTime()/1000.0
+            var bWarn=false
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
-                parseFloat(clientStatusBuffer.lastVisitTime)
-                theClientListHTML=theClientListHTML+clientStatusBuffer.site+":"+clientStatusBuffer.client+
-                    "&nbsp<input name='"+clientStatusBuffer.site+":"+clientStatusBuffer.client+
+                var timeoff=Math.Round(time_now-parseFloat(clientStatusBuffer.lastVisitTime))
+                var timeoffHTML=""  
+                if (timeoff>300&&timeoff<=600)
+                {
+                    timeoffHTML="<span style='background-color:pink;'>"+timeoff+"</span>"    
+                }
+                else if(timeoff>600)
+                {
+                    timeoffHTML="<span style='background-color:red;'>"+timeoff+"</span>"    
+                    bWarn=true
+                }
+                else
+                {
+                    timeoffHTML="<span >"+timeoff+"</span>"    
+                }
+                theClientListHTML=theClientListHTML+clientStatusBuffer.site+":"+clientStatusBuffer.client+"&nbsp;"+timeoffHTML+                    
+                    "&nbsp;<input name='"+clientStatusBuffer.site+":"+clientStatusBuffer.client+
                     "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />&nbsp;"+
                     "<input name='"+clientStatusBuffer.site+":"+clientStatusBuffer.client+
-                    "' type='button' value='删除' onclick='removeClient(this)'  />"
+                    "' type='button' value='删除' onclick='removeClient(this)' />"
             }
-            
             $("#theClientList")[0].innerHTML=theClientListHTML
+                        
+            if(bWarn)
+            {
+                $("#playAudioClientOffline")[0].volume=0.3;
+                $("#playAudioClientOffline")[0].play()
+            }
         }
         
         function getMission(itemId)
@@ -955,6 +977,7 @@
         <!--audio id="playAudioGot"  preload="auto" src="http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio--> 
         <audio id="playAudioGot"  preload="auto" src="/static/sound/alreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
         <audio id="playAudioNeed2Handle"  preload="auto" src="/static/sound/need2handle.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
+        <audio id="playAudioClientOffline"  preload="auto" src="/static/sound/clientoffline.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
     </div>
     <div>
         <a id="openNewPage" target="_blank" rel="noreferrer"></a>
