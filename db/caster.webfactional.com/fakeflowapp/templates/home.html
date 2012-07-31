@@ -475,7 +475,10 @@
                 if(""+theAllMissionList[i].itemId==""+itemId)
                 {
                     showMessage(theAllMissionList[i])
-                    showSubmitUrlDiv(itemId)
+                    if(""+itemId!=""+$("#submitUrlDiv")[0].itemId)
+                    {
+                        showSubmitUrlDiv(itemId)
+                    }
                     break;
                 }
             }
