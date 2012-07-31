@@ -474,7 +474,8 @@ function handleValidPage()
 			if(this.document.scripts[0].innerHTML=="window.opener.location.reload();alert('恭喜已验证成功！本页将关闭！');window.close();")
 			{
 				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime","0"))
-				
+				client=$(".outerLink a")[0].innerHTML // username
+                
 				if(unsafeWindow.getNmmValue("fetchResultTime","0")!="0")//need to send result
 				{
 					message=unsafeWindow.getNmmValue("message")//it's already encodeURIComponent
@@ -482,7 +483,7 @@ function handleValidPage()
 					url=unsafeWindow.getNmmValue("url")
 					site="nmimi"
 					//submit success url
-					input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site
+					input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";client="+encodeURIComponent(client)
 					
 					GM_log("input="+input)
 
@@ -509,6 +510,23 @@ function handleValidPage()
 				}
 				else
 				{	
+                    //send heart beat packet
+                    site="hiwinwin"                        
+                    input = "site="+site+";client="+encodeURIComponent(client)
+                    
+                    GM_log("input="+input)
+                    GM_xmlhttpRequest({
+                        method: "POST",
+                        url: "http://caster.webfactional.com/heartbeat",
+                        data: input,
+                        headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        onload: function(xhr) {
+                            GM_log('send heart beat packet return : response='+xhr.responseText)
+                        }
+                    })
 					//close validResult page
 					this.location.href="javascript:window.close()"
 					//close valid page
@@ -600,7 +618,7 @@ function handleValidPage()
             }
             //GM_log("message="+message)
         }
-        input = 'message='+encodeURIComponent(message.replace(/\s*/g,""))+
+        input = 'message='+encodeURIComponent(message)+
             ';itemId='+encodeURIComponent(itemId)+
             ';site='+site;
         GM_log(input)
@@ -659,7 +677,7 @@ function handleValidPage()
 			//wait 2 second to click
 			if($('#linkValid')[0].url_index>1)
 			{
-				setTimeout("$('#linkValid')[0].click()",1000)
+				setTimeout("$('#linkValid')[0].click()",2000)
 			}
 			else
 			{
@@ -669,7 +687,7 @@ function handleValidPage()
 		else
 		{
 			//unsafeWindow.setNmmValue("fetchResultTime",-1)
-            setTimeout(function(){unsafeWindow.getUrls()},0)
+            setTimeout(function(){unsafeWindow.getUrls()},2000)
 		}
 	}
 	
@@ -684,12 +702,12 @@ function handleValidPage()
             {
                 message=message+$(".step + div")[i].innerHTML+";"
             }
-            unsafeWindow.setNmmValue("message",encodeURIComponent(message.replace(/\s*/g,"")))
+            unsafeWindow.setNmmValue("message",encodeURIComponent(message))
             bLocal=GM_getValue("bLocal","90002")
             //GM_log("message="+message)
             shopkeeper=""
             site="nmimi"
-            input = 'message='+encodeURIComponent(message.replace(/\s*/g,""))+
+            input = 'message='+encodeURIComponent(message)+
                     ';shopkeeper='+encodeURIComponent(shopkeeper)+
                     ';site='+site+
                     ';local='+bLocal;

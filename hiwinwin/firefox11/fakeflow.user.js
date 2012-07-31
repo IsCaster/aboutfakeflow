@@ -5,6 +5,7 @@
 // @include       http://www.hiwinwin.com/task/count/index.aspx
 // @include       http://www.hiwinwin.com/task/count/
 // @include       http://www.hiwinwin.com/task/count/Taskin.aspx*
+// @include       http://www.hiwinwin.com/Error.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
@@ -30,12 +31,17 @@ if(GM_getValue("bLocal","undefined")=="undefined")
 if(location.href=="http://www.hiwinwin.com/task/count/" 
 	|| location.href=="http://www.hiwinwin.com/task/count/index.aspx" )
 {
-	if(document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!=-1)
+	if( document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx?id=")!=-1)
 	{
-        location.href="javascript:window.close()"
+        setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceLoaded").onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
 		return;
 	}
-    else if(document.referrer=="")
+    else if (document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!=-1)
+    {
+        setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceComplete").onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+    }
+    else if(document.referrer=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f"
+        || document.referrer=="")
     {
         handleGetMissionStaffPage()
     }
@@ -50,18 +56,33 @@ else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!
 	{
 		annouceGetMission()
 		handleMission()
+        if(document.referrer=="http://www.hiwinwin.com/task/count/")
+        {   
+            unsafeWindow.opener.top.document.getElementById("annouceLoaded").onclick() 
+        }
 	}
 	else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx?id=")!=-1)
 	{
 		var showMsg=document.createElement("p");
 		showMsg.innerHTML=document.scripts[0].innerHTML;    
 		document.body.insertBefore(showMsg,null);
+        
+        var openContainP=document.createElement("p");
+        openContainP.onclick=function()
+        {
+            unsafeWindow.open("http://www.hiwinwin.com/task/count/")
+        }
+        document.body.insertBefore(openContainP,null);
+        
+        if(showMsg.innerHTML.indexOf("window.location.href=\"http://www.hiwinwin.com/task/count/\"")!=-1)
+        {
+            openContainP.click()
+        }
 	}
-
-	if(document.referrer=="http://www.hiwinwin.com/task/count/")
-	{   
-		unsafeWindow.opener.top.document.getElementById("annouceLoaded").onclick() 
-	}
+}
+else if(location.href.indexOf("http://www.hiwinwin.com/Error.aspx")!=-1)
+{
+    handleAlreadyGotPage()
 }
 	
 function handleGetMissionStaffPage()
@@ -84,136 +105,283 @@ function handleGetMissionStaffPage()
     }	
 
     thisReflashImages = allReflashImages.snapshotItem(0);
-	
-	$(".cursor ")[0].waitForLoadTime=0
-	
+
+    $(".cursor ")[0].waitForLoadTime=0
+	$(".cursor ")[0].unique_flag=0
+    $(".cursor ")[0].goPageTimeOutIds=new Array()
+/*    
     unsafeWindow.goPage = function (n) {
-
-    //need to wait for get mission page loaded
-    if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
-    {
-		$(".cursor ")[0].waitForLoadTime=$(".cursor ")[0].waitForLoadTime+1
-        setTimeout("goPage(0);",2000+Math.random()*1000);
-        GM_log("setTimeout ,wait For Load  ");
-        return 
-    }
-	$(".cursor ")[0].waitForLoadTime=0
-	
-    //need to wait for mission page ?
-    if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
-    {
-        setTimeout("goPage(0);",2000+Math.random()*1000);
-        GM_log("setTimeout ,wait For Success  ");
-        return 
-    }
-
-
-    var qs = 'page=' + n + '&cnn=1&nows=' + (new Date()).getTime();
-    unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
-    var xml = unsafeWindow.makeXmlReq();
-    var url = '../../ajax/GetCount.aspx?' + qs;
-    xml.onreadystatechange = function() {
-    if (xml.readyState == 4) {
-    if (xml.status == 200 || xml.status == 304) {
-        
-		if(typeof($(".cursor ")[0].reloadTimeoutId)!="undefined")
-		{
-			clearTimeout($(".cursor ")[0].reloadTimeoutId)
-		}
-		
-		var txt = xml.responseText;
-        unsafeWindow.getObj('taskLst').innerHTML = txt;
-        //GM_log("txt="+txt);
-        
-        GM_log('$(".tbl a").length='+$(".tbl a").length)
-
-        if( $(".tbl a").length > 0 )
+        //need to wait for get mission page loaded
+        if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
         {
-            randomId=Math.round(Math.random()*$(".tbl a").length,10)%$(".tbl a").length
-            GM_log("randomId="+randomId+",allAnchors.length="+$(".tbl a").length)
-            var thisLink=	$(".tbl a")[randomId].toString();
-            GM_log("fetch mission ");
-            //alert(thisLink+typeof(thisLink));
-            //document.getElementById("playAudioGot").play();
+            $(".cursor ")[0].waitForLoadTime=$(".cursor ")[0].waitForLoadTime+1
+            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+            GM_log("setTimeout ,wait For Load  ");
+            $(".cursor ")[0].unique_flag=0
+            return 
+        }
+        $(".cursor ")[0].waitForLoadTime=0
+        
+        //need to wait for mission page ?
+        if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
+        {
+            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+            GM_log("setTimeout ,wait For Success  ");
+            $(".cursor ")[0].unique_flag=0
+            return 
+        }
+    
+        var qs = 'page=' + n + '&cnc=1&nows=' + (new Date()).getTime();
+        unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
+        var xml = unsafeWindow.makeXmlReq();
+        var url = '../../ajax/GetCount.aspx?' + qs;
+        xml.onreadystatechange = function() {
+            if (xml.readyState == 4) {
+            if (xml.status == 200 || xml.status == 304) {
+                
+                if(typeof($(".cursor ")[0].reloadTimeoutId)!="undefined")
+                {
+                    clearTimeout($(".cursor ")[0].reloadTimeoutId)
+                }
+                
+                var txt = xml.responseText;
+                unsafeWindow.getObj('taskLst').innerHTML = txt;
+                //GM_log("txt="+txt);
+                
+                GM_log('$(".tbl a").length='+$(".tbl a").length)
+                
+                if( $(".tbl a").length > 0 )
+                {
+                    randomId=Math.round(Math.random()*$(".tbl a").length,10)%$(".tbl a").length
+                    GM_log("randomId="+randomId+",allAnchors.length="+$(".tbl a").length)
+                    var thisLink=	$(".tbl a")[randomId].toString();
+                    GM_log("fetch mission ");
+                    //alert(thisLink+typeof(thisLink));
+                    //document.getElementById("playAudioGot").play();
 
-            //fetch mission directly
-            //location.href=thisLink;
-            
-            if(typeof(unsafeWindow.handleMissionPage)=="undefined")
-            {
-                var requestResultWindow=document.getElementById("requestResult").contentWindow;
-                unsafeWindow.handleMissionPage = requestResultWindow.open(thisLink)
-                //requestResultWindow.open(thisLink," ","status:no;resizable:no;help:no;dialogHeight:height:30px;dialogHeight:40px; ");
+                    //fetch mission directly
+                    //location.href=thisLink;
+                    
+                    $("#annouceLoaded")[0].need2wait=1
+                    if(typeof(unsafeWindow.handleMissionPage)=="undefined")
+                    {
+                        var requestResultWindow=document.getElementById("requestResult").contentWindow;
+                        unsafeWindow.handleMissionPage = requestResultWindow.open(thisLink)
+                        //requestResultWindow.open(thisLink," ","status:no;resizable:no;help:no;dialogHeight:height:30px;dialogHeight:40px; ");
+                    }
+                    else
+                    {
+                        unsafeWindow.handleMissionPage.location.href=thisLink
+                    }            
+                }
+                else
+                {
+                    //GM_log("not get mission ");
+                    
+                    if($(".p_l_20").length<=0)
+                    {
+                        //been added to the blacklist?
+                        //stop fresh
+                        GM_setValue( "keepReflash",0 )
+                        GM_log("taskLst.innerHTML="+txt)
+                        alert("出错错误，需要重新点刷新")
+                    }
+
+                }
+                
+                
+                
+                if( GM_getValue( "keepReflash",0 ) == 1 )
+                {
+                    //setTimeout("goPage(0);",2000+Math.random()*1000);
+                    //GM_log("setTimeout ,reflash ");
+                    var refreshTimeout=0
+                    GM_log("goPage(0); calculate refreshTimeout")
+                    if($(".tbl a").length>=2)
+                    {   
+                        refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,4000))
+                        if(refreshTimeout<0)
+                        {
+                            refreshTimeout=0
+                        }
+                    }
+                    else
+                    {
+                        refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
+                        if(refreshTimeout<0)
+                        {
+                            refreshTimeout=0
+                        }
+                    }
+                    GM_log("goPage(0); refreshTimeout="+refreshTimeout)
+                    timeoutId=setTimeout("goPage(0);",refreshTimeout);
+                    $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+                }
+                
             }
-            else
-            {
-                unsafeWindow.handleMissionPage.location.href=thisLink
             }
-            
-            $("#annouceLoaded")[0].need2wait=1
+            };
+        xml.open('get', url, true);
+        xml.setRequestHeader('If-Modified-Since', '0');
+        xml.send('');
+    }
+    */
+	  
+    unsafeWindow.goPage = function (n) {
+        //to be the unique one
+        if($(".cursor ")[0].unique_flag==0)
+        {
+            $(".cursor ")[0].unique_flag=1
+            for (var i=0;i<$(".cursor ")[0].goPageTimeOutIds.length;++i)
+            {
+                clearTimeout($(".cursor ")[0].goPageTimeOutIds[i])
+            }
+            $(".cursor ")[0].goPageTimeOutIds=new Array()
         }
         else
         {
-            //GM_log("not get mission ");
-            
-            if($(".p_l_20").length<=0)
-            {
-                //been added to the blacklist?
-                //stop fresh
-                GM_setValue( "keepReflash",0 )
-                
-            }
-
+            return;
+        }
+    
+        //need to wait for get mission page loaded
+        if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
+        {
+            $(".cursor ")[0].waitForLoadTime=$(".cursor ")[0].waitForLoadTime+1
+            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+            GM_log("setTimeout ,wait For Load  ");
+            $(".cursor ")[0].unique_flag=0
+            return 
+        }
+        $(".cursor ")[0].waitForLoadTime=0
+        
+        //need to wait for mission page ?
+        if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
+        {
+            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+            GM_log("setTimeout ,wait For Success  ");
+            $(".cursor ")[0].unique_flag=0
+            return 
         }
 
-        if( GM_getValue( "keepReflash",0 ) == 1 )
-        {
-            //setTimeout("goPage(0);",2000+Math.random()*1000);
-            //GM_log("setTimeout ,reflash ");
-            var refreshTimeout=0
-            GM_log("goPage(0); calculate refreshTimeout")
-            if($(".tbl a").length>=2)
-            {   
-                refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(1500,1000))
-                if(refreshTimeout<0)
+
+        var qs = 'page=' + n + '&cnc=1&nows=' + (new Date()).getTime();
+        unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
+        var xml = unsafeWindow.makeXmlReq();
+        var url = '../../ajax/GetCount.aspx?' + qs;
+        
+        xml.onreadystatechange = function() {
+        if (xml.readyState == 4) {
+        if (xml.status == 200 || xml.status == 304) {
+            
+            if(typeof($(".cursor ")[0].reloadTimeoutId)!="undefined")
+            {
+                clearTimeout($(".cursor ")[0].reloadTimeoutId)
+            }
+            
+            var txt = xml.responseText;
+            unsafeWindow.getObj('taskLst').innerHTML = txt;
+            //GM_log("txt="+txt);
+            
+            GM_log('$(".tbl a").length='+$(".tbl a").length)
+
+            if( $(".tbl a").length > 0 )
+            {
+                randomId=Math.round(Math.random()*$(".tbl a").length,10)%$(".tbl a").length
+                GM_log("randomId="+randomId+",allAnchors.length="+$(".tbl a").length)
+                var thisLink=	$(".tbl a")[randomId].toString();
+                GM_log("fetch mission ");
+                //alert(thisLink+typeof(thisLink));
+                //document.getElementById("playAudioGot").play();
+
+                //fetch mission directly
+                //location.href=thisLink;
+                
+                $("#annouceLoaded")[0].need2wait=1
+                if(typeof(unsafeWindow.handleMissionPage)=="undefined")
                 {
-                    refreshTimeout=0
+                    var requestResultWindow=document.getElementById("requestResult").contentWindow;
+                    unsafeWindow.handleMissionPage = requestResultWindow.open(thisLink)
+                    //requestResultWindow.open(thisLink," ","status:no;resizable:no;help:no;dialogHeight:height:30px;dialogHeight:40px; ");
                 }
+                else
+                {
+                    unsafeWindow.handleMissionPage.location.href=thisLink
+                }            
             }
             else
             {
-                refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
-                if(refreshTimeout<0)
+                //GM_log("not get mission ");
+                
+                if($(".p_l_20").length<=0)
                 {
-                    refreshTimeout=0
+                    //been added to the blacklist?
+                    //stop fresh
+                    GM_setValue( "keepReflash",0 )
+                    GM_log("taskLst.innerHTML="+txt)
+                    alert("出错错误，需要重新点刷新")
                 }
+
             }
-            GM_log("goPage(0); refreshTimeout="+refreshTimeout)
-            setTimeout("goPage(0);",refreshTimeout);
+
+            if( GM_getValue( "keepReflash",0 ) == 1 )
+            {
+                //setTimeout("goPage(0);",2000+Math.random()*1000);
+                //GM_log("setTimeout ,reflash ");
+                var refreshTimeout=0
+                GM_log("goPage(0); calculate refreshTimeout")
+                if($(".tbl a").length>=2)
+                {   
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,4000))
+                    if(refreshTimeout<0)
+                    {
+                        refreshTimeout=0
+                    }
+                }
+                else
+                {
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
+                    if(refreshTimeout<0)
+                    {
+                        refreshTimeout=0
+                    }
+                }
+                GM_log("goPage(0); refreshTimeout="+refreshTimeout)
+                timeoutId=setTimeout("goPage(0);",refreshTimeout);
+                $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
+            }
+
         }
+        }
+        };        
+        
+        //set reload timeout before send ajax
+        $(".cursor ")[0].reloadTimeoutId=setTimeout(function(){
+                                                        //confirm('annouceSuccess='+$('annouceSuccess')[0].need2wait,"1","2")
+                                                        //GM_log('annouceSuccess='+document.getElementById('annouceSuccess').outerHTML)
+                                                        if(typeof(document.getElementById('annouceSuccess').need2wait)=="undefined" || document.getElementById('annouceSuccess').need2wait!=1)
+                                                        {
+                                                            if(typeof(document.getElementById('annouceLoaded').need2wait)!="undefined" && document.getElementById('annouceLoaded').need2wait==1) 
+                                                            {
+                                                                document.getElementById('annouceLoaded').need2wait=0
+                                                            }
+                                                            else
+                                                            {
+                                                                unsafeWindow.goPage(0);
+                                                            }
+                                                        }
+                                                    },60000)
+        
+        xml.open('get', url, true);
+        xml.setRequestHeader('If-Modified-Since', '0');
+        xml.send('');
 
-    }
-    }
-    };
-    xml.open('get', url, true);
-    xml.setRequestHeader('If-Modified-Since', '0');
-    xml.send('');
-
-	$(".cursor ")[0].reloadTimeoutId=setTimeout("\
-												if(document.getElementById('annouceSuccess').need2wait!=1)\
-												{\
-													if(document.getElementById('annouceLoaded').need2wait==1) \
-													{\
-														document.getElementById('annouceLoaded').need2wait=0\
-													}\
-													else\
-													{\
-														goPage(0);\
-													}\
-												}",60000)
-
+        $(".cursor ")[0].unique_flag=0
     } 
-
+    
     thisReflashImages.onclick= function() 
     {
         if(GM_getValue("keepReflash",0)==0)
@@ -275,6 +443,27 @@ function handleGetMissionStaffPage()
     }
     document.body.insertBefore(annouceLoadedP,null);
 
+    var annouceAlreadyGotP=document.createElement("p");
+    annouceAlreadyGotP.id='annouceAlreadyGot';
+    annouceAlreadyGotP.onclick=function()
+    {
+        GM_log("<p>.onclick annouce already got")
+        thisLink="http://www.hiwinwin.com/task/count/Taskin.aspx"
+        if(typeof(unsafeWindow.handleMissionPage)=="undefined")
+        {
+            var requestResultWindow=document.getElementById("requestResult").contentWindow;
+            unsafeWindow.handleMissionPage = requestResultWindow.open(thisLink)
+            //requestResultWindow.open(thisLink," ","status:no;resizable:no;help:no;dialogHeight:height:30px;dialogHeight:40px; ");
+        }
+        else
+        {
+            unsafeWindow.handleMissionPage.location.href=thisLink
+        }
+        
+        $("#annouceLoaded")[0].need2wait=1
+    }
+    document.body.insertBefore(annouceAlreadyGotP,null);
+    
 	//switch run mode
 	//1: manual 2: auto
 	var switchModeBtn=document.createElement("input");
@@ -305,6 +494,7 @@ function handleGetMissionStaffPage()
     //function reflashMission()
     openContainP.onclick=function()
     {
+        /*
         thisLink="Taskin.aspx"
         if(typeof(unsafeWindow.handleMissionPage)=="undefined")
         {
@@ -318,11 +508,11 @@ function handleGetMissionStaffPage()
         }
         
         $("#annouceLoaded")[0].need2wait=1
-        
+        */
         if( GM_getValue( "keepReflash" ) == 1 )
         {
             //setTimeout("alert('test setTimeout')",1000)
-            setTimeout("goPage(0);",1500+Math.random()*1000);
+            setTimeout("goPage(0);",4325+Math.random()*4000);
         }
     }
     //reflashMission()
@@ -370,6 +560,7 @@ function annouceGetMission()
 
 function handleMission()
 {
+    GM_log("handleMission")
     unsafeWindow.getBase64Image=function (img) {
         // Create an empty canvas element
         var canvas = document.createElement("canvas");
@@ -468,6 +659,8 @@ function handleMission()
                     // success
                     GM_log("mission completed ,fetchResultTime="+this.fetchResultTime)
                     
+                    client=$(".top_right .f_b_org")[0].innerHTML // username
+
                     if(this.fetchResultTime!="0")//need 2 submit result
                     {
                         message=GM_getValue("message")
@@ -483,8 +676,9 @@ function handleMission()
                         site="hiwinwin"
                         
                         //submit success url
-                        input = "message="+encodeURIComponent(message.replace(/\s*/g,""))+";shopkeeper="+encodeURIComponent(shopkeeper)+
-                            ";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site
+                        input = "message="+encodeURIComponent(message)+";shopkeeper="+encodeURIComponent(shopkeeper)+
+                            ";itemId="+itemId+";url="+encodeURIComponent(url)+
+                            ";site="+encodeURIComponent(site)+";client="+encodeURIComponent(client)
                         
                         GM_log("input="+input)
                         GM_xmlhttpRequest({
@@ -516,6 +710,26 @@ function handleMission()
                             // }
                         // })
                     }
+                    else
+                    {
+                        //send heart beat packet
+                        site="hiwinwin"                        
+                        input = "site="+encodeURIComponent(site)+";client="+encodeURIComponent(client)
+                        
+                        GM_log("input="+input)
+                        GM_xmlhttpRequest({
+                            method: "POST",
+                            url: "http://caster.webfactional.com/heartbeat",
+                            data: input,
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            onload: function(xhr) {
+                                GM_log('send heart beat packet return : response='+xhr.responseText)
+                            }
+                        })
+                    }
                     // to do for test
                     //else
                     {
@@ -523,7 +737,7 @@ function handleMission()
                         url=GM_getValue("url")
                         message=GM_getValue("message")
                         keyword=message.split(";")[1]
-                        keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"")
+                        keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
                         fakeVisitDiv=document.createElement("div")
                         fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
                                                     <input name='url' type='hidden' value='"+url+"'/>\
@@ -535,7 +749,6 @@ function handleMission()
                     unsafeWindow.doCut();
                     
                     unsafeWindow.open("http://www.hiwinwin.com/task/count/")
-                    setTimeout(function(){unsafeWindow.opener.top.document.getElementById("annouceComplete").onclick()}, 2000)
                     //location.href='./'
                     //location.href="about:blank"
                     return
@@ -561,7 +774,7 @@ function handleMission()
                     if($("iframe").contents().find(".error_panel").length>=1&&$("iframe").contents().find(".error_panel")[0].innerHTML.indexOf("验证码不正确")==-1)
                     {
                         // not code error
-                        if(this.fetchResultTime!="0" || this.loadtime>this.urls.length)
+                        if(this.fetchResultTime!="-1" &&( this.fetchResultTime!="0" || this.loadtime>this.urls.length))
                         {
                             //if fetchResultTime == "0" && this.loadtime<=this.urls.length don't send fail message
                             message=GM_getValue("message")
@@ -576,7 +789,7 @@ function handleMission()
                             
                             fetchResultTime=this.fetchResultTime
                             //submit success url
-                            input = "message="+encodeURIComponent(message.replace(/\s*/g,""))+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                            input = "message="+encodeURIComponent(message)+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
                             GM_log("submitresultfail:"+input)
                             GM_xmlhttpRequest({
                                     method: "POST",
@@ -694,7 +907,7 @@ function handleMission()
                                 }
                                 else
                                 {
-                                    checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(6000,2000))
+                                    checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(7000,2000))
                                     if(checkUrlTimeout<2169)
                                     {
                                         checkUrlTimeout=2169
@@ -740,11 +953,11 @@ function handleMission()
                     }
                     message+=$("iframe").contents().find(".f_b_green + td")[3].innerHTML+";"//提示信息
                 }
-                GM_setValue("message",message.replace(/\s*/g,""))
+                GM_setValue("message",message)
                 GM_setValue("shopkeeper",shopkeeper.replace(/\s*/g,""))
              
                 //GM_log("post message")
-                input=	'message='+encodeURIComponent(message.replace(/\s*/g,""))+
+                input=	'message='+encodeURIComponent(message)+
                         ';shopkeeper='+encodeURIComponent(shopkeeper)+
                         ';site='+site+
                         ';local='+GM_getValue("bLocal","90002");
@@ -820,16 +1033,27 @@ function handleMission()
                             
                             // to do  assume code will return soon
                             //if($("iframe").contents().find("#code")[0].value!="")
+                            checkUrlTimeout=7876
+                            if(data.status==10004)
                             {
-                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(15000,10000))
-                                if(checkUrlTimeout<5876)
+                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(8000,2000))
+                                if(checkUrlTimeout<3169)
                                 {
-                                    checkUrlTimeout=5876
+                                    checkUrlTimeout=3169
                                 }
-                                GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
-                                //$("iframe").contents().find("#imgCode + input")[0].click()
-                                setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
                             }
+                            else
+                            {
+                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(20000,8000))
+                                if(checkUrlTimeout<7876)
+                                {
+                                    checkUrlTimeout=7876
+                                }
+                            }    
+                            GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
+                            //$("iframe").contents().find("#imgCode + input")[0].click()
+                            setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
+                            
                             
                         }
                         else if(data.status>=20001&&data.status<30000)//no url retrieved and no one get the mission in N(default:5) minutes,just give up
@@ -852,13 +1076,13 @@ function handleMission()
                         }
                         else if (data.status>=30001&&data.status<40000)
                         {
-                            setTimeout(unsafeWindow.getUrls(),10000)
+                            setTimeout(function(){unsafeWindow.getUrls()},3000)
                             $("iframe")[0].fetchResultTime="-1"
                             //$("#playAudioGot")[0].play()
                         }
                         else if (data.status==40001)
                         {
-                            setTimeout($("iframe").contents().find("#quitMissionBtn")[0].click(),2124)
+                            setTimeout(function(){$("iframe").contents().find("#quitMissionBtn")[0].click()},2124)
                         }
                         else
                         {
@@ -915,8 +1139,87 @@ function handleMission()
 		if($(".msg_panel div").length!=0&&$(".msg_panel div")[0].innerHTML.indexOf("退出任务成功")!=-1)
 		{
 			GM_log("quit mission success, go on to refresh to get mission")
-			unsafeWindow.opener.top.document.getElementById("annouceComplete").onclick()
+			//unsafeWindow.opener.top.document.getElementById("annouceComplete").onclick()
+            var openContainP=document.createElement("p");
+            openContainP.onclick=function()
+            {
+                unsafeWindow.open("http://www.hiwinwin.com/task/count/")
+            }
+            document.body.insertBefore(openContainP,null);
+            openContainP.click()
 		}
     }
 
+}
+
+function handleAlreadyGotPage()
+{
+    GM_log=function(){}
+    GM_log("alreadyGot");
+
+
+    // about audio
+
+    var playSoundDiv=document.createElement("div");
+    playSoundDiv.id='playSoundOutter';
+
+
+
+    //playSoundEmbed.src='file:///E:/MyDocuments/来路流量相关/tada.wav';
+    //playSoundEmbed.src='file:///F:/kugou/吴雨霏 - 句句我爱你.mp3';
+    //playSoundEmbed.width=100;
+    //playSoundEmbed.height=100;
+    //playSoundEmbed.loop=false;
+    //playSoundEmbed.autostart=true;
+    //var divTaskLst = unsafeWindow.getObj('taskLst');
+
+    document.body.insertBefore(playSoundDiv,null);
+
+    //playSoundDiv=unsafeWindow.getObj('playSoundOutter');
+
+    playSoundDiv.innerHTML = " \
+        <audio id=\"playAudioAlreadyGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
+        <audio id=\"playAudioChangeIP\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21111?filename%3dchangeip.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
+        ";
+        
+    var playAudio1=document.getElementById("playAudioAlreadyGot");
+    playAudio1.volume=0.3;
+    var playAudio2=document.getElementById("playAudioChangeIP");
+    playAudio2.volume=0.3;
+
+    var thisErrorPanel,allErrorPanel;
+
+    allErrorPanel = document.evaluate(
+        "//div[@class='error_panel']",
+        document,
+        null,
+        XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+        null);
+
+    if(allErrorPanel.snapshotLength != 1 )
+    {
+            //alert("程序出错，可能是hiwinwin改版了");
+            GM_log("fake flow#alreadyGot 程序出错，可能是hiwinwin改版了,error_panel number:"+allErrorPanel.snapshotLength);
+    }	
+    else
+    {
+        thisErrorPanel=allErrorPanel.snapshotItem(0);
+        var error_info=thisErrorPanel.firstChild.innerHTML;
+        
+        if(error_info == "对不起，您当前有未完成的来路访问任务，请先完成之后再接手新的任务")
+        {
+            //history.go(-1);
+            playAudio2.play();
+            unsafeWindow.opener.top.document.getElementById("annouceAlreadyGot").onclick()
+        }
+        else if(error_info.indexOf("IP")!=-1)
+        {
+            playAudio2.play();
+        }
+        else
+        {
+            alert(error_info);
+            GM_log("fake flow#alreadyGot 错误信息有误，error_info="+error_info);
+        }
+    }
 }

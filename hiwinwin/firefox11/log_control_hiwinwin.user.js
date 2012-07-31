@@ -3,12 +3,27 @@
 // @namespace     http://www.caster.org
 // @description   control login/logout on site hiwinwin.com
 // @include       http://www.hiwinwin.com/member/Logon.aspx
+// @include       http://www.hiwinwin.com/
+// @include       http://www.hiwinwin.com/member/
+// @include       http://www.hiwinwin.com/member/Password.aspx?*
+// @include       http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 
 //disable log
 //GM_log=function(){}
+
+//init
+if(GM_getValue("userName","")=="")
+{
+    GM_setValue("userName","harrypotter")
+    GM_setValue("password","sy07606129")
+    GM_setValue("opPassword","op07606129")
+    GM_setValue("questionId","1")
+    GM_setValue("answer","林云娇")
+}
+
 unsafeWindow.gaussianGenerate = function (mean, stdev)
 {
     function rnd_snd() {
@@ -21,14 +36,41 @@ if(location.href.indexOf("http://www.hiwinwin.com/member/Logon.aspx")!=-1)
 {
     handleLoginPage()
 }
+else if(location.href=="http://www.hiwinwin.com/")
+{
+    $("a[href='http://www.hiwinwin.com/member/Logon.aspx']")[0].click()
+}
+else if(location.href=="http://www.hiwinwin.com/member/")
+{
+    if(document.referrer=="http://www.hiwinwin.com/member/Logon.aspx")
+    {
+        setTimeout(function(){
+                $("#ff_ss")[0].click()
+                $("a[href='../finance/Exchange.aspx']")[0].click()
+            },1514)
+    }
+}
+else if(location.href.indexOf("http://www.hiwinwin.com/member/Password.aspx?")!=-1)
+{
+    if(document.referrer.indexOf("http://www.hiwinwin.com/member/Password.aspx?")==-1)
+    {
+        setTimeout(function(){
+                $("#password")[0].value=GM_getValue("opPassword")
+                $("#btnSubmit")[0].click()
+            },2324)
+    }
+}
+else if(location.href=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f")
+{
+    if(document.referrer=="http://www.hiwinwin.com/member/Password.aspx?url=%2ffinance%2fExchange.aspx")
+    {
+        setTimeout(function(){
+                $("a[href='/task/count/']")[0].click()
+            },3123)    
+    }
+}
 
 
-//for test
-GM_setValue("userName","敲棋")
-GM_setValue("password","yhcjc2w")
-GM_setValue("opPassword","mhczc1w")
-GM_setValue("questionId","0")
-GM_setValue("answer","")
 function handleLoginPage()
 {
     unsafeWindow.getBase64Image=function (img) {
