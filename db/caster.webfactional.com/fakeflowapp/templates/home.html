@@ -573,7 +573,7 @@
             var bWarn=false
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
-                var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer.lastVisitTime))
+                var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
                 var timeoffHTML=""  
                 if (timeoff>300&&timeoff<=600)
                 {
@@ -588,10 +588,10 @@
                 {
                     timeoffHTML="<span >"+timeoff+"</span>"    
                 }
-                theClientListHTML=theClientListHTML+clientStatusBuffer.site+":"+clientStatusBuffer.client+"&nbsp;"+timeoffHTML+                    
-                    "&nbsp;<input name='"+clientStatusBuffer.site+":"+clientStatusBuffer.client+
+                theClientListHTML=theClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+"&nbsp;"+timeoffHTML+                    
+                    "&nbsp;<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                     "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />&nbsp;"+
-                    "<input name='"+clientStatusBuffer.site+":"+clientStatusBuffer.client+
+                    "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                     "' type='button' value='删除' onclick='removeClient(this)' />"
             }
             $("#theClientList")[0].innerHTML=theClientListHTML
