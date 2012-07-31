@@ -573,7 +573,7 @@
             var bWarn=false
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
-                var timeoff=Math.Round(time_now-parseFloat(clientStatusBuffer.lastVisitTime))
+                var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer.lastVisitTime))
                 var timeoffHTML=""  
                 if (timeoff>300&&timeoff<=600)
                 {
