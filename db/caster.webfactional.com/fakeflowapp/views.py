@@ -768,7 +768,7 @@ def removeClient(request):
             del clientStatusBuffer[index]
     return HttpResponse("success")
     
-    
+@csrf_exempt    
 def heartBeat(request):
     site=request.POST["site"]
     client=request.POST["client"]
