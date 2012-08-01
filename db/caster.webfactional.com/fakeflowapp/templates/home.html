@@ -294,13 +294,13 @@
                                         +"配对的url:<p>"+theMission.url+"</p></div>"
                 }
                 
-                theMissionDivHtml=  theMissionDivHtml + "<p>任务信息"
+                theMissionDivHtml=  theMissionDivHtml + "<p id='clientsP'>任务信息"
                 for(var i=0;i<theMission.clients.length;++i)
                 {
                     theMissionDivHtml=  theMissionDivHtml+"["+theMission.site+":"+theMission.clients[i]+"]"
                 }
                 
-                theMissionDivHtml=  theMissionDivHtml + "</p>"+"<ul>"
+                theMissionDivHtml=  theMissionDivHtml + ":</p>"+"<ul>"
                 if(theMission.site=="hiwinwin")
                 {
                     for(var i=0;i<message_pieces.length;++i)
@@ -408,6 +408,13 @@
                                     "</ol>"
                                     
                 $("#submitUrlsDiv")[0].innerHTML=submitUrlsDivInnerHTML
+                
+                var clientsHTML = "任务信息"
+                for(var i=0;i<theMission.clients.length;++i)
+                {
+                    clientsHTML=  clientsHTML+"["+theMission.site+":"+theMission.clients[i]+"]"
+                }
+                $("#clientsP")[0].innerHTML = clientsHTML + ":"
             }
             
             for(var i=0,j=0;i<theMission.urls.length;++i)
