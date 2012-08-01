@@ -1,4 +1,5 @@
-from fakeflowapp.models import MissionInfo, VerificationCode
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList
+
 from django.db.models import Q
 import re
 entries = MissionInfo.objects.filter(url__endswith="&")
@@ -48,3 +49,7 @@ entries = MissionInfo.objects.filter(valid=False).exclude(url="")
 for entry in entries:
     entry.valid=True
     entry.save()
+    
+entries =  ShopkeeperWhiteList.objects.all()
+for entry in entries:
+    print entry.shopkeeper

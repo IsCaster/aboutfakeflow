@@ -154,6 +154,11 @@ def queryUrl(request):
     else:
         local="90002"
         
+    if request.POST.has_key("client"):    
+        client=request.POST["client"]
+    else:
+        client=""
+        
     # shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     # site=unquote(raw_site.encode('ascii','ignore')).decode('utf8')
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
@@ -168,6 +173,9 @@ def queryUrl(request):
     if location != "none":
         # update the last visit time 
         theMission.lastVisitTime=time()
+        # fill the mission client
+        if client != "" and client not in theMission.clients :
+            theMission.clients.append(client)
         return handleInBufferMission(location,theMission)
     
     entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
@@ -205,6 +213,9 @@ def queryUrl(request):
 
                 with GetMissionQueue().bufferLock:
                     location,theMission=GetMissionQueue().push(newMission)
+                # fill the mission client
+                if client != "" and client not in theMission.clients :
+                    theMission.clients.append(client)
 
                 # assume no one quicker than this thread        
                 if location == "undergo" or location == "done" :
@@ -246,7 +257,9 @@ def queryUrl(request):
     
     with GetMissionQueue().bufferLock:
         location,theMission=GetMissionQueue().push(newMission)
-    
+    # fill the mission client
+    if client != "" and client not in theMission.clients :
+        theMission.clients.append(client)
     logger.debug("push new Mission Item")
     return handleInBufferMission(location,theMission)
 
@@ -723,12 +736,15 @@ def addWhiteList(request):
     mid2_shopkeeper = unquote(mid_shopkeeper)
     shopkeeper = mid2_shopkeeper.decode('utf8')
     
-    newShopkeeper=ShopkeeperWhiteList()
-    newShopkeeper.shopkeeper=shopkeeper
-    newShopkeeper.save()
-    
-    return HttpResponse("success")
-    
+    entries=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
+    if entries.count() <=0 :
+        newShopkeeper=ShopkeeperWhiteList()
+        newShopkeeper.shopkeeper=shopkeeper
+        newShopkeeper.save()
+        return HttpResponse("adding success")
+    else:
+        return HttpResponse("shopkeeper already exist")
+        
 @login_required()
 def deleteWhiteList(request):
     #shopkeeper=request.POST["shopkeeper"]
@@ -759,7 +775,7 @@ def updateClientStatus(site,client):
     return
 
 @login_required()
-def removeClient(request):    
+def removeClient(request):
     site=unquote(request.POST["site"].encode('ascii','ignore')).decode('utf8')
     client=unquote(request.POST["client"].encode('ascii','ignore')).decode('utf8')
     
@@ -768,7 +784,7 @@ def removeClient(request):
             del clientStatusBuffer[index]
     return HttpResponse("success")
     
-@csrf_exempt    
+@csrf_exempt
 def heartBeat(request):
     site=request.POST["site"]
     client=request.POST["client"]
@@ -783,3 +799,11 @@ def resetClientVisitTime(request):
     
     updateClientStatus(site,client)
     return HttpResponse("success")    
+    
+def utf8ToGbk(request):
+    q=unquote(request.POST["q"].encode('ascii','ignore')).decode('utf8')
+    q_gbk=quote(q.encode("gbk"), safe='~()*!.\'')
+    
+    response_data={"r":q_gbk}
+    return HttpResponse(simplejson.dumps(response_data));
+    
