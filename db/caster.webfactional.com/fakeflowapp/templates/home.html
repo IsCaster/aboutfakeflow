@@ -845,7 +845,7 @@
             
             $("#theMissionList")[0].innerHTML=theMissionListHtml+"&nbsp;||&nbsp;"+thePublicMissionListHtml+
                 "<br/><input id='getNewMissionBtn' value='get new mission' type='button' onclick='getNewMission(this)' />"+
-                "<input id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
+                "<input style='display:none;'  id='switchGetNewMissionBtn' value='stop' type='button' onclick='switchGetNewMission(this)' />"
             
             //mark the current mission
             for(var i=0;i<$("#theMissionList a").length;++i)
