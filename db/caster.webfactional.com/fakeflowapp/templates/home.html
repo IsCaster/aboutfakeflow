@@ -575,11 +575,11 @@
             {
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
                 var timeoffHTML=""  
-                if (timeoff>300&&timeoff<=600)
+                if (timeoff>420&&timeoff<=840)
                 {
                     timeoffHTML="<span style='background-color:pink;'>"+timeoff+"</span>"    
                 }
-                else if(timeoff>600)
+                else if(timeoff>840)
                 {
                     timeoffHTML="<span style='background-color:red;'>"+timeoff+"</span>"    
                     bWarn=true
