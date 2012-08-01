@@ -332,7 +332,7 @@
                 theMissionDivHtml=theMissionDivHtml+
                                     "</ul>"
                 theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p>"+
-                                    "<div id='submitUrlsDiv' style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ul>"
+                                    "<div id='submitUrlsDiv' style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ol>"
                 for(var i=0;i<theMission.urls.length;++i)
                 {   
                     if(theMission.bTried[i])
@@ -352,7 +352,7 @@
                     }
                 }
                 theMissionDivHtml=theMissionDivHtml+
-                                    "</ul></div>"                
+                                    "</ol></div>"                
                 $("#theMission")[0].innerHTML=theMissionDivHtml
             }
             else
@@ -375,7 +375,7 @@
                     }
                 }
                 
-                var submitUrlsDivInnerHTML="<ul>"
+                var submitUrlsDivInnerHTML="<ol>"
                 for(var i=0;i<theMission.urls.length;++i)
                 {   
                     if(theMission.bTried[i])
@@ -395,7 +395,7 @@
                     }
                 }
                 submitUrlsDivInnerHTML=submitUrlsDivInnerHTML+
-                                    "</ul>"
+                                    "</ol>"
                                     
                 $("#submitUrlsDiv")[0].innerHTML=submitUrlsDivInnerHTML
             }
@@ -538,7 +538,6 @@
         
         function resetClientVisitTime(input)
         {
-            $("#playAudioClientOffline")[0].pause()
             values=input.name.split(":")
             site=values[0]
             client=values[1]
@@ -547,12 +546,12 @@
                 {
                     $("#callback_message")[0].innerHTML=data
                     $("#callback_message")[0].style.display="block"
+                    $("#playAudioClientOffline")[0].pause()
                 })
         }
         
         function removeClient(input)
-        {
-            $("#playAudioClientOffline")[0].pause()
+        { 
             values=input.name.split(":")
             site=values[0]
             client=values[1]
@@ -561,6 +560,7 @@
                 {
                     $("#callback_message")[0].innerHTML=data
                     $("#callback_message")[0].style.display="block"
+                    $("#playAudioClientOffline")[0].pause()
                 })
         }
         
