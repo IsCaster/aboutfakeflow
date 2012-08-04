@@ -231,7 +231,7 @@ function handleMyMissonPage()
                                 GM_log("get a new mission ,reset timeout")
                                 clearTimeout($(".bbtton6_a")[0].timeoutId);
                                 $('#playAudioGet2Work')[0].pause();
-                                $(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
+                                //$(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
                             }    
                         }    
                         GM_setValue("missionOpened",missionOpening)
@@ -307,7 +307,7 @@ function handleMyMissonPage()
         }
         GM_log(typeof($('#playAudioGet2Work')[0].pause));
         $('#playAudioGet2Work')[0].pause();
-        this.timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
+        //this.timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
         unsafeWindow.RefTask(1, pageSize, 1);
     }
 
@@ -354,7 +354,7 @@ function handleMyMissonPage()
     //http://storage.live.com/items/96902E43106FA83C%21109?filename%3dgot.ogg
 
 
-    $(".bbtton6_a")[0].timeoutId=setTimeout(" $('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
+    //$(".bbtton6_a")[0].timeoutId=setTimeout(" $('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
 
     if(GM_getValue("runMode",2)==2)
     {
@@ -484,7 +484,8 @@ function handleValidPage()
 					url=unsafeWindow.getNmmValue("url")
 					site="nmimi"
 					//submit success url
-					input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";client="+encodeURIComponent(client)
+					input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+
+                        ";client="+encodeURIComponent(client)
 					
 					GM_log("input="+input)
 
@@ -708,10 +709,12 @@ function handleValidPage()
             //GM_log("message="+message)
             shopkeeper=""
             site="nmimi"
+            client=GM_getValue("userName") 
             input = 'message='+encodeURIComponent(message)+
                     ';shopkeeper='+encodeURIComponent(shopkeeper)+
                     ';site='+site+
-                    ';local='+bLocal;
+                    ';local='+bLocal+
+                    ";client="+encodeURIComponent(client)
             GM_log(input)
             GM_xmlhttpRequest({
                 method: "POST",

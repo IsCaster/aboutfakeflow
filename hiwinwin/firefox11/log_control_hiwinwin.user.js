@@ -17,11 +17,11 @@
 //init
 if(GM_getValue("userName","")=="")
 {
-    GM_setValue("userName","harrypotter")
-    GM_setValue("password","sy07606129")
-    GM_setValue("opPassword","op07606129")
-    GM_setValue("questionId","1")
-    GM_setValue("answer","林云娇")
+    GM_setValue("userName","abc")
+    GM_setValue("password","1234")
+    GM_setValue("opPassword","4567")
+    GM_setValue("questionId","0")
+    GM_setValue("answer","")
 }
 
 unsafeWindow.gaussianGenerate = function (mean, stdev)
@@ -44,10 +44,19 @@ else if(location.href=="http://www.hiwinwin.com/member/")
 {
     if(document.referrer=="http://www.hiwinwin.com/member/Logon.aspx")
     {
-        setTimeout(function(){
-                $("#ff_ss")[0].click()
-                $("a[href='../finance/Exchange.aspx']")[0].click()
-            },1514)
+        if(Math.random()>=0.5)//to do
+        {
+            setTimeout(function(){
+                    $("#ff_ss")[0].click()
+                    $("a[href='../finance/Exchange.aspx']")[0].click()
+                },1514+Math.random()*2000)
+        }
+        else
+        {
+            setTimeout(function(){
+                    $("a[href='/task/count/']")[0].click()
+                },1514+Math.random()*2000)
+        }
     }
 }
 else if(location.href.indexOf("http://www.hiwinwin.com/member/Password.aspx?")!=-1)
@@ -57,7 +66,7 @@ else if(location.href.indexOf("http://www.hiwinwin.com/member/Password.aspx?")!=
         setTimeout(function(){
                 $("#password")[0].value=GM_getValue("opPassword")
                 $("#btnSubmit")[0].click()
-            },2324)
+            },2324+Math.random()*2000)
     }
 }
 else if(location.href=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f")
@@ -66,7 +75,7 @@ else if(location.href=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=h
     {
         setTimeout(function(){
                 $("a[href='/task/count/']")[0].click()
-            },3123)    
+            },3123+Math.random()*2000)    
     }
 }
 

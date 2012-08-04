@@ -41,6 +41,7 @@ if(location.href=="http://www.hiwinwin.com/task/count/"
         setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceComplete").onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
     }
     else if(document.referrer=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f"
+        || document.referrer=="http://www.hiwinwin.com/member/"
         || document.referrer=="")
     {
         handleGetMissionStaffPage()
@@ -75,6 +76,10 @@ else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!
         document.body.insertBefore(openContainP,null);
         
         if(showMsg.innerHTML.indexOf("window.location.href=\"http://www.hiwinwin.com/task/count/\"")!=-1)
+        {
+            openContainP.click()
+        }
+        else if(showMsg.innerHTML.indexOf("window.location.href=\"http://www.hiwinwin.com/member/Password.aspx")!=-1)
         {
             openContainP.click()
         }
@@ -938,6 +943,7 @@ function handleMission()
                 var message="";
                 var site="hiwinwin";
                 var shopkeeper="";
+                client=$(".top_right .f_b_org")[0].innerHTML // username
                 if($("iframe").contents().find(".f_b_green + td")[1].innerHTML.indexOf("根据搜索提示打开搜索结果列表中掌柜名为：")>=0)
                 {
 					message+=$("iframe").contents().find(".main_dl strong")[1].innerHTML+";"//put the shopkeeper in front
@@ -955,12 +961,13 @@ function handleMission()
                 }
                 GM_setValue("message",message)
                 GM_setValue("shopkeeper",shopkeeper.replace(/\s*/g,""))
-             
+                
                 //GM_log("post message")
                 input=	'message='+encodeURIComponent(message)+
                         ';shopkeeper='+encodeURIComponent(shopkeeper)+
                         ';site='+site+
-                        ';local='+GM_getValue("bLocal","90002");
+                        ';local='+GM_getValue("bLocal","90002")+
+                        ";client="+encodeURIComponent(client)
                 
 				// request=$.get("http://caster.webfactional.com/queryurl",input,function(data){
                 // GM_log("query return");
