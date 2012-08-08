@@ -806,7 +806,7 @@ def heartBeat(request):
     client=request.POST["client"]
     
     if site=="nmimi" :
-        if request.POST.has_key("price"):
+        if request.POST.has_key("price") and request.POST["price"]!="" :
             price=float(request.POST["price"])
         else:
             price=0.2
