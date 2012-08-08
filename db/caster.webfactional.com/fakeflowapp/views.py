@@ -425,8 +425,16 @@ def submitResultSuccess(request):
     site = request.POST["site"]
     client=request.POST["client"]
     
-    updateClientStatus(site,client)
+    if site=="nmimi" :
+        if request.POST.has_key("price"):
+            price=float(request.POST["price"])
+        else:
+            price=0.2
+    else:
+        price = 1
     
+    updateClientStatus(site,client)
+    recordMissionComplete(site,client,price)
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
     # code=unquote(raw_code.encode('ascii','ignore')).decode('utf8')
@@ -774,6 +782,14 @@ def updateClientStatus(site,client):
         clientStatusBuffer.append(newClientStatus)
     return
 
+def recordMissionComplete(site,client,price):
+    newMissionCompleteItem=MissionCompleteList()
+    newMissionCompleteItem.site=site
+    newMissionCompleteItem.client=client
+    newMissionCompleteItem.price=price
+    newMissionCompleteItem.save()
+    return
+    
 @login_required()
 def removeClient(request):
     site=unquote(request.POST["site"].encode('ascii','ignore')).decode('utf8')
@@ -790,6 +806,7 @@ def heartBeat(request):
     client=request.POST["client"]
     
     updateClientStatus(site,client)
+    recordMissionComplete(site,client,price)
     return HttpResponse("success")
 
 @login_required()
@@ -805,5 +822,8 @@ def utf8ToGbk(request):
     q_gbk=quote(q.encode("gbk"), safe='~()*!.\'')
     
     response_data={"r":q_gbk}
-    return HttpResponse(simplejson.dumps(response_data));
+    return HttpResponse(simplejson.dumps(response_data))
     
+def missionDailyStatistics(request):
+    response_data={"statisticsData":""}
+    return HttpResponse(simplejson.dumps(response_data))

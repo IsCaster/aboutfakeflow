@@ -133,25 +133,26 @@ function handleLoginPage()
             $("#questionId")[0].value=questionId
             $("#questionId")[0].onchange()
         }
-        var dataURL = unsafeWindow.getBase64Image($("#imgCode")[0])
-        input = "codeImg="+encodeURIComponent(dataURL)
-        GM_log(input)
-        GM_xmlhttpRequest({
-            method: "POST",
-            url: "http://caster.webfactional.com/querycode",
-            data: input,
-            headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-            },
-            onload: function(xhr) {
-                data=eval('('+xhr.responseText+')')
-                $("#code")[0].value=data.code
-                setTimeout(function(){$("#btnSubmit").click()},5000+Math.random()*6000)
+        setTimeout(function(){
+                var dataURL = unsafeWindow.getBase64Image($("#imgCode")[0])
+                input = "codeImg="+encodeURIComponent(dataURL)
+                GM_log(input)
+                GM_xmlhttpRequest({
+                    method: "POST",
+                    url: "http://caster.webfactional.com/querycode",
+                    data: input,
+                    headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    onload: function(xhr) {
+                        data=eval('('+xhr.responseText+')')
+                        $("#code")[0].value=data.code
+                        setTimeout(function(){$("#btnSubmit").click()},1000+Math.random()*4000)
+                    }
+                })
             }
-        })
-        
-        
+        ,5000)
     }
     else
     {

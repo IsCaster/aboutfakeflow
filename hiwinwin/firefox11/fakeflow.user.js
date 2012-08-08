@@ -958,6 +958,8 @@ function handleMission()
                         message+=$("iframe").contents().find(".main_dl strong")[i].innerHTML+";"
                     }
                     message+=$("iframe").contents().find(".f_b_green + td")[3].innerHTML+";"//提示信息
+                    
+                    shopkeeper=$("iframe").contents().find(".main_dl strong")[0].innerHTML+";"
                 }
                 GM_setValue("message",message)
                 GM_setValue("shopkeeper",shopkeeper.replace(/\s*/g,""))

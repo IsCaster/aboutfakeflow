@@ -60,6 +60,26 @@ else if(location.href.indexOf("RecoverG.aspx")!=-1)
 
 function handleMyMissonPage()
 {
+    unsafeWindow.setNmmValue2=function(key,value,missionId)
+    {
+        if(missionId.length>0)
+        {
+            keyMap=GM_getValue(key,"")
+            if(keyMap.indexOf("id"+missionId+"=")!=-1)
+            {
+                re_str="id"+missionId+"=[^;]*;"
+                re = new RegExp(re_str);
+
+                keyMap=keyMap.replace(re,"id"+missionId+"="+value+";")
+                GM_setValue(key,keyMap)
+            }
+            else
+            {
+                keyMap=keyMap+"id"+missionId+"="+value+";"
+                GM_setValue(key,keyMap)
+            }
+        }
+    }
 
     //disable log
     GM_log=function(){}
@@ -209,6 +229,8 @@ function handleMyMissonPage()
                                     
                                         if(open_count<8)//open 8 page max
                                         {
+                                            price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
+                                            unsafeWindow.setNmmValue2("price",price,missionId)
                                             $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
                                             open_count=open_count+1
                                         }    
@@ -476,6 +498,7 @@ function handleValidPage()
 			{
 				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime","0"))
 				client=GM_getValue("userName") // username
+                price =unsafeWindow.getNmmValue("price")
                 
 				if(unsafeWindow.getNmmValue("fetchResultTime","0")!="0")//need to send result
 				{
@@ -485,7 +508,7 @@ function handleValidPage()
 					site="nmimi"
 					//submit success url
 					input = "message="+message+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+
-                        ";client="+encodeURIComponent(client)
+                        ";client="+encodeURIComponent(client)+";price="+price
 					
 					GM_log("input="+input)
 
@@ -514,7 +537,7 @@ function handleValidPage()
 				{	
                     //send heart beat packet
                     site="nmimi"                        
-                    input = "site="+site+";client="+encodeURIComponent(client)
+                    input = "site="+site+";client="+encodeURIComponent(client)+";price="+price
                     
                     GM_log("input="+input)
                     GM_xmlhttpRequest({

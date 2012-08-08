@@ -18,3 +18,8 @@ class ShopkeeperWhiteList(models.Model):
     shopkeeper = models.CharField(max_length=100);
     updateTime = models.DateTimeField(auto_now_add=True);
     
+class MissionCompleteList(models.Model):
+    site = models.CharField(max_length=100);
+    client = models.CharField(max_length=100);
+    price = models.FloatField();
+    updateTime = models.DateTimeField(auto_now_add=True);
