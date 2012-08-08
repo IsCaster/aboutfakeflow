@@ -2,7 +2,7 @@
 # coding: gbk
 from django.http import HttpResponse
 from django.template import Context, loader
-from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList, MissionCompleteList
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
