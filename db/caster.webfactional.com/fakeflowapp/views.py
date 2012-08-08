@@ -805,6 +805,14 @@ def heartBeat(request):
     site=request.POST["site"]
     client=request.POST["client"]
     
+    if site=="nmimi" :
+        if request.POST.has_key("price"):
+            price=float(request.POST["price"])
+        else:
+            price=0.2
+    else:
+        price = 1
+    
     updateClientStatus(site,client)
     recordMissionComplete(site,client,price)
     return HttpResponse("success")
