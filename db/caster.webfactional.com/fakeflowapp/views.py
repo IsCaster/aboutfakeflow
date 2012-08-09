@@ -19,8 +19,9 @@ import re
 
 from django.contrib.auth.decorators import login_required
 
-
 from time import time
+from datetime import datetime
+from datetime import timedelta
 import logging
 logger = logging.getLogger(__name__)
 
@@ -783,6 +784,13 @@ def updateClientStatus(site,client):
     return
 
 def recordMissionComplete(site,client,price):
+    if site=="nmimi" :
+        tmp1=round(price*100)
+        if tmp1*0.85 == round(tmp1*0.85)*1.0 :
+            price = tmp1*0.85
+        else:
+            tmp2=round(tmp1*0.85/2)*2
+            price=tmp2
     newMissionCompleteItem=MissionCompleteList()
     newMissionCompleteItem.site=site
     newMissionCompleteItem.client=client
@@ -831,7 +839,43 @@ def utf8ToGbk(request):
     
     response_data={"r":q_gbk}
     return HttpResponse(simplejson.dumps(response_data))
-    
+
+class DailyData:
+    pass
+
+'''    
 def missionDailyStatistics(request):
-    response_data={"statisticsData":""}
-    return HttpResponse(simplejson.dumps(response_data))
+    dt_now=datetime.now()
+    dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+    if dt_now >dt_line:
+        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+    else:
+        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)-timedelta(days=1)
+    
+    clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=30)).distinct('site','client') 
+    
+    monthlyStatisticsData=[]
+    for i in range(0,31):
+        dailydata=DailyData()
+        dt_start=date_latest-timedelta(days=i)
+        dt_end=date_latest-timedelta(days=(i-1))
+        dailydata.label=dt_start.strftime("%Y %m %d")
+        dailydata.data=[]
+        dailydata.site=[]
+        dailydata.hi_sum=0
+        dailydata.nmi_sum=0
+        for item in clients:
+            gold=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
+            dailydata.data.append(gold['price__sum'])
+            dailydata.site.append(item.site)
+            if item.site=="hiwinwin" :
+                dailydata.hi_sum=dailydata.hi_sum+gold['price__sum']
+            elif item.site=="nmimi" :
+                dailydata.nmi_sum=dailydata.nmi_sum+gold['price__sum']
+            
+        MissionCompleteList.objects.filter(dt_start)
+    template_values={ "statisticsData":"",
+                    "headline":clients,
+                    }
+    return render_to_response('statisticsdata.html', template_values);
+'''    

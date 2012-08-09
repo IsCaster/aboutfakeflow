@@ -1,4 +1,5 @@
-from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList,MissionCompleteList
+from datetime import datetime
 
 from django.db.models import Q
 import re
@@ -53,3 +54,13 @@ for entry in entries:
 entries =  ShopkeeperWhiteList.objects.all()
 for entry in entries:
     print entry.shopkeeper
+
+entries = MissionCompleteList.objects.filter(site="nmimi")
+for entry in entries:
+    tmp1=round(entry.price*100)
+    if tmp1*0.85 == round(tmp1*0.85)*1.0 :
+        entry.price = tmp1*0.85
+    else:
+        tmp2=round(tmp1*0.85/2)*2
+        entry.price=tmp2
+    entry.save()
