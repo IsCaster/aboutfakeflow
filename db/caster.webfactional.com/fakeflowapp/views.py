@@ -871,6 +871,8 @@ def missionDailyStatistics(request):
         for item in clients:
             gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
             gold=gold_contain["price__sum"]
+            if gold==None :
+                gold=0
             if item.site=="nmimi" :
                 gold=gold/100.0
                 dailydata.nmi_sum=dailydata.nmi_sum+gold
