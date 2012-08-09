@@ -842,8 +842,10 @@ def utf8ToGbk(request):
 
 class DailyData:
     pass
+class DailyClientData:
+    pass
 
-'''    
+@login_required()    
 def missionDailyStatistics(request):
     dt_now=datetime.now()
     dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
@@ -860,22 +862,25 @@ def missionDailyStatistics(request):
         dt_start=date_latest-timedelta(days=i)
         dt_end=date_latest-timedelta(days=(i-1))
         dailydata.label=dt_start.strftime("%Y %m %d")
-        dailydata.data=[]
-        dailydata.site=[]
+        dailydata.clientsData=[]
         dailydata.hi_sum=0
         dailydata.nmi_sum=0
         for item in clients:
-            gold=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
-            dailydata.data.append(gold['price__sum'])
-            dailydata.site.append(item.site)
+            gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
+            gold=gold_contain["price__sum"]
+            if item.site=="nmimi" :
+                gold=gold/100.0
+                dailydata.nmi_sum=dailydata.nmi_sum+gold
             if item.site=="hiwinwin" :
-                dailydata.hi_sum=dailydata.hi_sum+gold['price__sum']
-            elif item.site=="nmimi" :
-                dailydata.nmi_sum=dailydata.nmi_sum+gold['price__sum']
-            
-        MissionCompleteList.objects.filter(dt_start)
-    template_values={ "statisticsData":"",
-                    "headline":clients,
+                dailydata.hi_sum=dailydata.hi_sum+gold
+            dailyClientData=DailyClientData()
+            dailyClientData.site=item.site
+            dailyClientData.gold=gold
+            dailydata.clientsData.append(dailyClientData)
+        dailydata.money=dailydata.hi_sum*0.248*0.4+dailydata.nmi_sum*0.4
+        monthlyStatisticsData.append(dailydata)
+        
+    template_values={   "statisticsData":monthlyStatisticsData,
+                        "headline":clients,
                     }
     return render_to_response('statisticsdata.html', template_values);
-'''    

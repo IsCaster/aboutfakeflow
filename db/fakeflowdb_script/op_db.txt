@@ -64,3 +64,7 @@ for entry in entries:
         tmp2=round(tmp1*0.85/2)*2
         entry.price=tmp2
     entry.save()
+    
+entries = MissionCompleteList.objects.filter(site="nmimi").distinct('price')
+for entry in entries:
+    print entry.price

@@ -951,10 +951,10 @@
   <body >
     <div id="callback_message" style="background-color: #C0C0C0 ; display:none" onclick="displayNone(this)" ></div>
     {% if user %}
-        <div align="right">Logged in as {{ user.username }} - 
+        <div align="right"><a href="/missiondailystatistics" target="_blank" >统计</a>&nbsp;Logged in as {{ user.username }} - 
     	    <a href="{{log_in_out_url}}">Log out</a> </div>
    	{% else %}
-    	<div align="right"><a href="{{log_in_out_url}}">Log in</a></div>
+    	<div align="right"><a href="/missiondailystatistics" target="_blank" >统计</a>&nbsp;<a href="{{log_in_out_url}}">Log in</a></div>
     {% endif %}
     <div id="theClientList">
     </div>

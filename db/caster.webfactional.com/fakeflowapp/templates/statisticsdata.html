@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>统计数据</title>
+    <style type="text/css">
+        td.hiwinwin {
+            background-color:#C0C0C0 ;
+        }
+    </style>
+  </head>
+  <body>
+    <table id="statisticsDataTab" >
+        <tr>
+            <td>日期</td>
+            {% for item in headline %}
+                <td>{{ item.site }}:{{ item.client}}</td>
+            {% endfor %}
+            <td>hiwinwin总计</td>
+            <td>nmimi总计</td>
+            <td>money估算</td>
+        </tr>
+    {% for dailyData in statisticsData %}
+        <tr>
+            <td>{{ dailyData.label }}</td>
+            {% for clientData in dailyData.clientsData %}
+                <td class='{{ clientData.site }}'>{{ clientData.gold}}</td>
+            {% endfor %}
+            <td>{{ dailyData.hi_sum }}</td>
+            <td>{{ dailyData.nmi_sum }}</td>
+            <td>{{ dailyData.money }}</td>
+        </tr>    
+    {% endfor %}
+
+    </table>
+  </body>
+</html>
