@@ -882,7 +882,9 @@ def missionDailyStatistics(request):
             dailyClientData.site=item.site
             dailyClientData.gold=gold
             dailydata.clientsData.append(dailyClientData)
-        dailydata.money=dailydata.hi_sum*0.248*0.4+dailydata.nmi_sum*0.4
+        dailydata.hi_money=dailydata.hi_sum*0.248*0.4
+        dailydata.nmi_money=dailydata.nmi_sum*0.4
+        dailydata.money=dailydata.hi_money+dailydata.nmi_money
         monthlyStatisticsData.append(dailydata)
         
     template_values={   "statisticsData":monthlyStatisticsData,

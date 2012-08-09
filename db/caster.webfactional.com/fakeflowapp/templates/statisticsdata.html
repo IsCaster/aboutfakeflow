@@ -24,8 +24,8 @@
             {% for clientData in dailyData.clientsData %}
                 <td class='{{ clientData.site }}'>{{ clientData.gold}}</td>
             {% endfor %}
-            <td>{{ dailyData.hi_sum }}</td>
-            <td>{{ dailyData.nmi_sum }}</td>
+            <td>{{ dailyData.hi_sum }}/{{ dailyData.hi_money}}</td>
+            <td>{{ dailyData.nmi_sum }}/{{ dailyData.nmi_money}}</td>
             <td>{{ dailyData.money }}</td>
         </tr>    
     {% endfor %}
