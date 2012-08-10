@@ -194,6 +194,8 @@ function handleMyMissonPage()
                                         
                                         if(open_count<8)//open 8 page max
                                         {
+                                            price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
+                                            unsafeWindow.setNmmValue2("price",price,missionId)
                                             $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
                                             open_count=open_count+1
                                         }    
@@ -280,6 +282,8 @@ function handleMyMissonPage()
                                 if(invalidList.indexOf("id"+missionId+"=1;")==-1 && missionOpened.indexOf("id"+missionId+";")==-1)
                                 {
                                     bResetTimeout=1
+                                    price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
+                                    unsafeWindow.setNmmValue2("price",price,missionId)
                                     $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
                                 }
                                 else
@@ -1105,7 +1109,7 @@ function handleGetMissionPage()
                 GM_log("啥,又抢到了一个来路流量任务");
                 $("#trigerRefresh")[0].type="radio";
             }	
-            GoPage(1);
+            //GoPage(1);
         });
     }
 
