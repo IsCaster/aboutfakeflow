@@ -14,19 +14,20 @@
     <table id="statisticsDataTab" >
         <tr>
             <td>日期</td>
+            <td>money<br/>估算</td>
+            <td>hiwinwin<br/>总计</td>
+            <td>nmimi<br/>总计</td>
             {% for item in headline %}
                 <td>{{ item.site }}<br/>{{ item.client}}</td>
             {% endfor %}
-            <td>hiwinwin总计</td>
-            <td>nmimi总计</td>
-            <td>money估算</td>
+            
         </tr>
     {% for dailyData in statisticsData %}
         <tr>
+            <td>{{ dailyData.label }}</td>
             <td class='money'>{{ dailyData.money }}</td>
             <td>{{ dailyData.hi_sum }}/{{ dailyData.hi_money}}</td>
             <td>{{ dailyData.nmi_sum }}/{{ dailyData.nmi_money}}</td>
-            <td>{{ dailyData.label }}</td>
             {% for clientData in dailyData.clientsData %}
                 <td class='{{ clientData.site }}'>{{ clientData.gold}}</td>
             {% endfor %}
