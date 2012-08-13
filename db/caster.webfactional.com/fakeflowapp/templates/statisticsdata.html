@@ -5,6 +5,9 @@
         td.hiwinwin {
             background-color:#C0C0C0 ;
         }
+        td.money {
+            color:#0000CD;
+        }
     </style>
   </head>
   <body>
@@ -12,7 +15,7 @@
         <tr>
             <td>日期</td>
             {% for item in headline %}
-                <td>{{ item.site }}:{{ item.client}}</td>
+                <td>{{ item.site }}<br/>{{ item.client}}</td>
             {% endfor %}
             <td>hiwinwin总计</td>
             <td>nmimi总计</td>
@@ -20,16 +23,15 @@
         </tr>
     {% for dailyData in statisticsData %}
         <tr>
+            <td class='money'>{{ dailyData.money }}</td>
+            <td>{{ dailyData.hi_sum }}/{{ dailyData.hi_money}}</td>
+            <td>{{ dailyData.nmi_sum }}/{{ dailyData.nmi_money}}</td>
             <td>{{ dailyData.label }}</td>
             {% for clientData in dailyData.clientsData %}
                 <td class='{{ clientData.site }}'>{{ clientData.gold}}</td>
             {% endfor %}
-            <td>{{ dailyData.hi_sum }}/{{ dailyData.hi_money}}</td>
-            <td>{{ dailyData.nmi_sum }}/{{ dailyData.nmi_money}}</td>
-            <td>{{ dailyData.money }}</td>
         </tr>    
     {% endfor %}
-
     </table>
   </body>
 </html>

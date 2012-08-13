@@ -36,9 +36,9 @@ s=re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://it
 
 entries = MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm"))
 for entry in entries:
-	entry.url = re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",entry.url)
-	print entry.url
-	entry.save()	
+    entry.url = re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",entry.url)
+    print entry.url
+    entry.save()	
     
     
 entries = MissionInfo.objects.filter(valid=False).filter(url="")
