@@ -730,7 +730,7 @@ def submitShopkeeper(request):
         entry.shopkeeper=shopkeeper
         entry.save()
     if entries.count() >=1 :    
-        return HttpResponse("<script> window.close(); </script>")
+        return HttpResponse("<script> setTimeout(function(){window.close()},5000); </script>")
     else:    
         return HttpResponse("something wrong there ,url no exist")
 

@@ -45,7 +45,6 @@ entries = MissionInfo.objects.filter(valid=False).filter(url="")
 for entry in entries:
     entry.delete() 
     
-    
 entries = MissionInfo.objects.filter(valid=False).exclude(url="")
 for entry in entries:
     entry.valid=True
@@ -68,3 +67,7 @@ for entry in entries:
 entries = MissionCompleteList.objects.filter(site="nmimi").distinct('price')
 for entry in entries:
     print entry.price
+
+entries = MissionInfo.objects.filter(site="hiwinwin").order_by("-updateTime")[:60]
+for entry in entries:
+    print entry.shopkeeper
