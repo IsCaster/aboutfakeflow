@@ -6,6 +6,10 @@ class MissionInfo(models.Model):
     message = models.CharField(max_length=2000);#don't need to support multi line
     url = models.CharField(max_length=2000);
     site = models.CharField(max_length=100);
+    firstVisitUrl = models.CharField(max_length=2000);# go into the taobao item page by a assigned web page
+    keyword = models.CharField(max_length=2000);# go into the taobao item page by taobao homepage search, record the search keyword
+    inshopUrl = models.CharField(max_length=2000);# go into the taobao shop by this item url ,this url maybe isn't the final taobao item page url
+    searchTips = models.CharField(max_length=2000);# the additional conditions of taobao homepage search 
     valid = models.BooleanField(default=True);
     updateTime = models.DateTimeField(auto_now_add=True);
 	

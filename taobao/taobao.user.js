@@ -320,7 +320,7 @@ function inshop_search()
     {
         event = event||window.event;
         //console.info("press key ="+event.keyCode);
-        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press Enter
         {
             $("#getUrlsBtn")[0].click()
             //console.info("invalid keepReflash");

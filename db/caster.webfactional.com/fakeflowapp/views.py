@@ -359,6 +359,7 @@ def getMission(request):
         
 def submitUrl(request):
     itemId = request.POST["itemId"]
+    keyword =request.POST["keyword"]
     urls =[]
     if request.POST.has_key("urls"):
         raw_urls=request.POST['urls']
@@ -372,6 +373,8 @@ def submitUrl(request):
     if len(urls) >=1 :
         logger.debug("urls[0]=%s"%(urls[0]))    
     if theMission != None:
+        # add keyword
+        theMission.keyword=keyword
         if str(theMission.customer) != str(request.user) and theMission.customer != "public":
             logger.debug("theMission.customer=%s,request.user=%s"%(theMission.customer,request.user))
             response_data={
@@ -495,6 +498,7 @@ def submitResultSuccess(request):
                     newMissionInfo.url=url
                     newMissionInfo.shopkeeper=theMission.shopkeeper
                     newMissionInfo.site=theMission.site
+                    newMissionInfo.keyword=theMission.keyword
                     newMissionInfo.save()
                     # move theMission to doneBuffer ,after pop theMission can only in the undergoBuffer
                     entries=MissionInfo.objects.filter(message=message,site=theMission.site).order_by("-updateTime")[:20]#retrieve max :20

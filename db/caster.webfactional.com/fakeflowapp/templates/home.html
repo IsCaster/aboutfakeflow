@@ -338,9 +338,11 @@
                                         "<li>"+message_pieces[i]+"</li>"
                     }
                 }
+                theMissionDivHtml=theMissionDivHtml+"<li>"+"关键词<input type='text' id='searchKeyword' size='80' />"+"</li>"
                 theMissionDivHtml=theMissionDivHtml+
                                     "</ul>"
-                theMissionDivHtml=theMissionDivHtml+"<p>尝试的url:</p>"+
+                theMissionDivHtml=theMissionDivHtml+
+                                    "<p>尝试的url:</p>"+
                                     "<div id='submitUrlsDiv' style='width: 600px; height: 120px;overflow:scroll;overflow-x:hidden' ><ol>"
                 for(var i=0;i<theMission.urls.length;++i)
                 {   
@@ -363,6 +365,14 @@
                 theMissionDivHtml=theMissionDivHtml+
                                     "</ol></div>"                
                 $("#theMission")[0].innerHTML=theMissionDivHtml
+                if(theMission.site=="hiwinwin" && theMission.keyword == "")
+                {
+                    $("#searchKeyword")[0].value=message_pieces[1]
+                }
+                else
+                {
+                    $("#searchKeyword")[0].value=theMission.keyword
+                }
             }
             else
             {
@@ -501,7 +511,7 @@
 					}
 				}
 				submitData["urls"]=submitData["urls"]+"]"
-				
+                submitData["keyword"]=$("#searchKeyword")[0].value
 				submitUrl(submitData)
 				
 			}
@@ -524,6 +534,16 @@
                     $("#callback_message")[0].innerHTML=data
                     $("#callback_message")[0].style.display="block"
                 })
+            }
+            
+            $("#urlsInput")[0].onkeydown =  function (event)
+            {
+                event = event||window.event;
+                //console.info("press key ="+event.keyCode);
+                if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press Enter
+                {
+                    $("#submitUrlsBtn")[0].click()
+                }
             }
 		}
 		

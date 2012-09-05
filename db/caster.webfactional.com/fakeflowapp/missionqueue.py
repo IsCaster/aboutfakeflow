@@ -118,8 +118,11 @@ class MissionItem:
         self.split=2 # one mission productor(all the same url customer) can check how many urls one time, 0 represent all the urls
         self.createTime=time()
         self.lastVisitTime=self.createTime
-        self.clients=[] 
-        
+        self.clients=[]
+        self.keyword="" #keyword of taobao home page search
+        self.firstVisitUrl="" # to do
+        self.inshopUrl="" # to do
+        self.searchTips="" # to do
     def toJson(self):
         jsonData={}
         jsonData["message"]=self.raw_message
@@ -134,6 +137,10 @@ class MissionItem:
         jsonData["fetchResultTimes"]=self.fetchResultTimes
         jsonData["bTried"]=self.bTried
         jsonData["clients"]=self.clients # new
+        jsonData["keyword"]=self.keyword
+        jsonData["firstVisitUrl"]=self.firstVisitUrl
+        jsonData["inshopUrl"]=self.inshopUrl
+        jsonData["searchTips"]=self.searchTips
         
         bNeed = True
         if self.url!="" :
