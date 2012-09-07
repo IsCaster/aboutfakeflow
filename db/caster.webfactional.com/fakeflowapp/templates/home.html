@@ -338,7 +338,10 @@
                                         "<li>"+message_pieces[i]+"</li>"
                     }
                 }
-                theMissionDivHtml=theMissionDivHtml+"<li>"+"关键词<input type='text' id='searchKeyword' size='80' />"+"</li>"
+                theMissionDivHtml=theMissionDivHtml+"<li>"+
+                                    "关键词<input type='text' id='searchKeyword' size='30' />"+
+                                    "<input value='快速搜索' type='button' onclick='quickSearch($(\\'#searchKeyword\\')[0].value)' />"+
+                                    "</li>"
                 theMissionDivHtml=theMissionDivHtml+
                                     "</ul>"
                 theMissionDivHtml=theMissionDivHtml+
