@@ -724,7 +724,7 @@ def fakeVisit(request):
     else:
         site="hiwinwin"
     if request.POST.has_key("message") :
-        message=request.POST["message"]
+        message=unquote(request.POST["message"].encode('ascii','ignore')).decode('utf8')
         logger.debug("fakeVisit message="+message)
         newMission=MissionItem(message,site);
         with GetMissionQueue().bufferLock:
