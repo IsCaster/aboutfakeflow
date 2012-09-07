@@ -511,7 +511,7 @@
 					}
 				}
 				submitData["urls"]=submitData["urls"]+"]"
-                submitData["keyword"]=$("#searchKeyword")[0].value
+                submitData["keyword"]=$("#searchKeyword")[0].value.replace(/^\s*/,"").replace(/\s*$/,"")
 				submitUrl(submitData)
 				
 			}

@@ -716,6 +716,7 @@ def fakeVisit(request):
     firstVisitUrl=""
     inshopUrl=""
     searchTips=""
+    itemid=""
     if request.POST.has_key("keyword") :
         keyword=request.POST["keyword"]
     
@@ -746,16 +747,21 @@ def fakeVisit(request):
     #url=re.sub(r"&$","",url)
     #remove spm
     #url=re.sub(r"\?spm=[a-z0-9\.]*&","",url)
-    #transform to standard item url pattern
-    url=re.sub(r"^http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
-    url=re.sub(r"^http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
-    url=re.sub(r"^http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
+    #transform to standard item url pattern ,maybe start with http://ju.atpanel.com/
+    url=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
+    url=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
+    url=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
+    
+    itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
+    itemid=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     template_values=Context({
         'url':url,
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
         'firstVisitUrl':firstVisitUrl,
         'inshopUrl':inshopUrl,
         'searchTips':searchTips,
+        'itemId':itemId,
     })
     return render_to_response('fakevisit.html',template_values)
     
@@ -765,10 +771,10 @@ def submitShopkeeper(request):
     raw_shopkeeper=request.POST["shopkeeper"]
     shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     
-    # set url = itemid
-    itemid=re.sub(r"^http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
-    itemid=re.sub(r"^http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
-    itemid=re.sub(r"^http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
+    # set url = itemid , maybe start with http://ju.atpanel.com/
+    itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
+    itemid=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     
     if url == itemid :
         entries=MissionInfo.objects.filter(url__contains=url)
