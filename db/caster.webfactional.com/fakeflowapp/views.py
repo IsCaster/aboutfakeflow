@@ -736,7 +736,7 @@ def fakeVisit(request):
                 #to do
         else:#no in the missionqueue maybe in the database
             entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
-            logger.debug("fakeVisit db entries.count()="+entries.count())
+            logger.debug("fakeVisit db entries.count()=%d"%entries.count())
             for entry in entries:
                 if entry.keyword != "" or entry.firstVisitUrl != "":
                     keyword=entry.keyword
