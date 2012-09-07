@@ -763,6 +763,7 @@ def fakeVisit(request):
         'inshopUrl':inshopUrl,
         'searchTips':searchTips,
         'itemId':itemId,
+        'site':site,
     })
     return render_to_response('fakevisit.html',template_values)
     
