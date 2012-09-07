@@ -726,7 +726,7 @@ def fakeVisit(request):
         site="hiwinwin"
     if request.POST.has_key("message") :
         message=unquote(request.POST["message"].encode('ascii','ignore')).decode('utf8')
-        logger.debug("fakeVisit message="+message)
+        logger.debug("fakeVisit message="+message+",site="+site)
         newMission=MissionItem(message,site);
         with GetMissionQueue().bufferLock:
             location,theMission=GetMissionQueue().query(newMission)
@@ -736,7 +736,8 @@ def fakeVisit(request):
                 keyword = theMission.keyword
                 #to do
         else:#no in the missionqueue maybe in the database
-            entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
+            #theMission.message is different from message
+            entries=MissionInfo.objects.filter(message=theMission.message,site=site).order_by("-updateTime")[:20]#retrieve max :20
             logger.debug("fakeVisit db entries.count()=%d"%entries.count())
             for entry in entries:
                 if entry.keyword != "" or entry.firstVisitUrl != "":
