@@ -716,7 +716,7 @@ def fakeVisit(request):
     firstVisitUrl=""
     inshopUrl=""
     searchTips=""
-    itemid=""
+    itemId=""
     if request.POST.has_key("keyword") :
         keyword=request.POST["keyword"]
     
@@ -752,9 +752,9 @@ def fakeVisit(request):
     url=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
     url=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
     
-    itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
-    itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
-    itemid=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
+    itemId=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemId=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
+    itemId=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     template_values=Context({
         'url':url,
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
