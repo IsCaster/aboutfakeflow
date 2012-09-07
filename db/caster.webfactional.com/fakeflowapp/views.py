@@ -765,9 +765,15 @@ def submitShopkeeper(request):
     raw_shopkeeper=request.POST["shopkeeper"]
     shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     
-    url=re.sub("&$","",url)
+    # set url = itemid
+    itemid=re.sub(r"^http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"^http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
+    itemid=re.sub(r"^http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     
-    entries=MissionInfo.objects.filter(url__contains=url)
+    if url == itemid :
+        entries=MissionInfo.objects.filter(url__contains=url)
+    else :
+        entries=MissionInfo.objects.filter(Q(url__contains=itemid+"&")|Q(url__endswith=itemid))
     for entry in entries:
         entry.shopkeeper=shopkeeper
         entry.save()
