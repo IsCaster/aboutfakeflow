@@ -1,8 +1,8 @@
 from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList,MissionCompleteList
 from datetime import datetime
-
 from django.db.models import Q
 import re
+
 entries = MissionInfo.objects.filter(url__endswith="&")
 for entry in entries:
     entry.url = re.sub("&$","",entry.url)
@@ -26,7 +26,7 @@ for entry in entries:
 entries = MissionInfo.objects.filter(site="hiwinwin").exclude(shopkeeper="")
 for entry in entries:
 	entry.message = re.sub(";;",";",entry.message)
-	entry.save()	
+	entry.save()
 	
 http://detail.tmall.com/item.htm?	
 MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm"))
@@ -34,11 +34,18 @@ MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://deta
 s=u'http://www.taobao.com/view_image.php?pic=Wx0GGlFDXA1VUwMDWx0SCwkNGRFcVxxQW1UcCxMFRBkDCFdVV1cRRhpVRDhHJXQAC2tXbkExKgkBICAsWmsDC0FQQFVFBgYV&title=zNSxps34teq16sbM17DQ3iDN2NW5sObIq8zX17DQ3sSjsOUgt%2F7XsMrOxrfA4MSjsOUguuzJqw%3D%3D&version=2&c=NGRmNzAwOGIyNzlkMDQ4NzJjMDdmMDNhZDlhMWEzMTc%3D&itemId=16818132105&shopId=71431144&sellerRate=0&dbId=&fv=9'
 s=re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",s)
 
-entries = MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm"))
+entries = MissionInfo.objects.filter(site="hiwinwin").exclude(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm?")|Q(url__contains="http://item.tmall.com/item.htm?"))
 for entry in entries:
     entry.url = re.sub(r"http://www.taobao.com/view_image.php?.*itemId=([0-9]*).*",r"http://item.taobao.com/item.htm?id=\1",entry.url)
     print entry.url
-    entry.save()	
+
+entries = MissionInfo.objects.filter(Q(url__contains="http://detail.tmall.com/item.htm?")|Q(url__contains="http://item.taobao.com/item.htm")|Q(url__contains="http://item.tmall.com/item.htm"))[:80]
+for entry in entries:    
+    print entry.url
+    entry.url=re.sub(r"^http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",entry.url)
+    entry.url=re.sub(r"^http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",entry.url)
+    entry.url=re.sub(r"^http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",entry.url)
+    print entry.url
     
     
 entries = MissionInfo.objects.filter(valid=False).filter(url="")
@@ -68,6 +75,6 @@ entries = MissionCompleteList.objects.filter(site="nmimi").distinct('price')
 for entry in entries:
     print entry.price
 
-entries = MissionInfo.objects.filter(site="hiwinwin").order_by("-updateTime")[:60]
+entries = MissionInfo.objects.filter(url__contains="?spm=").order_by("-updateTime")[:60]
 for entry in entries:
-    print entry.shopkeeper
+    print entry.url

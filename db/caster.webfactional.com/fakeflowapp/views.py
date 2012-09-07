@@ -712,12 +712,47 @@ def queryCode(request):
 @csrf_exempt
 def fakeVisit(request):
     url=request.POST["url"]
-    keyword=request.POST["keyword"]
-    #return HttpResponse("<html><head><title>fake visit item on taobao</title></head><body><p id='url'>"+url+"</p><p id='keyword'>"+keyword+"</p></body></html>");
-    url=re.sub("&$","",url)
+    keyword=""
+    firstVisitUrl=""
+    inshopUrl=""
+    searchTips=""
+    if request.POST.has_key("keyword") :
+        keyword=request.POST["keyword"]
+    
+    if request.POST.has_key("site") :
+        site=request.POST["site"]
+    else:
+        site="hiwinwin"
+    if request.POST.has_key("message") :
+        message=request.POST["message"]
+        newMission=MissionItem(message,site);
+        with GetMissionQueue().bufferLock:
+            location,theMission=GetMissionQueue().query(newMission)
+        if location != "none" :
+            if theMission.keyword != "":
+                keyword = theMission.keyword
+                #to do
+        else:#no in the missionqueue maybe in the database
+            entries=MissionInfo.objects.filter(message=message,site=site).order_by("-updateTime")[:20]#retrieve max :20
+            for entry in entries:
+                if entry.keepword != "" or entry.firstVisitUrl != "":
+                    keyword=entry.keepword
+                    firstVisitUrl=entry.firstVisitUrl
+                    #to do
+    
+    #url=re.sub(r"&$","",url)
+    #remove spm
+    #url=re.sub(r"\?spm=[a-z0-9\.]*&","",url)
+    #transform to standard item url pattern
+    url=re.sub(r"^http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
+    url=re.sub(r"^http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
+    url=re.sub(r"^http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
     template_values=Context({
         'url':url,
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
+        'firstVisitUrl':firstVisitUrl,
+        'inshopUrl':inshopUrl,
+        'searchTips':searchTips,
     })
     return render_to_response('fakevisit.html',template_values)
     
@@ -734,7 +769,7 @@ def submitShopkeeper(request):
         entry.shopkeeper=shopkeeper
         entry.save()
     if entries.count() >=1 :    
-        return HttpResponse("<script> setTimeout(function(){window.close()},5000); </script>")
+        return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    
         return HttpResponse("something wrong there ,url no exist")
 

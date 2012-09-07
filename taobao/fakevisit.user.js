@@ -26,10 +26,18 @@ function handleFakeVisitPage()
 {
 	GM_setValue("url",$("#url")[0].innerHTML.replace(/&amp;/g,"&"))
     keyword=$("#keyword")[0].innerHTML
-    url="http://s.taobao.com/search?q="+keyword
-    $("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
-    $("#searchpageframe")[0].contentWindow.open(url)    
-    setTimeout(function(){unsafeWindow.close()},2000)
+    if(keyword=="")
+    {
+        // to do
+        setTimeout(function(){unsafeWindow.close()},2000)
+    }
+    else
+    {
+        url="http://s.taobao.com/search?q="+keyword
+        $("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
+        $("#searchpageframe")[0].contentWindow.open(url)    
+        setTimeout(function(){unsafeWindow.close()},2000)
+    }
 }
 
 function handleTaobaoSearchPage()
