@@ -45,7 +45,7 @@ li.tab_ya strong{background-position:left -490px; color:#FFF;}
 .lst_tip td {line-height:20px; padding:10px 0px 10px 0px;}
 .lst_tip img {vertical-align:middle;}
 
-.dm_gold{background:url(../images/ico_gold.gif) left center no-repeat; padding-left:12px;}
+.dm_gold{background:url(../images/ico_gold.gif) left center no-repeat; padding-left:12px; font-weight:bold;}
 
 .pub_tip1{padding:5px 20px 10px 75px; line-height:20px; background:url(../images/task_ico_1.gif) 15px top no-repeat; border:1px dashed #A3C5EA;}
 .pub_tip1 strong {color:#9092AE;}

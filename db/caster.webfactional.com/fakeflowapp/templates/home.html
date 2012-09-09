@@ -341,7 +341,7 @@
                 }
                 theMissionDivHtml=theMissionDivHtml+"<li>"+
                                     "关键词<input type='text' id='searchKeyword' size='30' />"+
-                                    "<input value='快速搜索' type='button' onclick='quickSearch($(\"#searchKeyword\")[0].value)' />"+
+                                    "<input value='快速搜索' type='button' id='quickSearchBtn' onclick='quickSearch($(\"#searchKeyword\")[0].value)' />"+
                                     "</li>"
                 theMissionDivHtml=theMissionDivHtml+
                                     "</ul>"
@@ -377,6 +377,17 @@
                 {
                     $("#searchKeyword")[0].value=theMission.keyword
                 }
+                
+                $("#searchKeyword")[0].onkeydown =  function (event)
+                {
+                    event = event||window.event;
+                    //console.info("press key ="+event.keyCode);
+                    if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press Enter
+                    {
+                        $("#quickSearchBtn")[0].click()
+                    }
+                }
+                
             }
             else
             {
