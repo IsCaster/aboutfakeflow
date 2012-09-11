@@ -749,13 +749,13 @@ def fakeVisit(request):
     #remove spm
     #url=re.sub(r"\?spm=[a-z0-9\.]*&","",url)
     #transform to standard item url pattern ,maybe start with http://ju.atpanel.com/
-    url=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
-    url=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
-    url=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
+    url=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
+    url=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
+    url=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
     
-    itemId=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
-    itemId=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
-    itemId=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
+    itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
+    itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     template_values=Context({
         'url':url,
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
