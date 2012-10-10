@@ -139,3 +139,4 @@ function handleTaobaoItemPage()
     GM_log("submitshopkeeper")
     $("#submitshopkeeper")[0].submit()
 }
+
