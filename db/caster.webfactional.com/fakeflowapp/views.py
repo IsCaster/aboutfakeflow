@@ -128,7 +128,7 @@ def handleInBufferMission(location,theMission):
     # 30002       there are urls to custom, blocked by other customers
     
     # 40001       invalid mission ,should quit the mission
-    
+            
     # 50001       unkowned error
 @csrf_exempt
 @missionQueueTrace 
@@ -169,6 +169,8 @@ def queryUrl(request):
     shopkeeper=re.sub(r";$","",raw_shopkeeper)
     site=raw_site
     message=re.sub(r"\s*","",raw_message)
+    
+    recordClientIP(site,client,request.META['REMOTE_ADDR'])
     
     # query cache first 
     newMission=MissionItem(raw_message,site,shopkeeper);
@@ -440,7 +442,7 @@ def submitResultSuccess(request):
     else:
         price = 1
     
-    updateClientStatus(site,client)
+    updateClientStatus(site,client,request.META['REMOTE_ADDR'])
     recordMissionComplete(site,client,price)
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
@@ -627,11 +629,14 @@ def deleteMissionC(request):
 
 @csrf_exempt 
 def submitResultFail(request):
+    # don't record ip address for now ,because request don't have client information.
     raw_message = request.POST["message"]
     itemId = request.POST["itemId"]
     site = request.POST["site"]
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
+    
+    recordClientIP(site,client,request.META['REMOTE_ADDR'])
     
     message=re.sub(r"\s*","",raw_message)
     
@@ -827,19 +832,29 @@ def deleteWhiteList(request):
         
     return HttpResponse("success")
 
-def updateClientStatus(site,client):
+def updateClientStatus(site,client,ip="N/A"):
     bNewone = True
     for clientStatus in clientStatusBuffer:
         if clientStatus["site"]==site and clientStatus["client"]== client :
             bNewone=False
             clientStatus["lastVisitTime"]=str(time())
+            if ip != "N/A" and ip != clientStatus["ip"] :
+                clientStatus["ip"] = ip
             break;
     if bNewone:
         newClientStatus={}
         newClientStatus["site"]=site
         newClientStatus["client"]=client
+        newClientStatus["ip"]=ip
         newClientStatus["lastVisitTime"]=str(time())
         clientStatusBuffer.append(newClientStatus)
+    return
+
+def recordClientIP(site,client,ip):
+    for clientStatus in clientStatusBuffer:
+        if clientStatus["site"]==site and clientStatus["client"]== client and clientStatus["ip"] != ip:
+            clientStatus["ip"]=ip
+            break
     return
 
 def recordMissionComplete(site,client,price):
@@ -880,7 +895,7 @@ def heartBeat(request):
     else:
         price = 1
     
-    updateClientStatus(site,client)
+    updateClientStatus(site,client,request.META['REMOTE_ADDR'])
     recordMissionComplete(site,client,price)
     return HttpResponse("success")
 

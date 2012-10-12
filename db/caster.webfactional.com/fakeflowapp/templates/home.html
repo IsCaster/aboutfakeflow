@@ -626,30 +626,29 @@
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
-                var timeoffHTML=""  
+                var timeoffHTML=""
+                
                 if (timeoff>420&&timeoff<=840)
                 {
-                    timeoffHTML="<span style='background-color:pink;'>"+timeoff+"</span>"    
+                    timeoffHTML="<span style='background-color:pink;'>"+timeoff+"s</span>"    
                 }
                 else if(timeoff>840)
                 {
-                    timeoffHTML="<span style='background-color:red;'>"+timeoff+"</span>"    
+                    timeoffHTML="<span style='background-color:red;'>"+timeoff+"s</span>"    
                     bWarn=true
                 }
                 else
                 {
-                    timeoffHTML="<span >"+timeoff+"</span>"    
+                    timeoffHTML="<span >"+timeoff+"s</span>"    
                 }
-                theClientListHTML=theClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+"&nbsp;"+timeoffHTML+                    
-                    "s<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                theClientListHTML=theClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                    "&nbsp;<span style='color:gray'>"+clientStatusBuffer[i].ip+
+                    "</span>&nbsp;"+timeoffHTML+                    
+                    "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                     "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
                     "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                     "' type='button' value='删除' onclick='removeClient(this)' />"
-                if((i+1)%5==0)
-                {   
-                    //add a <br/> every 5 clients
-                    theClientListHTML=theClientListHTML+"<br/>"
-                }    
+                
             }
             $("#theClientList")[0].innerHTML=theClientListHTML
                         
