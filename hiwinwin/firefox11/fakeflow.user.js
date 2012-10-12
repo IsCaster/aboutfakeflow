@@ -273,7 +273,7 @@ function handleGetMissionStaffPage()
         }
 
 
-        var qs = 'page=' + n + '&cnc=1&nows=' + (new Date()).getTime();
+        var qs = 'page=' + n + '&cnd=1&nows=' + (new Date()).getTime();
         unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
         var xml = unsafeWindow.makeXmlReq();
         var url = '../../ajax/GetCount.aspx?' + qs;
@@ -341,17 +341,17 @@ function handleGetMissionStaffPage()
                 if($(".tbl a").length>=2)
                 {   
                     refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,4000))
-                    if(refreshTimeout<0)
+                    if(refreshTimeout<2124)
                     {
-                        refreshTimeout=0
+                        refreshTimeout=2124
                     }
                 }
                 else
                 {
                     refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
-                    if(refreshTimeout<0)
+                    if(refreshTimeout<2124)
                     {
-                        refreshTimeout=0
+                        refreshTimeout=2124
                     }
                 }
                 GM_log("goPage(0); refreshTimeout="+refreshTimeout)
@@ -538,11 +538,11 @@ function annouceGetMission()
 
     document.body.insertBefore(playSoundDiv,null);
 
-    playSoundDiv.innerHTML = " \
-        <audio id=\"playAudioGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
-        ";
+    // playSoundDiv.innerHTML = " \
+        // <audio id=\"playAudioGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
+        // ";
     
-    $("#playAudioGot")[0].volume=0.3;
+    // $("#playAudioGot")[0].volume=0.3;
     
     //GM_log(".msg_panel div count = "+$(".msg_panel div").length)
     //if($(".msg_panel div").length!=0 &&$(".msg_panel div")[0].innerHTML.indexOf("任务接手成功，请尽快完成任务。"!=-1))
@@ -657,6 +657,8 @@ function handleMission()
             
  
             //check if it's a success dialog
+            var fixed_itemId=this.itemId.replace(/^http:\/\/www\.hiwinwin\.com\/task\/count\//g,"")
+            GM_log("before check success dialog fixed itemId="+fixed_itemId)
             if($("iframe").contents().find(".tip_less").length==1)
             {
                 if($("iframe").contents().find(".tip_less")[0].innerHTML.indexOf("商品网址验证成功，成功完成来路访问")>=0)
@@ -671,9 +673,10 @@ function handleMission()
                         message=GM_getValue("message")
                         shopkeeper=GM_getValue("shopkeeper","")
                         itemId=""
-                        if(typeof(this.itemId)!="undefined")
+                        if(typeof(fixed_itemId)!="undefined")
                         {
-                            itemId=this.itemId
+                            itemId=fixed_itemId
+                            GM_log("itemId="+itemId)
                         }
                         code=GM_getValue("code")
                         codeImg=GM_getValue("codeImg")
@@ -747,6 +750,8 @@ function handleMission()
                         fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
                                                     <input name='url' type='hidden' value='"+url+"'/>\
                                                     <input name='keyword' type='hidden' value='"+keyword+"'/>\
+                                                    <input name='message' type='hidden' value='"+message+"'/>\
+                                                    <input name='site' type='hidden' value='hiwinwin'/>\
                                                 </form>"
                         document.body.insertBefore(fakeVisitDiv,null)                        
                         $("#fakevisit")[0].submit()
@@ -786,9 +791,9 @@ function handleMission()
                             shopkeeper=GM_getValue("shopkeeper","")
                             itemId=""
                             url=preUrlLink.href
-                            if(typeof(this.itemId)!="undefined")
+                            if(typeof(fixed_itemId)!="undefined")
                             {
-                                itemId=this.itemId
+                                itemId=fixed_itemId
                             }
                             site="hiwinwin"
                             
@@ -909,6 +914,7 @@ function handleMission()
                                     // {
                                         // checkUrlTimeout=13876
                                     // }
+                                    checkUrlTimeout=10176
                                 }
                                 else
                                 {
@@ -1091,7 +1097,7 @@ function handleMission()
                         }
                         else if (data.status==40001)
                         {
-                            setTimeout(function(){$("iframe").contents().find("#quitMissionBtn")[0].click()},2124)
+                            setTimeout(function(){$("iframe").contents().find("#quitMissionBtn")[0].click()},10124)
                         }
                         else
                         {
@@ -1186,15 +1192,15 @@ function handleAlreadyGotPage()
 
     //playSoundDiv=unsafeWindow.getObj('playSoundOutter');
 
-    playSoundDiv.innerHTML = " \
-        <audio id=\"playAudioAlreadyGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
-        <audio id=\"playAudioChangeIP\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21111?filename%3dchangeip.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
-        ";
+    // playSoundDiv.innerHTML = " \
+        // <audio id=\"playAudioAlreadyGot\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21110?filename%3dalreadygot.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
+        // <audio id=\"playAudioChangeIP\"  preload=\"auto\" src=\"http://storage.live.com/items/96902E43106FA83C%21111?filename%3dchangeip.ogg\" > <b>Your browser does not support the audio tag.</b> </audio> \
+        // ";
         
-    var playAudio1=document.getElementById("playAudioAlreadyGot");
-    playAudio1.volume=0.3;
-    var playAudio2=document.getElementById("playAudioChangeIP");
-    playAudio2.volume=0.3;
+    // var playAudio1=document.getElementById("playAudioAlreadyGot");
+    // playAudio1.volume=0.3;
+    // var playAudio2=document.getElementById("playAudioChangeIP");
+    // playAudio2.volume=0.3;
 
     var thisErrorPanel,allErrorPanel;
 
@@ -1218,12 +1224,12 @@ function handleAlreadyGotPage()
         if(error_info == "对不起，您当前有未完成的来路访问任务，请先完成之后再接手新的任务")
         {
             //history.go(-1);
-            playAudio2.play();
+            //playAudio2.play();
             unsafeWindow.opener.top.document.getElementById("annouceAlreadyGot").onclick()
         }
         else if(error_info.indexOf("IP")!=-1)
         {
-            playAudio2.play();
+            //playAudio2.play();
         }
         else
         {
