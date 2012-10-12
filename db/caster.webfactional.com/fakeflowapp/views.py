@@ -170,7 +170,7 @@ def queryUrl(request):
     site=raw_site
     message=re.sub(r"\s*","",raw_message)
     
-    recordClientIP(site,client,request.META['REMOTE_ADDR'])
+    recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     
     # query cache first 
     newMission=MissionItem(raw_message,site,shopkeeper);
@@ -442,7 +442,7 @@ def submitResultSuccess(request):
     else:
         price = 1
     
-    updateClientStatus(site,client,request.META['REMOTE_ADDR'])
+    updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     recordMissionComplete(site,client,price)
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
@@ -636,7 +636,7 @@ def submitResultFail(request):
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
     
-    recordClientIP(site,client,request.META['REMOTE_ADDR'])
+    recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     
     message=re.sub(r"\s*","",raw_message)
     
@@ -895,7 +895,7 @@ def heartBeat(request):
     else:
         price = 1
     
-    updateClientStatus(site,client,request.META['REMOTE_ADDR'])
+    updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     recordMissionComplete(site,client,price)
     return HttpResponse("success")
 
