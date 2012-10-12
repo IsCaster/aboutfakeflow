@@ -636,8 +636,6 @@ def submitResultFail(request):
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
     
-    recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
-    
     message=re.sub(r"\s*","",raw_message)
     
     if len(itemId) != 0 :
