@@ -657,7 +657,7 @@ function handleMission()
             
  
             //check if it's a success dialog
-            var fixed_itemId=this.itemId.replace(/^http:\/\/www\.hiwinwin\.com\/task\/count\//g,"")
+            var fixed_itemId=this.itemId.replace(/^http:\/\/www\.hiwinwin\.com\/task\/count\//g,"").replace(/Taskin\.aspx/g,"")
             GM_log("before check success dialog fixed itemId="+fixed_itemId)
             if($("iframe").contents().find(".tip_less").length==1)
             {
