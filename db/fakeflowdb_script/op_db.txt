@@ -83,3 +83,8 @@ entries = MissionInfo.objects.filter(url="",valid=False).order_by("-updateTime")
 for entry in entries:
     print entry.message
     print entry.updateTime
+    
+entries = MissionInfo.objects.filter(shopkeeper="sdiniyÊıÂëÆì½¢µê")
+for entry in entries:
+    entry.valid=False
+    entry.save()

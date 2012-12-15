@@ -310,6 +310,16 @@ function inshop_search()
         addBeforeElement=itemListElements[1]
     }
     
+	
+	var itemHrefLinks
+	if(itemListElements.find(".permalink").length>=1)
+	{
+		itemHrefLinks=itemListElements.find(".permalink")
+	}
+	else
+	{
+		itemHrefLinks=itemListElements.find(".item-name")
+	}
 
     addBeforeElement.parentNode.insertBefore(resultUrlsDiv,addBeforeElement);
     
@@ -347,21 +357,21 @@ function inshop_search()
         
         var resultUrls=""
         
-        if(anchor>=0 && anchor<=itemListElements.find(".permalink").length-1)
+        if(anchor>=0 && anchor<=itemHrefLinks.length-1)
         {
-            resultUrls=resultUrls+itemListElements.find(".permalink")[anchor].href+";"
+            resultUrls=resultUrls+itemHrefLinks[anchor].href+";"
         }
         
         
-        for(var i=1;i<itemListElements.find(".permalink").length;i++)
+        for(var i=1;i<itemHrefLinks.length;i++)
         {
-            if( anchor+i >=0 && anchor+i <= itemListElements.find(".permalink").length-1)
+            if( anchor+i >=0 && anchor+i <= itemHrefLinks.length-1)
             {
-                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor+i].href+";"
+                resultUrls=resultUrls+itemHrefLinks[anchor+i].href+";"
             }
-            if( anchor-i >=0 && anchor-i <= itemListElements.find(".permalink").length-1)
+            if( anchor-i >=0 && anchor-i <= itemHrefLinks.length-1)
             {
-                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor-i].href+";"
+                resultUrls=resultUrls+itemHrefLinks[anchor-i].href+";"
             }
         }
         resultUrls=resultUrls.replace(/;$/,"")
@@ -390,21 +400,21 @@ function inshop_search()
         
         var resultUrls=""
         
-        if(anchor>=0 && anchor<=itemListElements.find(".permalink").length-1)
+        if(anchor>=0 && anchor<=itemHrefLinks.length-1)
         {
-            resultUrls=resultUrls+itemListElements.find(".permalink")[anchor].href+";"
+            resultUrls=resultUrls+itemHrefLinks[anchor].href+";"
         }
         
         
-        for(var i=1;i<itemListElements.find(".permalink").length;i++)
+        for(var i=1;i<itemHrefLinks.length;i++)
         {
-            if( anchor+i >=0 && anchor+i <= itemListElements.find(".permalink").length-1)
+            if( anchor+i >=0 && anchor+i <= itemHrefLinks.length-1)
             {
-                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor+i].href+";"
+                resultUrls=resultUrls+itemHrefLinks[anchor+i].href+";"
             }
-            if( anchor-i >=0 && anchor-i <= itemListElements.find(".permalink").length-1)
+            if( anchor-i >=0 && anchor-i <= itemHrefLinks.length-1)
             {
-                resultUrls=resultUrls+itemListElements.find(".permalink")[anchor-i].href+";"
+                resultUrls=resultUrls+itemHrefLinks[anchor-i].href+";"
             }
         }
         resultUrls=resultUrls.replace(/;$/,"")
@@ -439,9 +449,9 @@ function inshop_search()
 	if(GM_getValue("bGetAllUrls","0")=="1")
     {
         resultUrls=";"
-        for(var i=0;i<itemListElements.find(".permalink").length;i++)
+        for(var i=0;i<itemHrefLinks.length;i++)
         {
-            resultUrls=resultUrls+itemListElements.find(".permalink")[i].href+";"
+            resultUrls=resultUrls+itemHrefLinks[i].href+";"
         }
         resultUrls=resultUrls.replace(/;$/,"")
         
