@@ -776,6 +776,11 @@ def submitShopkeeper(request):
     raw_shopkeeper=request.POST["shopkeeper"]
     shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     
+    itemTitle=""
+    
+    if request.POST.has_key("itemTitle") and request.POST["itemTitle"]!="" :
+        itemTitle=unquote(request.POST["itemTitle"].encode('ascii','ignore')).decode('utf8')
+    
     # set url = itemid , maybe start with http://ju.atpanel.com/
     itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
     itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
@@ -787,6 +792,8 @@ def submitShopkeeper(request):
         entries=MissionInfo.objects.filter(Q(url__contains=itemid+"&")|Q(url__endswith=itemid))
     for entry in entries:
         entry.shopkeeper=shopkeeper
+        # use itemTitle as keyword,if fake visit fail
+        entry.keyword=itemTitle
         entry.save()
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
