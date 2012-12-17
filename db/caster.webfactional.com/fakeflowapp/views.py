@@ -759,6 +759,7 @@ def fakeVisit(request):
     itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
     itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
+	logger.debug("fakeVisit keyword="+keyword)
     template_values=Context({
         'url':url,
         'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
@@ -795,6 +796,10 @@ def submitShopkeeper(request):
         # use itemTitle as keyword,if fake visit fail
         entry.keyword=itemTitle
         entry.save()
+		with GetMissionQueue().bufferLock:
+			for id,item in GetMissionQueue().doneBuffer.items():
+				if len(item.urls) == 1 && itemid in item.urls[0] :
+					item.keyword=itemTitle		
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    

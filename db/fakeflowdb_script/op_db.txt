@@ -88,3 +88,19 @@ entries = MissionInfo.objects.filter(shopkeeper="sdiniyÊıÂëÆì½¢µê")
 for entry in entries:
     entry.valid=False
     entry.save()
+
+
+entries = MissionInfo.objects.exclude(keyword="").filter(site="nmimi").order_by("-updateTime")[:20]
+for entry in entries:
+    print entry.message
+    print entry.keyword
+    print entry.url
+    print entry.updateTime
+	
+	
+entries = MissionInfo.objects.filter(message__contains="T02.1")
+for entry in entries:
+    print entry.message
+    print entry.keyword
+    print entry.url
+    print entry.updateTime
