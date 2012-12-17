@@ -798,7 +798,7 @@ def submitShopkeeper(request):
         entry.save()
         with GetMissionQueue().bufferLock:
             for id,item in GetMissionQueue().doneBuffer.items():
-                if len(item.urls) == 1 && itemid in item.urls[0] :
+                if len(item.urls) == 1 and itemid in item.urls[0]:
                     item.keyword=itemTitle
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
