@@ -390,7 +390,7 @@ def submitUrl(request):
                 with theMission.itemLock :
                     for new_url in urls:
                         bAdd=True
-                        if re.search(r"^http://",url) == None :
+                        if re.search(r"^http://",new_url) == None :
                             bAdd=False
                         else:    
                             for index,url in enumerate(theMission.urls):
