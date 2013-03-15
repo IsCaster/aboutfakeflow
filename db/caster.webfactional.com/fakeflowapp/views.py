@@ -851,7 +851,7 @@ def updateClientStatus(site,client,ip="N/A"):
             if ip != "N/A" and ip != clientStatus["ip"] :
                 clientStatus["ip"] = ip
             if ip == "N/A" :
-                clientStatusclientStatus["lastVisitTime"]="0"
+                clientStatus["lastVisitTime"]="0"
             break;
     if bNewone:
         newClientStatus={}
