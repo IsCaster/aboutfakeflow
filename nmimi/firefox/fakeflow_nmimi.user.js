@@ -17,14 +17,8 @@
 
 //GM_log("enter GM script");
 //disable log
-//GM_log=function(){}
+GM_log=function(){}
 
-//set run mode
-//1: manual 2: auto
-if(GM_getValue("runMode","undefined")=="undefined")
-{
-    GM_setValue("runMode",1)
-}
 
 //set run mode
 //1: local 2: remote
@@ -33,6 +27,18 @@ if(GM_getValue("bLocal","undefined")=="undefined")
     GM_setValue("bLocal",90002)
 }
 
+if(GM_getValue("need2wait4complete","undefined")=="undefined")
+{
+    GM_setValue("need2wait4complete",0)
+}
+
+unsafeWindow.gaussianGenerate = function (mean, stdev)
+{
+    function rnd_snd() {
+        return (Math.random()*2-1)+(Math.random()*2-1)+(Math.random()*2-1)+(Math.random()*2-1);
+    }
+    return rnd_snd()*stdev+mean
+}
 
 if(location.href.indexOf("FMDating.aspx")!=-1)
 {
@@ -164,7 +170,7 @@ function handleMyMissonPage()
                 $("#divInfo").html(htm);
                 $("#reLoad").hide();
                 //GM_log("autoOpen="+autoOpen); 
-                if((typeof(autoOpen)!="undefined"&&autoOpen==1)||page_index>=2)//index >=2 or click refresh manually,open all valid mission ,to do
+                if((typeof(autoOpen)!="undefined"&&autoOpen==1)||page_index>=2)//index >=2 or click refresh manually,open all valid mission 
                 {
                     GM_log("manually Open")
                     setTimeout(function(){
@@ -173,80 +179,47 @@ function handleMyMissonPage()
                         var missionOpening=""
                         var bResetTimeout = 0
                         
-                        if(GM_getValue("runMode",2)==2)
-                        {
-                            open_count=0
-                            for(var i=0;i<=$(".button4_a").length-2;i=i+2)
-                            {
-                                GM_log("open Mission No." + (i+2)/2);
-                                
-                                if(typeof(invalidList)!="undefined")
-                                {
-                                    missionId=$(".button4_a")[i].onclick.toSource().replace(/.*id=([0-9]*).*/,"$1")
-                                    
-                                    missionOpening=missionOpening+"id"+missionId+";"
-                                    if(invalidList.indexOf("id"+missionId+"=1;")==-1)
-                                    {
-                                        if(missionOpened.indexOf("id"+missionId+";")==-1)
-                                        {
-                                            bResetTimeout=1   
-                                        }
-                                        
-                                        if(open_count<8)//open 8 page max
-                                        {
-                                            price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
-                                            unsafeWindow.setNmmValue2("price",price,missionId)
-                                            $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
-                                            open_count=open_count+1
-                                        }    
-                                    }
-                                    else
-                                    {
-                                        //invalid mission 
-                                        GM_log("invalid mission id="+missionId)
-                                    }
-                                    
-                                }
+                        var open_count=0
 
+                        for(var i=$(".button4_a").length-2;i>=0;i=i-2)
+                        {
+                            GM_log("open Mission No." + (i+2)/2);
+                            
+                            if(typeof(invalidList)!="undefined")
+                            {
+                                missionId=$(".button4_a")[i].onclick.toSource().replace(/.*id=([0-9]*).*/,"$1")
+                                
+                                missionOpening=missionOpening+"id"+missionId+";"
+                                if(invalidList.indexOf("id"+missionId+"=1;")==-1)
+                                {
+                                    if(missionOpened.indexOf("id"+missionId+";")==-1)
+                                    {
+                                        bResetTimeout=1
+                                    }
+                                
+                                    if(open_count<8)//open 8 page max
+                                    {
+                                        price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
+                                        unsafeWindow.setNmmValue2("price",price,missionId)
+                                        setTimeout("$('.button4_a')["+i+"].onclick();",1000+Math.random()*2000);//点偶数的,是打开任务;奇数是取消任务.
+                                        open_count=open_count+1
+                                    }    
+                                }
+                                else
+                                {
+                                    //invalid mission 
+                                    GM_log("invalid mission id="+missionId)
+                                }
+                                
                             }
-                        }
-                        else
-                        {
-                            open_count=0
-                            for(var i=$(".button4_a").length-2;i>=0;i=i-2)
-                            {
-                                GM_log("open Mission No." + (i+2)/2);
-                                
-                                if(typeof(invalidList)!="undefined")
-                                {
-                                    missionId=$(".button4_a")[i].onclick.toSource().replace(/.*id=([0-9]*).*/,"$1")
-                                    
-                                    missionOpening=missionOpening+"id"+missionId+";"
-                                    if(invalidList.indexOf("id"+missionId+"=1;")==-1)
-                                    {
-                                        if(missionOpened.indexOf("id"+missionId+";")==-1)
-                                        {
-                                            bResetTimeout=1
-                                        }
-                                    
-                                        if(open_count<8)//open 8 page max
-                                        {
-                                            price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
-                                            unsafeWindow.setNmmValue2("price",price,missionId)
-                                            $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
-                                            open_count=open_count+1
-                                        }    
-                                    }
-                                    else
-                                    {
-                                        //invalid mission 
-                                        GM_log("invalid mission id="+missionId)
-                                    }
-                                    
-                                }
 
-                            } 
                         }
+                        if($(".button4_a").length == 0 || open_count == 0 )
+                        {
+                            GM_log("1.set need2wait4complete 0")
+                            GM_setValue("need2wait4complete",0)
+                        }
+
                         if(bResetTimeout)
                         {
                             if(typeof($(".bbtton6_a")[0].timeoutId) != "undefined" && $(".bbtton6_a")[0].timeoutId !=0)
@@ -284,7 +257,8 @@ function handleMyMissonPage()
                                     bResetTimeout=1
                                     price = $(".button4_a:eq("+i+")").parent().parent().parent().find("td.price p")[0].innerHTML
                                     unsafeWindow.setNmmValue2("price",price,missionId)
-                                    $(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
+                                    //$(".button4_a")[i].onclick();//点偶数的,是打开任务;奇数是取消任务.
+                                    setTimeout("$('.button4_a')["+i+"].onclick();",1000+Math.random()*2000);//点偶数的,是打开任务;奇数是取消任务.
                                 }
                                 else
                                 {
@@ -296,6 +270,13 @@ function handleMyMissonPage()
 
                         }
                         
+                        
+                        if($(".button4_a").length == 0 )
+                        {
+                            GM_log("1.set need2wait4complete 0")
+                            GM_setValue("need2wait4complete",0)
+                        }
+                        
                         if(bResetTimeout)
                         {
                             if(typeof($(".bbtton6_a")[0].timeoutId) != "undefined" && $(".bbtton6_a")[0].timeoutId !=0)
@@ -304,7 +285,7 @@ function handleMyMissonPage()
                                 GM_log("get a new mission ,reset timeout")
                                 clearTimeout($(".bbtton6_a")[0].timeoutId);
                                 $('#playAudioGet2Work')[0].pause();
-                                $(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
+                                //$(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
                             }    
                         }
                         
@@ -320,7 +301,6 @@ function handleMyMissonPage()
             $(".reListTitle tbody td").css("border-width","0px");
             $("#divTaskBody").show();    
         });
-        
     }
 
 
@@ -331,7 +311,6 @@ function handleMyMissonPage()
             clearTimeout(this.timeoutId);
             GM_log("clearTimeout");
         }
-        GM_log(typeof($('#playAudioGet2Work')[0].pause));
         $('#playAudioGet2Work')[0].pause();
         //this.timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
         unsafeWindow.RefTask(1, pageSize, 1);
@@ -382,28 +361,21 @@ function handleMyMissonPage()
 
     //$(".bbtton6_a")[0].timeoutId=setTimeout(" $('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
 
-    if(GM_getValue("runMode",2)==2)
+    var annouceSuccessP=document.createElement("p");
+    annouceSuccessP.id='annouceSuccess';
+    annouceSuccessP.onclick=function()
     {
-		
-        setInterval("RefTask(1, pageSize, 1);",60000)
+        unsafeWindow.RefTask(1, pageSize, 2);
     }
-    else
-    {
-		//for debug
-        setInterval("RefTask(1, pageSize, 2);",40000)
-    }
+    document.body.insertBefore(annouceSuccessP,null);    
+    
     GM_log("handleMyMissionPage end")
 }
 
 function handleValidPage()
 {
-        /**
-     * Get URL parameters
-     * @param the name of the parameter from the URL to retrieve
-     * @return the requested parameter value if exists else an empty string
-     */
     //disable log
-    //GM_log=function(){}
+    GM_log=function(){}
              
     unsafeWindow.getUrlParam = function (name) {
         var regexS;
@@ -493,6 +465,8 @@ function handleValidPage()
             if(this.location.href=="http://wwww.nmimi.com/AlarmMsg.aspx")
             {
                 //mission expired
+                GM_log("2.set need2wait4complete 0")
+                GM_setValue("need2wait4complete",0)
                 this.location.href="javascript:window.close()"
 				GM_log("mission expired")
 				unsafeWindow.location.href="javascript:window.close()"
@@ -503,6 +477,20 @@ function handleValidPage()
 				GM_log("mission completed fetchResultTime="+unsafeWindow.getNmmValue("fetchResultTime","0"))
 				client=GM_getValue("userName") // username
                 price =unsafeWindow.getNmmValue("price")
+                
+                //fake visit item on taobao.com
+                url=unsafeWindow.getNmmValue("url")
+                message=unsafeWindow.getNmmValue("message")
+                //keyword=message.split(";")[1]
+                //keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
+                fakeVisitDiv=document.createElement("div")
+                fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
+                                            <input name='url' type='hidden' value='"+url+"'/>\
+                                            <input name='message' type='hidden' value='"+message+"'/>\
+                                            <input name='site' type='hidden' value='nmimi'/>\
+                                        </form>"
+                document.body.insertBefore(fakeVisitDiv,null)                        
+                $("#fakevisit")[0].submit()
                 
 				if(unsafeWindow.getNmmValue("fetchResultTime","0")!="0")//need to send result
 				{
@@ -529,6 +517,9 @@ function handleValidPage()
 							GM_log('submit url return: response='+xhr.responseText)
 							//GM_log('validResultWindow : '+validResultWindow)
 							
+                            //annouce complete
+                            GM_log("3.set need2wait4complete 0")
+                            GM_setValue("need2wait4complete",0)
 							//close validResult page
 							validResultWindow.location.href="javascript:window.close()"
 							
@@ -556,6 +547,10 @@ function handleValidPage()
                             GM_log('send heart beat packet return : response='+xhr.responseText)
                         }
                     })
+
+                    //annouce complete
+                    GM_log("5.set need2wait4complete 0")
+                    GM_setValue("need2wait4complete",0)
 					//close validResult page
 					this.location.href="javascript:window.close()"
 					//close valid page
@@ -566,6 +561,9 @@ function handleValidPage()
             else if(this.document.body.innerHTML.indexOf("此任务已完成地址验证！")!=-1)
             {
                 //mission complete already
+                //annouce complete
+                GM_log("6.set need2wait4complete 0")
+                GM_setValue("need2wait4complete",0)
                 //close validResult page
                 this.location.href="javascript:window.close()"
                 //close valid page
@@ -663,6 +661,9 @@ function handleValidPage()
                 GM_log('submit invalid mission return: response='+xhr.responseText)
                 
                 unsafeWindow.setNmmValue("invalid","1")
+                //annouce complete
+                GM_log("7.set need2wait4complete 0")
+                GM_setValue("need2wait4complete",0)
                 location.href="javascript:window.close()"
             }});
 
@@ -706,7 +707,12 @@ function handleValidPage()
 			//wait 2 second to click
 			if($('#linkValid')[0].url_index>1)
 			{
-				setTimeout("$('#linkValid')[0].click()",2000)
+                var timeout=Math.round(unsafeWindow.gaussianGenerate(2500,1000))
+                if(timeout<1734)
+                {
+                    timeout=1734
+                }
+				setTimeout("$('#linkValid')[0].click()",timeout)
 			}
 			else
 			{
@@ -810,6 +816,9 @@ function handleValidPage()
                     }
                     else if(data.status==40001)
                     {
+                        //annouce complete
+                        GM_log("8.set need2wait4complete 0")
+                        GM_setValue("need2wait4complete",0)
                         unsafeWindow.setNmmValue("invalid","1")
                         location.href="javascript:window.close()"
                     }
@@ -864,14 +873,14 @@ function handleValidPage()
 
 
     //$(".bbtton6_a")[0].timeoutId=setTimeout("	$('#playAudioGet2Work')[0].currentTime=0;$('#playAudioGet2Work')[0].play();",800000);
-    if(GM_getValue("runMode",2)==2)
-    {
-        $('#linkValid')[0].closeTimeoutId=setTimeout("location.href='http://caster.webfactional.com/close'",56000)
-    }
-    else
-    {
-        setTimeout("location.href='http://caster.webfactional.com/close'",901000)
-    }
+    
+    setTimeout(function()
+        {
+            GM_log("9.set need2wait4complete 0")
+            GM_setValue('need2wait4complete',0)
+            location.href='javascript:window.close()'
+        },901000)
+
     //GM_log("handleValidPage end")
 	
 	//url group  to check
@@ -906,6 +915,8 @@ function handleValidPage()
 
 function handleValidResultPage()
 {
+    //disable log
+    GM_log=function(){}
 	GM_log("enter handleValidResultPage")
 
 }
@@ -914,11 +925,22 @@ function handleValidResultPage()
 function handleGetMissionPage()
 {
     //disable log
-    GM_log=function(){}
+    //GM_log=function(){}
 
     GM_log("enter GM script :fake flow mission for nmimi");
-
-
+    var pageSize=15;//defined in http://wwww.nmimi.com/js/MyAFMData.js
+    
+    GM_setValue("need2wait4complete",0)
+    
+    //open MyMissonPage
+    var openContainP=document.createElement("p");
+    openContainP.onclick=function()
+    {
+        unsafeWindow.myMissionPageWindow=unsafeWindow.open("/Mission/MyAcceptFlowMission.aspx")
+    }
+    document.body.insertBefore(openContainP,null);
+    openContainP.click()
+        
     //get refresh button
     var thisRefreshImages,allRefreshImages;
 
@@ -978,23 +1000,65 @@ function handleGetMissionPage()
     }
     thisRefreshImages.parentNode.insertBefore(keepRefreshBtn,trigerRefreshBtn);
 
-
-
-
-
-
     //change function GetDatingResult
+    $("#trigerRefresh")[0].unique_flag=0
+    $("#trigerRefresh")[0].goPageTimeOutIds=new Array()
+    
+    unsafeWindow.GoPage = function(index){
+        //to be the unique one
+        if($("#trigerRefresh")[0].unique_flag==0)
+        {
+            $("#trigerRefresh")[0].unique_flag=1
+            for (var i=0;i<$("#trigerRefresh")[0].goPageTimeOutIds.length;++i)
+            {
+                clearTimeout($("#trigerRefresh")[0].goPageTimeOutIds[i])
+            }
+            $("#trigerRefresh")[0].goPageTimeOutIds=new Array()
+        }
+        else
+        {
+            return;
+        }
 
-    unsafeWindow.GetDatingResult = function (i,s){
-        GM_log("enter GetDatingResult");
-        $("#trigerRefresh")[0].type="button";
+        setTimeout(function()
+        {
+            if( GM_getValue( "keepRefresh",0 ) == 1 )
+            {
+                if(GM_getValue("need2wait4complete",0) == 1)
+                {
+                    //clear backup refresh
+                    if(typeof($("#trigerRefresh")[0].reloadTimeoutId)!="undefined"&&$("#trigerRefresh")[0].reloadTimeoutId!=0)
+                    {
+                        clearTimeout($("#trigerRefresh")[0].reloadTimeoutId)
+                        $("#trigerRefresh")[0].reloadTimeoutId=0
+                    }
+                    
+                    timeoutId=setTimeout("document.getElementById('trigerRefresh').onclick();",2000+Math.random()*1000);
+                    $("#trigerRefresh")[0].goPageTimeOutIds.push(timeoutId)
+                    GM_log("setTimeout ,wait For complete  ");
+                    $("#trigerRefresh")[0].unique_flag=0 
+                    return 
+                }
+                unsafeWindow.GetDatingResult(index,pageSize);
+                unsafeWindow.SetPage(index);
+                $("#trigerRefresh")[0].unique_flag=0 
+            }
+            $("#trigerRefresh")[0].unique_flag=0 
+        },0)
+
         
+    } 
+    
+    unsafeWindow.GetDatingResult = function (pageIndex,s){
+        GM_log("enter GetDatingResult");
+        
+        $("#trigerRefresh")[0].type="button";
         $("#divTaskBody").hide();
         $("#reLoad").show();
         //GM_log(typeof(unsafeWindow.jQuery.postJOSN));
         
         
-        var jqxhr=unsafeWindow.jQuery.postJOSN("/Action/FMSer.asmx/GetDaTingData",{"pageIndex":i,"pageSize":s,"key":""}, function(result){
+        var jqxhr=unsafeWindow.jQuery.postJOSN("/Action/FMSer.asmx/GetDaTingData",{"pageIndex":pageIndex,"pageSize":s,"key":""}, function(result){
             if(typeof($("#trigerRefresh")[0].reloadTimeoutId)!="undefined"&&$("#trigerRefresh")[0].reloadTimeoutId!=0)
             {
                 clearTimeout($("#trigerRefresh")[0].reloadTimeoutId)
@@ -1009,7 +1073,7 @@ function handleGetMissionPage()
                 isBuff=false;
             }else{
                 var htm="";
-                for(i=0;i<result.itemList.length;i++){
+                for(var i=0;i<result.itemList.length;i++){
                     var item = result.itemList[i];
                     htm+="<tr>";
                     htm+="<td class=\"id\" style=\"width:195px;\">";
@@ -1073,18 +1137,30 @@ function handleGetMissionPage()
             var refreshTimeout=0
             if($(".tcolor").length!=0)
             {
-                refreshTimeout=3000+Math.random()*2000
+                if($(".button4_a").length >= 2)
+                {
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(2000,2000))
+                }
+                else
+                {
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
+                }
             }
             else//没有刷出来,被加黑名单?
             {
                 refreshTimeout=300000+Math.random()*60000
             }
+            if(refreshTimeout<2124)
+            {
+                refreshTimeout=2124
+            }
             setTimeout(function(){
                     GM_log("post over, keepRefresh = "+GM_getValue("keepRefresh"));
                     if( GM_getValue("keepRefresh") == 1 )
                     {
-                        setTimeout("document.getElementById('trigerRefresh').onclick();",refreshTimeout);
-                        GM_log("setTimeout refresh in loading  ");
+                        timeoutId=setTimeout("document.getElementById('trigerRefresh').onclick();",refreshTimeout);
+                        $("#trigerRefresh")[0].goPageTimeOutIds.push(timeoutId)
+                        GM_log("setTimeout refresh wait for "+refreshTimeout+" microsecond");
                     }
                         
                 },0)
@@ -1096,6 +1172,7 @@ function handleGetMissionPage()
             $("#trigerRefresh")[0].reloadTimeoutId=0
         }
         $("#trigerRefresh")[0].reloadTimeoutId=setTimeout("document.getElementById('trigerRefresh').onclick();",60000);
+        
     }
 
     //response to got a mission
@@ -1108,6 +1185,7 @@ function handleGetMissionPage()
             if(result.StateCode==0){
                 GM_log("啥,又抢到了一个来路流量任务");
                 $("#trigerRefresh")[0].type="radio";
+                setTimeout(function(){$("#annouceSuccess")[0].click()},1000+Math.random()*2000);        
             }	
             //GoPage(1);
         });
@@ -1118,27 +1196,27 @@ function handleGetMissionPage()
     document.body.onkeydown =  function (event)
     {
         event = event||window.event;
-        GM_log("press key ="+event.keyCode);
+        //GM_log("press key ="+event.keyCode);
         if(event.keyCode==119 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F8	
         {
             GM_setValue("keepRefresh",0);//invalid keepRefresh
             GM_log("invalid keepRefresh");
         }
     }
-
-
-    function refreshMission()
+    
+    //add a p tag  to annouce success getting a mission.
+    var annouceSuccessP=document.createElement("p");
+    annouceSuccessP.id='annouceSuccess';
+    annouceSuccessP.onclick=function()
     {
-        /*if( GM_getValue("keepRefresh",0) == 1 )
-        {
-            clearTimeout();
-            setTimeout("document.getElementById('trigerRefresh').onclick();",1500);
-            GM_log("setTimeout refresh in loading  ");
-        }*/
+        GM_log("<p>.onclick annouceSuccess")
+        GM_setValue("need2wait4complete",1)
+        unsafeWindow.myMissionPageWindow.document.getElementById("annouceSuccess").onclick() 
+        setTimeout(function(){GM_setValue("need2wait4complete",0)},30000)
     }
-
-    //GM_log("refreshMission");
-    refreshMission();
+    document.body.insertBefore(annouceSuccessP,null);    
+    
+    // origin page would call Gopage(1) itself
 }
 
 

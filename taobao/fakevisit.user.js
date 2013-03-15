@@ -6,7 +6,9 @@
 // @include       http://s.taobao.com/search?*
 // @include       http://item.taobao.com/item.htm?*
 // @include       http://detail.tmall.com/item.htm?*
+// @include       http://item.tmall.com/item.htm?*
 // @include       http://love.taobao.com/*
+// @include       http://www.taobao.com/go/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 GM_log("enter GM script");
@@ -18,7 +20,7 @@ else if(location.href.indexOf("http://s.taobao.com/search?")!=-1)
 {
 	handleTaobaoSearchPage()
 }
-else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1)
+else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1||location.href.indexOf("http://item.tmall.com/item.htm?")!=-1)
 {
 	handleTaobaoItemPage()
 }
@@ -79,7 +81,7 @@ function handleTaobaoSearchPage()
 			}
         }
         openContainP.click()
-		setTimeout(function(){unsafeWindow.close()},5000)
+		setTimeout(function(){unsafeWindow.close()},50000)
     }
 	
 	function getUrlParam(name)
@@ -121,7 +123,7 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt1);
 		obj.dispatchEvent(evt2);
 		obj.dispatchEvent(evt3);
-		setTimeout(function(){unsafeWindow.close()},5000)
+		setTimeout(function(){unsafeWindow.close()},50000)
     }
     document.body.insertBefore(clickContainP,null);  	
  
@@ -145,6 +147,11 @@ function handleTaobaoSearchPage()
 			itemId=unsafeWindow.opener.document.getElementById("itemId").innerHTML
 		}
 	}
+    
+    if(unsafeWindow.opener)
+    {
+        unsafeWindow.opener.close()
+    }
 	
 	if(itemId=="")
 	{

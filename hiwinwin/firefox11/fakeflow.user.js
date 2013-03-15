@@ -68,6 +68,18 @@ else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!
 		showMsg.innerHTML=document.scripts[0].innerHTML;    
 		document.body.insertBefore(showMsg,null);
         
+        if(showMsg.innerHTML.indexOf("超过")!=-1)
+        {
+            missionId=location.href.replace(/.*id=(\d*)&.*/g,"$1")
+            invalidMissionIdList=GM_getValue("invalidMissionId","")
+            if(invalidMissionIdList.indexOf(missionId+";")==-1)
+            {
+                invalidMissionIdList=invalidMissionIdList+missionId+";"
+                GM_setValue("invalidMissionId",invalidMissionIdList)
+            }
+        }
+        
+        
         var openContainP=document.createElement("p");
         openContainP.onclick=function()
         {
@@ -92,6 +104,10 @@ else if(location.href.indexOf("http://www.hiwinwin.com/Error.aspx")!=-1)
 	
 function handleGetMissionStaffPage()
 {
+    //reset invalidMissionIdList oldMissionIdList
+    GM_setValue("invalidMissionId","")
+    GM_setValue("oldMissionId","")
+    
     var thisReflashImages,allReflashImages;
 
     allReflashImages = document.evaluate(
@@ -114,6 +130,7 @@ function handleGetMissionStaffPage()
     $(".cursor ")[0].waitForLoadTime=0
 	$(".cursor ")[0].unique_flag=0
     $(".cursor ")[0].goPageTimeOutIds=new Array()
+    $(".cursor ")[0].resetMissionIdListTimeoutId=0
 /*    
     unsafeWindow.goPage = function (n) {
         //need to wait for get mission page loaded
@@ -233,7 +250,6 @@ function handleGetMissionStaffPage()
         xml.send('');
     }
     */
-	  
     unsafeWindow.goPage = function (n) {
         //to be the unique one
         if($(".cursor ")[0].unique_flag==0)
@@ -249,7 +265,19 @@ function handleGetMissionStaffPage()
         {
             return;
         }
-    
+        
+        //check if it's 24:00:00 reset invalidMissionIdList oldMissionIdList
+        var d = new Date();
+        
+        if(d.getHours()==23 && d.getMinutes()>30 && d.getMinutes()<55 && $(".cursor ")[0].resetMissionIdListTimeoutId==0 )
+        {
+            $(".cursor ")[0].resetMissionIdListTimeoutId=setTimeout(function()
+                    {
+                        GM_setValue("invalidMissionId","")
+                        GM_setValue("oldMissionId","")
+                    },(59-d.getMinutes())*60000
+                )
+        }
         //need to wait for get mission page loaded
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
         {
@@ -295,9 +323,62 @@ function handleGetMissionStaffPage()
 
             if( $(".tbl a").length > 0 )
             {
-                randomId=Math.round(Math.random()*$(".tbl a").length,10)%$(".tbl a").length
-                GM_log("randomId="+randomId+",allAnchors.length="+$(".tbl a").length)
+                var randomId=-1
+                
+                //check \进行中\ first
+                //for(var i=0;i<$(".tbl a").length;++i)
+                // {   
+                    // if($(".tbl a")[i].parentNode.parentNode.innerHTML.indexOf("进行中")!="")
+                    // {
+                        // randomId=i
+                        // break;
+                    // }
+                // }
+                
+                //check oldMissionIdList second
+                var oldMissionIdList=GM_getValue("oldMissionId","")
+                
+                if(randomId==-1)
+                {
+                    for(var i=0;i<$(".tbl a").length;++i)
+                    {   
+                        missionId=$(".tbl a")[i].toString().replace(/.*id=(\d*)&.*/g,"$1")
+                        
+                        if(oldMissionIdList.indexOf(missionId+";")==-1)
+                        {
+                            randomId=i;
+                            break;
+                        }
+                    }
+                }
+                
+                if(randomId==-1)
+                {
+                    //check invalidMissionIdList
+                    var invalidMissionIdList=GM_getValue("invalidMissionId","")
+                    for(var i=0;i<$(".tbl a").length;++i)
+                    {   
+                        missionId=$(".tbl a")[i].toString().replace(/.*id=(\d*)&.*/g,"$1")
+                        
+                        if(invalidMissionIdList.indexOf(missionId+";")==-1)
+                        {
+                            randomId=i;
+                            break;
+                        }
+                    }
+                }
+                
+                if(randomId==-1)
+                {
+                    randomId=Math.round(Math.random()*$(".tbl a").length,10)%$(".tbl a").length
+                }   
+                
+                
                 var thisLink=	$(".tbl a")[randomId].toString();
+                missionId=thisLink.replace(/.*id=(\d*)&.*/g,"$1")
+                oldMissionIdList=oldMissionIdList+missionId+";"
+                GM_log("randomId="+randomId+",allAnchors.length="+$(".tbl a").length+",missionId="+missionId)
+                GM_setValue("oldMissionId",oldMissionIdList)
                 GM_log("fetch mission ");
                 //alert(thisLink+typeof(thisLink));
                 //document.getElementById("playAudioGot").play();
@@ -315,7 +396,8 @@ function handleGetMissionStaffPage()
                 else
                 {
                     unsafeWindow.handleMissionPage.location.href=thisLink
-                }            
+                }  
+                
             }
             else
             {
@@ -340,7 +422,7 @@ function handleGetMissionStaffPage()
                 GM_log("goPage(0); calculate refreshTimeout")
                 if($(".tbl a").length>=2)
                 {   
-                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,4000))
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(4000,3000))
                     if(refreshTimeout<2124)
                     {
                         refreshTimeout=2124
@@ -348,7 +430,7 @@ function handleGetMissionStaffPage()
                 }
                 else
                 {
-                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,8000))
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,5000))
                     if(refreshTimeout<2124)
                     {
                         refreshTimeout=2124
@@ -657,8 +739,6 @@ function handleMission()
             
  
             //check if it's a success dialog
-            var fixed_itemId=this.itemId.replace(/^http:\/\/www\.hiwinwin\.com\/task\/count\//g,"").replace(/Taskin\.aspx/g,"")
-            GM_log("before check success dialog fixed itemId="+fixed_itemId)
             if($("iframe").contents().find(".tip_less").length==1)
             {
                 if($("iframe").contents().find(".tip_less")[0].innerHTML.indexOf("商品网址验证成功，成功完成来路访问")>=0)
@@ -673,10 +753,9 @@ function handleMission()
                         message=GM_getValue("message")
                         shopkeeper=GM_getValue("shopkeeper","")
                         itemId=""
-                        if(typeof(fixed_itemId)!="undefined")
+                        if(typeof(GM_getValue("itemId"))!="undefined")
                         {
-                            itemId=fixed_itemId
-                            GM_log("itemId="+itemId)
+                            itemId=GM_getValue("itemId")
                         }
                         code=GM_getValue("code")
                         codeImg=GM_getValue("codeImg")
@@ -750,7 +829,7 @@ function handleMission()
                         fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
                                                     <input name='url' type='hidden' value='"+url+"'/>\
                                                     <input name='keyword' type='hidden' value='"+keyword+"'/>\
-                                                    <input name='message' type='hidden' value='"+message+"'/>\
+                                                    <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
                                                     <input name='site' type='hidden' value='hiwinwin'/>\
                                                 </form>"
                         document.body.insertBefore(fakeVisitDiv,null)                        
@@ -791,9 +870,9 @@ function handleMission()
                             shopkeeper=GM_getValue("shopkeeper","")
                             itemId=""
                             url=preUrlLink.href
-                            if(typeof(fixed_itemId)!="undefined")
+                            if(typeof(GM_getValue("itemId"))!="undefined")
                             {
-                                itemId=fixed_itemId
+                                itemId=GM_getValue("itemId")
                             }
                             site="hiwinwin"
                             
@@ -1013,11 +1092,14 @@ function handleMission()
                         if(typeof(data.itemId)!="undefined")
                         {
                             GM_log("data.itemId = "+data.itemId)
-                            $("iframe")[0].itemId=data.itemId
+                            //$("iframe")[0].itemId=data.itemId
+                            GM_setValue("itemId",data.itemId)
+                            GM_log("GM_getValue('itemId')="+GM_getValue('itemId'))
                         }    
                         else
                         {
-                            $("iframe")[0].itemId=""
+                            GM_setValue("itemId","")
+                            //$("iframe")[0].itemId=""
                         }
                         
                         
