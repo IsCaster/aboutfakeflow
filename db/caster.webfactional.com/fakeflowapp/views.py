@@ -390,12 +390,15 @@ def submitUrl(request):
                 with theMission.itemLock :
                     for new_url in urls:
                         bAdd=True
-                        for index,url in enumerate(theMission.urls):
-                            new_url_trim=re.sub(r"&$","",new_url)
-                            url_trim=re.sub(r"&$","",url)
-                            if new_url_trim== url_trim and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
-                                bAdd = False
-                                break
+                        if re.search(r"^http://",url) == None :
+                            bAdd=False
+                        else:    
+                            for index,url in enumerate(theMission.urls):
+                                new_url_trim=re.sub(r"&$","",new_url)
+                                url_trim=re.sub(r"&$","",url)
+                                if new_url_trim== url_trim and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
+                                    bAdd = False
+                                    break
                         if bAdd :
                             logger.debug("add new url:%s"%(new_url))
                             theMission.urls.append(new_url)
