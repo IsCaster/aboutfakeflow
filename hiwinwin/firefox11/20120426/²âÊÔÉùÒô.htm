@@ -1,0 +1,42 @@
+<html lang="zh_cn">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <title>测试声音</title>
+   </head>
+
+
+   <body id="diveintogreasemonkey-org" >
+	<embed id="devUnknown" 
+       src="file:///F:/kugou/吴雨霏 - 句句我爱你.mp3"
+       
+       loop="false" 
+       autostart="false">
+	</embed>
+<div id="main" width=100 height=100 >
+	sadfsadf
+</div>
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAWCAYAAACCAs+RAAAC0UlEQVRYhd1X2RHlIAxzT+pJPakn96T9ICZAIC/7ucsMk4MjtmTZJDLT/0MPST415nNMkjOzX98akIaec3br1v3evrN7jvJo9zHh3dCat+sng1djpnUKn+zpc/kE92Yk6ZEZJPoEENMiKY7GKTnMmxFdmf/C7Lo+Mx2AI+69CN6MjAv7BHF6v/tYZDzWjc+ZaSX36H/obdGy/4BrXg5tNbIilGkz0OIdafHJSCpNyICMkMXBkUKUMiEz2K7gkQnbFmmBDyZ37cGIsLJgA3akTVzijTQxxnUaISNuY8uZmiPKDBmXEwhaYYu651z2KmGCZnCyp9n34sjJY2YYSEekyYYsCSNk60YaISNh4qa52ClGignxnlNO1T63w+g9P7CxZWQa1OXEBoV6JxVDOsc5Z5bvPVp43c7TDFjgzciJgskJ/mCEzZHSRgude1xq4YOQiTQuJoqZ075tXQsvD0mgGEukBRp819DszMWI9Mw6pBsjQQPtOS1ziP0m7sGZ0HW/T6mibLpphHMmq3vbkz6Ej2KX5Aw8BpqBTdgNyexGV+w3DalrqM2ZY7/viVvoFTa7Sj6G2Tz+Xly3Gmlotyy1OlcZy3ZnYjwBENmF3nvExGSl4PWbmWlf6V7k/P6lHTXSGcFcWUsrhWCF09gqtGwbVx1YKzQuZ9bK3jIXu17Gs97OzsrOr1mrNFLDorvgeyxfjqWKoZwcaXNaOKXuFIsS9ibLibISfXwF+K8ZIZuRlbliYKjXDNlxCXzs49GkHBmLIRempu9eNWTH5OlstmVkRIe8tdIEvaAHWKy0m1MBK1Lk4XgCTUg/zlV2ryMnm049dh7HD0S+tNdTrc//OWX4Y03OmZUZk13H/5EVifWdXqq5jE8o/uqvQC02xRqjR+Tj93HhAcTmpGzbp/+1JvZ82NGznXTUVvxEgNy/X43DqI/Z6fXn7Gsb7TptkXzRyL94/QOONChqJZUxRQAAAABJRU5ErkJggg==" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
+<script>
+	
+	input={"message":encodeURI("雨霏 "),"shopkeeper":encodeURI("雨霏 雨霏 "),"site":"hiwinwin","status":0}
+	request=$.get("http://www.fakeflowdb.com/queryurl",input,function(data){
+		alert("data="+data);
+	});
+</script>
+
+   <script type="text/javascript">
+function playSound(id)
+{
+  var node=document.getElementById(id);
+  if(node!=null)
+  {
+    node.Play();
+  }
+}
+playSound("devUnknown");
+</script>
+<a  onclick="return confirm('abc');" href="about:blank">退出任务</a>
+   </body>
+</html>

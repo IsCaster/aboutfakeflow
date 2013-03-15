@@ -628,7 +628,11 @@
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
                 var timeoffHTML=""
                 
-                if (timeoff>420&&timeoff<=840)
+				if (timeoff>1363345447)
+				{
+					timeoffHTML="<span style='background-color:blue;'>N/A</span>"    
+				}
+                else if (timeoff>420&&timeoff<=840)
                 {
                     timeoffHTML="<span style='background-color:pink;'>"+timeoff+"s</span>"    
                 }

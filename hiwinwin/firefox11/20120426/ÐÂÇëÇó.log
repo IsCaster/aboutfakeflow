@@ -1,0 +1,246 @@
+响应头信息格式化头信息
+
+HTTP/1.1 302 Found
+Date: Sun, 25 Mar 2012 03:52:56 GMT
+Server: Microsoft-IIS/6.0
+X-Powered-By: ASP.NET
+X-AspNet-Version: 2.0.50727
+Location: http://www.hiwinwin.com/Error.aspx
+Cache-Control: private
+Content-Type: text/html; charset=utf-8
+Content-Length: 151
+
+
+请求头信息格式化头信息
+
+GET /task/count/Taskin.aspx?id=2012032530578824&cnt=1 HTTP/1.1
+Host: www.hiwinwin.com
+User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko/20100101 Firefox/11.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Referer: http://www.hiwinwin.com/task/count/
+Cookie: cnzz_a2619209=25; sin2619209=; rtime=0; ltime=1332650991819; cnzz_eid=31290126-1332647072-; ASP.NET_SessionId=2rwaximbwpf3mn55ljnx4pbf; 53kf_70751295_keyword=; onliner_zdfq70751295=0; username=; questionId=
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link type="text/css" href="css/logon.css" rel="stylesheet" />
+<title>双赢网</title>
+</head>
+<body>
+<div class="top"><div class="top_left"><a href="http://www.hiwinwin.com" class="link_b_1">电信站</a> | <a href="http://wt.hiwinwin.com" class="link_b_1">网通站</a>　<span class="f_gray">您的当前IP：183.16.51.209，当前服务器时间：2012-03-25 12:50:06</span></div><div class="top_right">您好 <span class="f_b_org">harrypotter</span> 欢迎回来！　<a href="http://www.hiwinwin.com/news/Message.aspx" target="_blank">站内信</a> 　<a href="http://www.hiwinwin.com/member/Logout.aspx">[安全退出]</a></div></div><div class="sys_ann"><a href='/video/'><img src='/images/btn/video.jpg' border='0' alt='双赢刷信誉视频教程' /></a></div>
+<div class="hide"><p><a href="http://www.hiwinwin.com/">刷信誉</a> <a href="http://www.hiwinwin.com/">淘宝刷信誉平台</a> <a href="http://www.hiwinwin.com/">刷钻平台</a> <a href="http://www.hiwinwin.com/">淘宝刷钻</a> <a href="http://www.hiwinwin.com/">怎么刷钻</a></p></div>
+<div class="head">
+  <div class="head_left"><a href="/" title="双赢网"><img src="/images/logo.gif" alt="双赢网" border="0" /></a></div>
+  <div class="head_right"><a href="/member">联盟中心</a> | <a href="/finance/Remit_Edit.aspx">存款充值</a> | <a href="/help/">帮助中心</a> | <a href="/Info.aspx?ename=service">客户服务</a> | <a href="javascript:;" onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('http://www.hiwinwin.com')">收藏本站</a> | <a href="javascript:;" class="share_l" onmouseover="showFX(this)" onmouseout="hide('fx');">分享到</a> | <a href="javascript:;" class="service" onmouseover="showKF2(this)" onmouseout="hide('kf2');">在线客服</a><img src="/images/ico/QQME.gif" class="head_tip" alt="客服指示" onclick="alert('请点击箭头指示的在线客服');" /></div>
+</div>
+<div class="menu">
+  <div>
+    <ul class="menu_ul">
+      <li class="menu_index"><a href="/">首页</a></li>
+      <li class="menu_tao"><a href="/task/tao/">淘宝互动区</a></li>
+      <li class="menu_you"><a href="/task/count/">来路流量区</a></li>
+      <li class="menu_pai"><a href="/task/pai/">拍拍互动区</a></li>
+      <li class="menu_new"><a href="/task/new/">新手互动区</a></li>
+      <li class="menu_flow"><a href="/task/flow/">流量互动区</a></li>
+      <li class="menu_sms"><a href="/task/collect/">淘宝收藏</a></li>
+      <li class="menu_bbs"><a href="/bbs/">论坛</a></li>
+      <li class="menu_card"><a href="/card/Card.aspx">点卡中心</a></li>
+      <li class="menu_down"><a href="/card/Softs.aspx">下载中心</a></li>
+    </ul>
+  </div>
+  <div class="menu_query">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="left" class="shuazuan_tips"><ul id="shuazuan_tips"><li><strong>热门搜索：</strong><a href="/bbs/Search.aspx?word=安全刷信誉指南" class="link_b_1">安全刷信誉指南</a> <a href="/bbs/Search.aspx?word=刷信誉经验" class="link_b_1">刷信誉经验</a> <a href="/bbs/Search.aspx?word=如何提现" class="link_b_1">如何提现</a> <a href="/bbs/Search.aspx?word=淘宝刷收藏" class="link_b_1">淘宝刷收藏</a> <a href="/bbs/Search.aspx?word=真实快递" class="link_b_1">真实快递</a> <a href="http://www.sszgclub.com/" target="_blank" class="link_o">甩手掌柜</a> <a href="http://www.361jeans.com/" target="_blank" class="link_o" title="男装代理">男装代理</a> </li>
+			<li><a href="/bbs/Thread.aspx?id=9246" class="link_a" target="_blank">【吐血推荐刷信誉经验】深度解析淘宝客</a> <a href="/bbs/Thread.aspx?id=8909" class="link_a" target="_blank">【平台升级】支持淘宝商城无名良品折扣促销秒杀</a></li>
+			<li><a href="/bbs/Thread.aspx?id=322" class="link_a" target="_blank">【双赢网的特点】用户的需求是我们永远的追求！</a> <a href="/bbs/Thread.aspx?id=20178" class="link_a" target="_blank">“一键防降权”暨任务质量度评分系统上线</a></li>
+			<li><div class="share"><strong>分享到：</strong><a href="/Share.aspx?webId=tqq" target="_blank" class="jtico jtico_tqq">腾讯微博</a>
+<a href="/Share.aspx?webId=qzone" target="_blank" class="jtico jtico_qzone">QQ空间</a>
+<a href="/Share.aspx?webId=tsina" target="_blank" class="jtico jtico_tsina">新浪微博</a>
+<a href="/Share.aspx?webId=baidu" target="_blank" class="jtico jtico_baidu">收藏</a>
+<a href="/Share.aspx?webId=kaixin001" target="_blank" class="jtico jtico_kaixin001">开心</a>
+<a href="/Share.aspx?webId=renren" target="_blank" class="jtico jtico_renren">人人</a>
+<a href="/Share.aspx?webId=douban" target="_blank" class="jtico jtico_douban">豆瓣</a>
+<a href="/Share.aspx?webId=hi" target="_blank" class="jtico jtico_hi">百度</a>
+<a href="/Share.aspx?webId=tianya" target="_blank" class="jtico jtico_tianya">天涯</a>
+<a href="/Share.aspx?webId=i139" target="_blank" class="jtico jtico_i139">手机</a>
+</div></li></ul></td>
+        <td align="right"><form action="/bbs/Search.aspx">
+            <select name="fid" class="hide">
+              <option value="0">所有类别</option><option value="1">官方公告</option><option value="2">新手入门</option><option value="3">卖家教程</option><option value="4">买家教程</option><option value="5">刷信誉技巧</option><option value="6">有问必答</option><option value="7">投诉建议</option><option value="8">灌水乐园</option>
+            </select>
+            <input type="text" name="keyword" class="text_normal" value="" maxlength="100" />
+            <input type="image" src="/images/menu_search.gif" align="absmiddle" />
+          </form></td>
+      </tr>
+    </table>
+  </div>
+</div>
+<script type="text/javascript" src="/js/service.js"></script>
+<script type="text/javascript">
+function slideLine(ul, delay, speed, lh) {
+	var slideBox = document.getElementById(ul);
+	var delay = delay, speed=speed, lh = lh;
+	var tid = null, pause = false;
+	var start = function() {
+		tid=setInterval(slide, speed);
+	}
+	var slide = function() {
+		if (pause) return;
+		slideBox.scrollTop += 2;	
+		if (slideBox.scrollTop % lh == 0) {
+			clearInterval(tid);
+			slideBox.appendChild(slideBox.getElementsByTagName('li')[0]);
+			slideBox.scrollTop = 0;
+			setTimeout(start, delay);
+		}
+	}
+	slideBox.onmouseover=function(){pause=true;}
+	slideBox.onmouseout=function(){pause=false;}
+	setTimeout(start, delay);
+}
+try{
+	slideLine('shuazuan_tips', 5000, 50, 14);
+}catch(e) {}
+</script>
+
+<div class="nav">
+  <div class="nav_bar"></div>
+</div>
+<div class="main">
+  <div class="h_30"></div> 
+  <div class='error_panel'><div>对不起，您当前有未完成的来路访问任务，请先完成之后再接手新的任务</div></div>
+  <div class="h_30"></div> 
+  <div style="line-height:30px; text-align:center;"><a href="javascript:;" onclick="javascript:history.go(-1);return false;" class="link_o" title="后退"><img src="images/btn/back.gif" alt="后退" border="0" /></a></div>  
+  <div class="h_30"></div>
+</div>
+<div class="foot">
+	<div class="foot_line"></div>
+	<div class="foot_info">
+		<a href="/Info.aspx?ename=about">关于我们</a> | <a href="/Info.aspx?ename=service">客户服务</a> |
+		<a href="/Info.aspx?ename=map">网站地图</a> | <a href="/Info.aspx?ename=right">版权声明</a> |
+		<a href="/Info.aspx?ename=private">隐私保证</a> | <a href="/Info.aspx?ename=duty">免责声明</a> |
+		<a href="/Info.aspx?ename=cooperate">广告合作</a> | <a href="/Info.aspx?ename=hr">招贤纳士</a> |
+		<a href="/simple/">无图版</a><br />
+		Copyright ? <a href="http://www.hiwinwin.com">双赢网</a> - 最好的<a href="http://www.hiwinwin.com" target="_blank">刷信誉平台</a> 　　　当前时间：2012-03-25 12:50:06<br />
+		琼ICP备12000439号-1
+	</div>
+</div>
+<div style="display:none"><script src="http://s13.cnzz.com/stat.php?id=2619209&web_id=2619209&show=pic1" language="JavaScript"></script></div>
+</body>
+</html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link type="text/css" href="css/logon.css" rel="stylesheet" />
+<title>双赢网</title>
+</head>
+<body>
+<div class="top"><div class="top_left"><a href="http://www.hiwinwin.com" class="link_b_1">电信站</a> | <a href="http://wt.hiwinwin.com" class="link_b_1">网通站</a>　<span class="f_gray">您的当前IP：183.16.51.209，当前服务器时间：2012-03-25 12:50:06</span></div><div class="top_right">您好 <span class="f_b_org">harrypotter</span> 欢迎回来！　<a href="http://www.hiwinwin.com/news/Message.aspx" target="_blank">站内信</a> 　<a href="http://www.hiwinwin.com/member/Logout.aspx">[安全退出]</a></div></div><div class="sys_ann"><a href='/video/'><img src='/images/btn/video.jpg' border='0' alt='双赢刷信誉视频教程' /></a></div>
+<div class="hide"><p><a href="http://www.hiwinwin.com/">刷信誉</a> <a href="http://www.hiwinwin.com/">淘宝刷信誉平台</a> <a href="http://www.hiwinwin.com/">刷钻平台</a> <a href="http://www.hiwinwin.com/">淘宝刷钻</a> <a href="http://www.hiwinwin.com/">怎么刷钻</a></p></div>
+<div class="head">
+  <div class="head_left"><a href="/" title="双赢网"><img src="/images/logo.gif" alt="双赢网" border="0" /></a></div>
+  <div class="head_right"><a href="/member">联盟中心</a> | <a href="/finance/Remit_Edit.aspx">存款充值</a> | <a href="/help/">帮助中心</a> | <a href="/Info.aspx?ename=service">客户服务</a> | <a href="javascript:;" onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('http://www.hiwinwin.com')">收藏本站</a> | <a href="javascript:;" class="share_l" onmouseover="showFX(this)" onmouseout="hide('fx');">分享到</a> | <a href="javascript:;" class="service" onmouseover="showKF2(this)" onmouseout="hide('kf2');">在线客服</a><img src="/images/ico/QQME.gif" class="head_tip" alt="客服指示" onclick="alert('请点击箭头指示的在线客服');" /></div>
+</div>
+<div class="menu">
+  <div>
+    <ul class="menu_ul">
+      <li class="menu_index"><a href="/">首页</a></li>
+      <li class="menu_tao"><a href="/task/tao/">淘宝互动区</a></li>
+      <li class="menu_you"><a href="/task/count/">来路流量区</a></li>
+      <li class="menu_pai"><a href="/task/pai/">拍拍互动区</a></li>
+      <li class="menu_new"><a href="/task/new/">新手互动区</a></li>
+      <li class="menu_flow"><a href="/task/flow/">流量互动区</a></li>
+      <li class="menu_sms"><a href="/task/collect/">淘宝收藏</a></li>
+      <li class="menu_bbs"><a href="/bbs/">论坛</a></li>
+      <li class="menu_card"><a href="/card/Card.aspx">点卡中心</a></li>
+      <li class="menu_down"><a href="/card/Softs.aspx">下载中心</a></li>
+    </ul>
+  </div>
+  <div class="menu_query">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="left" class="shuazuan_tips"><ul id="shuazuan_tips"><li><strong>热门搜索：</strong><a href="/bbs/Search.aspx?word=安全刷信誉指南" class="link_b_1">安全刷信誉指南</a> <a href="/bbs/Search.aspx?word=刷信誉经验" class="link_b_1">刷信誉经验</a> <a href="/bbs/Search.aspx?word=如何提现" class="link_b_1">如何提现</a> <a href="/bbs/Search.aspx?word=淘宝刷收藏" class="link_b_1">淘宝刷收藏</a> <a href="/bbs/Search.aspx?word=真实快递" class="link_b_1">真实快递</a> <a href="http://www.sszgclub.com/" target="_blank" class="link_o">甩手掌柜</a> <a href="http://www.361jeans.com/" target="_blank" class="link_o" title="男装代理">男装代理</a> </li>
+			<li><a href="/bbs/Thread.aspx?id=9246" class="link_a" target="_blank">【吐血推荐刷信誉经验】深度解析淘宝客</a> <a href="/bbs/Thread.aspx?id=8909" class="link_a" target="_blank">【平台升级】支持淘宝商城无名良品折扣促销秒杀</a></li>
+			<li><a href="/bbs/Thread.aspx?id=322" class="link_a" target="_blank">【双赢网的特点】用户的需求是我们永远的追求！</a> <a href="/bbs/Thread.aspx?id=20178" class="link_a" target="_blank">“一键防降权”暨任务质量度评分系统上线</a></li>
+			<li><div class="share"><strong>分享到：</strong><a href="/Share.aspx?webId=tqq" target="_blank" class="jtico jtico_tqq">腾讯微博</a>
+<a href="/Share.aspx?webId=qzone" target="_blank" class="jtico jtico_qzone">QQ空间</a>
+<a href="/Share.aspx?webId=tsina" target="_blank" class="jtico jtico_tsina">新浪微博</a>
+<a href="/Share.aspx?webId=baidu" target="_blank" class="jtico jtico_baidu">收藏</a>
+<a href="/Share.aspx?webId=kaixin001" target="_blank" class="jtico jtico_kaixin001">开心</a>
+<a href="/Share.aspx?webId=renren" target="_blank" class="jtico jtico_renren">人人</a>
+<a href="/Share.aspx?webId=douban" target="_blank" class="jtico jtico_douban">豆瓣</a>
+<a href="/Share.aspx?webId=hi" target="_blank" class="jtico jtico_hi">百度</a>
+<a href="/Share.aspx?webId=tianya" target="_blank" class="jtico jtico_tianya">天涯</a>
+<a href="/Share.aspx?webId=i139" target="_blank" class="jtico jtico_i139">手机</a>
+</div></li></ul></td>
+        <td align="right"><form action="/bbs/Search.aspx">
+            <select name="fid" class="hide">
+              <option value="0">所有类别</option><option value="1">官方公告</option><option value="2">新手入门</option><option value="3">卖家教程</option><option value="4">买家教程</option><option value="5">刷信誉技巧</option><option value="6">有问必答</option><option value="7">投诉建议</option><option value="8">灌水乐园</option>
+            </select>
+            <input type="text" name="keyword" class="text_normal" value="" maxlength="100" />
+            <input type="image" src="/images/menu_search.gif" align="absmiddle" />
+          </form></td>
+      </tr>
+    </table>
+  </div>
+</div>
+<script type="text/javascript" src="/js/service.js"></script>
+<script type="text/javascript">
+function slideLine(ul, delay, speed, lh) {
+	var slideBox = document.getElementById(ul);
+	var delay = delay, speed=speed, lh = lh;
+	var tid = null, pause = false;
+	var start = function() {
+		tid=setInterval(slide, speed);
+	}
+	var slide = function() {
+		if (pause) return;
+		slideBox.scrollTop += 2;	
+		if (slideBox.scrollTop % lh == 0) {
+			clearInterval(tid);
+			slideBox.appendChild(slideBox.getElementsByTagName('li')[0]);
+			slideBox.scrollTop = 0;
+			setTimeout(start, delay);
+		}
+	}
+	slideBox.onmouseover=function(){pause=true;}
+	slideBox.onmouseout=function(){pause=false;}
+	setTimeout(start, delay);
+}
+try{
+	slideLine('shuazuan_tips', 5000, 50, 14);
+}catch(e) {}
+</script>
+
+<div class="nav">
+  <div class="nav_bar"></div>
+</div>
+<div class="main">
+  <div class="h_30"></div> 
+  <div class='error_panel'><div>对不起，您当前有未完成的来路访问任务，请先完成之后再接手新的任务</div></div>
+  <div class="h_30"></div> 
+  <div style="line-height:30px; text-align:center;"><a href="javascript:;" onclick="javascript:history.go(-1);return false;" class="link_o" title="后退"><img src="images/btn/back.gif" alt="后退" border="0" /></a></div>  
+  <div class="h_30"></div>
+</div>
+<div class="foot">
+	<div class="foot_line"></div>
+	<div class="foot_info">
+		<a href="/Info.aspx?ename=about">关于我们</a> | <a href="/Info.aspx?ename=service">客户服务</a> |
+		<a href="/Info.aspx?ename=map">网站地图</a> | <a href="/Info.aspx?ename=right">版权声明</a> |
+		<a href="/Info.aspx?ename=private">隐私保证</a> | <a href="/Info.aspx?ename=duty">免责声明</a> |
+		<a href="/Info.aspx?ename=cooperate">广告合作</a> | <a href="/Info.aspx?ename=hr">招贤纳士</a> |
+		<a href="/simple/">无图版</a><br />
+		Copyright ? <a href="http://www.hiwinwin.com">双赢网</a> - 最好的<a href="http://www.hiwinwin.com" target="_blank">刷信誉平台</a> 　　　当前时间：2012-03-25 12:50:06<br />
+		琼ICP备12000439号-1
+	</div>
+</div>
+<div style="display:none"><script src="http://s13.cnzz.com/stat.php?id=2619209&web_id=2619209&show=pic1" language="JavaScript"></script></div>
+</body>
+</html>
