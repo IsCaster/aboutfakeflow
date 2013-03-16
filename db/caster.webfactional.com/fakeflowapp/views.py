@@ -936,6 +936,15 @@ class DailyClientData:
 
 @login_required()    
 def missionDailyStatistics(request):
+    if request.GET.has_key("t"):
+        end_time=float(request.GET["t"])
+        margin_time=end_time-3
+        
+        if margin_time <= 0 :
+            margin_time=margin_time+24
+    else:
+        margin_time=24
+    
     dt_now=datetime.now()
     dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
     if dt_now >dt_line:
@@ -949,7 +958,7 @@ def missionDailyStatistics(request):
     for i in range(0,31):
         dailydata=DailyData()
         dt_start=date_latest-timedelta(days=i)
-        dt_end=date_latest-timedelta(days=(i-1))
+        dt_end=date_latest-timedelta(days=i)+timedelta(hours=margin_time)
         dailydata.label=dt_start.strftime("%Y %m %d")
         dailydata.clientsData=[]
         dailydata.hi_sum=0
