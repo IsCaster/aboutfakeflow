@@ -11,6 +11,128 @@
     </style>
   </head>
   <body>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+    <!--script src="http://hacks.bluesmoon.info/strftime/strftime.js"></script-->
+    <script language="JavaScript" >
+        //for csrf checking
+        jQuery(document).ajaxSend(function(event, xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            function sameOrigin(url) {
+                // url could be relative or scheme relative or absolute
+                var host = document.location.host; // host + port
+                var protocol = document.location.protocol;
+                var sr_origin = '//' + host;
+                var origin = protocol + sr_origin;
+                // Allow absolute or scheme relative URLs to same origin
+                return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                    (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                    // or any other URL that isn't scheme relative or absolute i.e relative.
+                    !(/^(\/\/|http:|https:).*/.test(url));
+            }
+            function safeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+        
+            if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        });
+        
+        
+        function updateStatistic()
+        {
+            $.post("/missiontodaystatistics",{},function(data)
+                {
+                    updateTable(data)
+                },"json")
+        }
+        
+        function updateTable(data)
+        {
+            beginTimeStr=$("#statisticsDataTab tr:eq(1) td ")[0].innerHTML
+            beginTime_pieces = beginTimeStr.split(":")
+            beginTime_h=beginTime_pieces[0]
+            beginTime_m=beginTime_pieces[1]
+            
+            endTime_pieces = data.label.split(":")
+            endTime_h=endTime_pieces[0]
+            endTime_m=endTime_pieces[1]
+            
+            increTime=parseInt(endTime_h)*60+parseInt(endTime_m)-parseInt(beginTime_h)*60-parseInt(beginTime_m)
+            if(increTime<0)
+            {
+                increTime=increTime+24*60
+            }
+            
+            increMoney=parseFloat(data.money)-parseFloat($("#statisticsDataTab tr:eq(1) td ")[1].innerHTML)
+            
+            hiStr=$("#statisticsDataTab tr:eq(1) td ")[2].innerHTML
+            hi_pieces = hiStr.split("/")
+            hi_sum=hi_pieces[0]
+            hi_money=hi_pieces[1]
+            
+            increHi_sum=parseFloat(data.hi_sum)-parseFloat(hi_sum)
+            increHi_money=parseFloat(data.hi_money)-parseFloat(hi_money)
+            
+            
+            nmiStr=$("#statisticsDataTab tr:eq(1) td ")[3].innerHTML
+            nmi_pieces = nmiStr.split("/")
+            nmi_sum=nmi_pieces[0]
+            nmi_money=nmi_pieces[1]
+            
+            increNmi_sum=parseFloat(data.nmi_sum)-parseFloat(nmi_sum)
+            increNmi_money=parseFloat(data.nmi_money)-parseFloat(nmi_money)
+            
+            newline=document.createElement("tr")
+            incrementline=document.createElement("tr")
+            
+            newline.innerHTML=      "<tr>"+
+                                        "<td>"+data.label+"</td>"+
+                                        "<td class='money'>"+data.money+"</td>"+
+                                        "<td>"+data.hi_sum+"/"+data.hi_money+"</td>"+
+                                        "<td>"+data.nmi_sum+"/"+data.nmi_money+"</td>"
+            for(var i=0;i<data.gold.length;++i)
+            {
+                newline.innerHTML=  newline.innerHTML + 
+                                        "<td class='"+data.site[i]+"'>"+data.gold[i]+"</td>"
+            }
+            newline.innerHTML=  newline.innerHTML +             
+                                    "</tr>"
+
+            incrementline.innerHTML="<tr style='color:red ; font-size: 50%;' >"+
+                                        "<td>+"+increTime+"m</td>"+
+                                        "<td>+"+increMoney+"</td>"+
+                                        "<td>+"+increHi_sum+"/+"+increHi_money+"</td>"+
+                                        "<td>+"+increNmi_sum+"/+"+increNmi_money+"</td>"
+            for(var i=0;i<data.gold.length;++i)
+            {
+                var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
+                incrementline.innerHTML=  incrementline.innerHTML + 
+                                        "<td class='"+data.site[i]+"'>+"+increGold+"</td>"
+            }
+            incrementline.innerHTML=  incrementline.innerHTML + 
+                                        "</tr>"
+                                        
+            $("#statisticsDataTab").insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
+            $("#statisticsDataTab").insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
+        }
+        
+    </script>
+    <input type="button" value="update" onclick="updateStatistic()">
     <table id="statisticsDataTab" >
         <tr>
             <td>日期</td>
