@@ -64,6 +64,7 @@
         
         function updateTable(data)
         {
+            alert("1")
             beginTimeStr=$("#statisticsDataTab tr:eq(1) td ")[0].innerHTML
             beginTime_pieces = beginTimeStr.split(":")
             beginTime_h=beginTime_pieces[0]
@@ -78,7 +79,7 @@
             {
                 increTime=increTime+24*60
             }
-            
+            alert("2")
             increMoney=parseFloat(data.money)-parseFloat($("#statisticsDataTab tr:eq(1) td ")[1].innerHTML)
             
             hiStr=$("#statisticsDataTab tr:eq(1) td ")[2].innerHTML
@@ -97,7 +98,7 @@
             
             increNmi_sum=parseFloat(data.nmi_sum)-parseFloat(nmi_sum)
             increNmi_money=parseFloat(data.nmi_money)-parseFloat(nmi_money)
-            
+            alert("3")
             newline=document.createElement("tr")
             incrementline=document.createElement("tr")
             
@@ -119,6 +120,7 @@
                                         "<td>+"+increMoney+"</td>"+
                                         "<td>+"+increHi_sum+"/+"+increHi_money+"</td>"+
                                         "<td>+"+increNmi_sum+"/+"+increNmi_money+"</td>"
+            alert("4")
             for(var i=0;i<data.gold.length;++i)
             {
                 var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
@@ -127,9 +129,10 @@
             }
             incrementline.innerHTML=  incrementline.innerHTML + 
                                         "</tr>"
-                                        
-            $("#statisticsDataTab").insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
-            $("#statisticsDataTab").insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
+            alert("5")
+            $("#statisticsDataTab")[0].insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
+            $("#statisticsDataTab")[0].insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
+            alert("6")
         }
         
     </script>
