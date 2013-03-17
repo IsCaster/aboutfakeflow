@@ -120,7 +120,7 @@
                                     "</tr>"
             newline.innerHTML=newlineInnerHTML
                                         
-            var incrementlineInnerHTML="<tr class='incre'>"+
+            var incrementlineInnerHTML="<tr>"+
                                         "<td>+"+increTime+"m</td>"+
                                         "<td>+"+increMoney+"</td>"+
                                         "<td>+"+increHi_sum+"/"+increHi_money+"</td>"+
@@ -135,6 +135,7 @@
             incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "</tr>"
             incrementline.innerHTML=incrementlineInnerHTML 
+            incrementline.class="incre"
 
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
