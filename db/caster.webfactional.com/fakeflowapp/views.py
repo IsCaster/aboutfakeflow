@@ -1018,6 +1018,8 @@ def missionTodayStatistics(request):
     todayStatisticsData=monthlyStatisticsData[0]
     todayStatisticsData.label=dt_now.strftime("%R")
     
+    
+    response_data={}
     response_data['label']=todayStatisticsData.label
     clientsSite=[]
     clientsGold=[]
