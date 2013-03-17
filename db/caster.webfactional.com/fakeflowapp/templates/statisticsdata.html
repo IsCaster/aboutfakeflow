@@ -136,7 +136,7 @@
             {
                 var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
                 incrementlineInnerHTML=  incrementlineInnerHTML + 
-                                        "<td class='"+data.site[i]+"'>+"+increGold.toFixed(1)+"</td>"
+                                        "<td class='"+data.site[i]+"'>+"+increGold.toFixed(2)+"</td>"
             }
             incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "</tr>"
