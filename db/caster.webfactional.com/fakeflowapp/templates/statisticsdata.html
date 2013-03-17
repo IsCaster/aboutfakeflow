@@ -132,8 +132,8 @@
                                         "</tr>"
             incrementline.innerHTML=incrementlineInnerHTML 
             alert("5")
-            $("#statisticsDataTab")[0].insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
-            $("#statisticsDataTab")[0].insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
+            $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
+            $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
             alert("6")
         }
         
