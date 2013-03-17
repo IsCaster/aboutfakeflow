@@ -57,6 +57,7 @@
         {
             $.post("/missiontodaystatistics",{},function(data)
                 {
+                    alert(data.label)
                     updateTable(data)
                 },"json")
         }
