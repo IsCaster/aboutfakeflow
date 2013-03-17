@@ -934,28 +934,26 @@ class DailyData:
 class DailyClientData:
     pass
 
-@login_required()    
-def missionDailyStatistics(request):
-    if request.GET.has_key("t"):
-        end_time=float(request.GET["t"])
-        margin_time=end_time-3
-        
-        if margin_time <= 0 :
-            margin_time=margin_time+24
-    else:
-        margin_time=24
-    
-    dt_now=datetime.now()
-    dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not be now
+    margin_time=end_time-start_time
+    if margin_time <= 0 :
+        margin_time=margin_time+24
+
+    dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,start_time,0)
     if dt_now >dt_line:
-        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,start_time,0)
     else:
-        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)-timedelta(days=1)
+        date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,start_time,0)-timedelta(days=1)
     
+    if day_count > 30 :
+        c_lifetime=day_count
+    else:
+        c_lifetime=day_count
     clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=30)).distinct('site','client') 
+    #client will last at least a month
     
-    monthlyStatisticsData=[]
-    for i in range(0,31):
+    daysStatisticsData=[]
+    for i in range(0,day_count):
         dailydata=DailyData()
         dt_start=date_latest-timedelta(days=i)
         dt_end=date_latest-timedelta(days=i)+timedelta(hours=margin_time)
@@ -980,9 +978,111 @@ def missionDailyStatistics(request):
         dailydata.hi_money=dailydata.hi_sum*0.248*0.4
         dailydata.nmi_money=dailydata.nmi_sum*0.4
         dailydata.money=dailydata.hi_money+dailydata.nmi_money
-        monthlyStatisticsData.append(dailydata)
+        daysStatisticsData.append(dailydata)
+    return daysStatisticsData,clients
+
+@login_required()    
+def missionDailyStatistics(request):
+    if request.GET.has_key("s"):
+        start_time=float(request.GET["s"])
+    else :
+        start_time=6
+    if request.GET.has_key("e"):
+        end_time=float(request.GET["e"])
+    else :
+        end_time=start_time
         
+    dt_now=datetime.now()
+    monthlyStatisticsData,clients=missionStatisticsFun(dt_now,start_time,end_time,31)
+    
+    monthlyStatisticsData[0].label=dt_now.strftime("%R")
+    
     template_values={   "statisticsData":monthlyStatisticsData,
                         "headline":clients,
                     }
     return render_to_response('statisticsdata.html', template_values);
+    
+@login_required()    
+def missionTodayStatistics(request):
+    if request.GET.has_key("s"):
+        start_time=float(request.GET["s"])
+    else :
+        start_time=6
+    if request.GET.has_key("e"):
+        end_time=float(request.GET["e"])
+    else :
+        end_time=start_time
+        
+    dt_now=datetime.now()
+    monthlyStatisticsData,clients=missionStatisticsFun(dt_now,start_time,end_time,1)
+    todayStatisticsData=monthlyStatisticsData[0]
+    todayStatisticsData.label=dt_now.strftime("%R")
+    
+    response_data['label']=todayStatisticsData.label
+    clientsSite=[]
+    clientsGold=[]
+    for item in todayStatisticsData.clientsData:
+        clientsSite.append(item.site)
+        clientsGold.append(item.gold)
+    response_data['site']=clientsSite
+    response_data['gold']=clientsGold
+    response_data['hi_sum']=todayStatisticsData.hi_sum
+    response_data['nmi_sum']=todayStatisticsData.nmi_sum
+    response_data['hi_money']=todayStatisticsData.hi_money
+    response_data['nmi_money']=todayStatisticsData.nmi_money
+    response_data['money']=todayStatisticsData.money
+
+    return HttpResponse(simplejson.dumps(response_data));
+    
+# @login_required()    
+# def missionDailyStatistics(request):
+    # if request.GET.has_key("t"):
+        # end_time=float(request.GET["t"])
+        # margin_time=end_time-3
+        
+        # if margin_time <= 0 :
+            # margin_time=margin_time+24
+    # else:
+        # margin_time=24
+    
+    # dt_now=datetime.now()
+    # dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+    # if dt_now >dt_line:
+        # date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
+    # else:
+        # date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)-timedelta(days=1)
+    
+    # clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=30)).distinct('site','client') 
+    
+    # monthlyStatisticsData=[]
+    # for i in range(0,31):
+        # dailydata=DailyData()
+        # dt_start=date_latest-timedelta(days=i)
+        # dt_end=date_latest-timedelta(days=i)+timedelta(hours=margin_time)
+        # dailydata.label=dt_start.strftime("%Y %m %d")
+        # dailydata.clientsData=[]
+        # dailydata.hi_sum=0
+        # dailydata.nmi_sum=0
+        # for item in clients:
+            # gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
+            # gold=gold_contain["price__sum"]
+            # if gold==None :
+                # gold=0
+            # if item.site=="nmimi" :
+                # gold=gold/100.0
+                # dailydata.nmi_sum=dailydata.nmi_sum+gold
+            # if item.site=="hiwinwin" :
+                # dailydata.hi_sum=dailydata.hi_sum+gold
+            # dailyClientData=DailyClientData()
+            # dailyClientData.site=item.site
+            # dailyClientData.gold=gold
+            # dailydata.clientsData.append(dailyClientData)
+        # dailydata.hi_money=dailydata.hi_sum*0.248*0.4
+        # dailydata.nmi_money=dailydata.nmi_sum*0.4
+        # dailydata.money=dailydata.hi_money+dailydata.nmi_money
+        # monthlyStatisticsData.append(dailydata)
+        
+    # template_values={   "statisticsData":monthlyStatisticsData,
+                        # "headline":clients,
+                    # }
+    # return render_to_response('statisticsdata.html', template_values);
