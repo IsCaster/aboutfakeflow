@@ -8,6 +8,11 @@
         td.money {
             color:#0000CD;
         }
+        tr.incre
+        {
+            color:red ;
+            font-size: 50%;
+        }
     </style>
   </head>
   <body>
@@ -57,14 +62,13 @@
         {
             $.post("/missiontodaystatistics",{},function(data)
                 {
-                    alert(data.label)
                     updateTable(data)
                 },"json")
         }
         
         function updateTable(data)
         {
-            alert("1")
+
             beginTimeStr=$("#statisticsDataTab tr:eq(1) td ")[0].innerHTML
             beginTime_pieces = beginTimeStr.split(":")
             beginTime_h=beginTime_pieces[0]
@@ -79,7 +83,7 @@
             {
                 increTime=increTime+24*60
             }
-            alert("2")
+
             increMoney=parseFloat(data.money)-parseFloat($("#statisticsDataTab tr:eq(1) td ")[1].innerHTML)
             
             hiStr=$("#statisticsDataTab tr:eq(1) td ")[2].innerHTML
@@ -98,11 +102,11 @@
             
             increNmi_sum=parseFloat(data.nmi_sum)-parseFloat(nmi_sum)
             increNmi_money=parseFloat(data.nmi_money)-parseFloat(nmi_money)
-            alert("3")
+
             var newline=document.createElement("tr")
             var incrementline=document.createElement("tr")
             
-            newlineInnerHTML=      "<tr>"+
+            var newlineInnerHTML=      "<tr>"+
                                         "<td>"+data.label+"</td>"+
                                         "<td class='money'>"+data.money+"</td>"+
                                         "<td>"+data.hi_sum+"/"+data.hi_money+"</td>"+
@@ -116,12 +120,12 @@
                                     "</tr>"
             newline.innerHTML=newlineInnerHTML
                                         
-            incrementlineInnerHTML="<tr style='color:red ; font-size: 50%;' >"+
+            var incrementlineInnerHTML="<tr class='incre'>"+
                                         "<td>+"+increTime+"m</td>"+
                                         "<td>+"+increMoney+"</td>"+
-                                        "<td>+"+increHi_sum+"/+"+increHi_money+"</td>"+
-                                        "<td>+"+increNmi_sum+"/+"+increNmi_money+"</td>"
-            alert("4")
+                                        "<td>+"+increHi_sum+"/"+increHi_money+"</td>"+
+                                        "<td>+"+increNmi_sum+"/"+increNmi_money+"</td>"
+
             for(var i=0;i<data.gold.length;++i)
             {
                 var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
@@ -131,10 +135,10 @@
             incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "</tr>"
             incrementline.innerHTML=incrementlineInnerHTML 
-            alert("5")
+
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
-            alert("6")
+
         }
         
     </script>
