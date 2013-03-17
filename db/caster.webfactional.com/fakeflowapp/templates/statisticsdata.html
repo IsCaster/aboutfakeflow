@@ -99,23 +99,24 @@
             increNmi_sum=parseFloat(data.nmi_sum)-parseFloat(nmi_sum)
             increNmi_money=parseFloat(data.nmi_money)-parseFloat(nmi_money)
             alert("3")
-            newline=document.createElement("tr")
-            incrementline=document.createElement("tr")
+            var newline=document.createElement("tr")
+            var incrementline=document.createElement("tr")
             
-            newline.innerHTML=      "<tr>"+
+            newlineInnerHTML=      "<tr>"+
                                         "<td>"+data.label+"</td>"+
                                         "<td class='money'>"+data.money+"</td>"+
                                         "<td>"+data.hi_sum+"/"+data.hi_money+"</td>"+
                                         "<td>"+data.nmi_sum+"/"+data.nmi_money+"</td>"
             for(var i=0;i<data.gold.length;++i)
             {
-                newline.innerHTML=  newline.innerHTML + 
+                newlineInnerHTML=  newlineInnerHTML + 
                                         "<td class='"+data.site[i]+"'>"+data.gold[i]+"</td>"
             }
-            newline.innerHTML=  newline.innerHTML +             
+            newlineInnerHTML=  newlineInnerHTML +             
                                     "</tr>"
-
-            incrementline.innerHTML="<tr style='color:red ; font-size: 50%;' >"+
+            newline.innerHTML=newlineInnerHTML
+                                        
+            incrementlineInnerHTML="<tr style='color:red ; font-size: 50%;' >"+
                                         "<td>+"+increTime+"m</td>"+
                                         "<td>+"+increMoney+"</td>"+
                                         "<td>+"+increHi_sum+"/+"+increHi_money+"</td>"+
@@ -124,11 +125,12 @@
             for(var i=0;i<data.gold.length;++i)
             {
                 var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
-                incrementline.innerHTML=  incrementline.innerHTML + 
+                incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "<td class='"+data.site[i]+"'>+"+increGold+"</td>"
             }
-            incrementline.innerHTML=  incrementline.innerHTML + 
+            incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "</tr>"
+            incrementline.innerHTML=incrementlineInnerHTML 
             alert("5")
             $("#statisticsDataTab")[0].insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
             $("#statisticsDataTab")[0].insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
