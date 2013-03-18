@@ -114,7 +114,7 @@
             
             var newlineInnerHTML=      "<tr>"+
                                         "<td>"+data.label+"</td>"+
-                                        "<td class='money'>"+data.money+"</td>"+
+                                        "<td class='money'>"+data.money.toFixed(2)+"</td>"+
                                         "<td>"+data.hi_sum+"/"+data.hi_money.toFixed(2)+"</td>"+
                                         "<td>"+data.nmi_sum.toFixed(2)+"/"+data.nmi_money.toFixed(2)+"</td>"
             for(var i=0;i<data.gold.length;++i)
