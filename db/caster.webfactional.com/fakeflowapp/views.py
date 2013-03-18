@@ -945,12 +945,12 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
     else:
         date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,start_time,0)-timedelta(days=1)
     
-    if day_count > 30 :
+    if day_count > 7 :
         c_lifetime=day_count
     else:
-        c_lifetime=day_count
-    clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=30)).distinct('site','client') 
-    #client will last at least a month
+        c_lifetime=7
+    clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=c_lifetime)).distinct('site','client') 
+    #client will last at least a week
     
     daysStatisticsData=[]
     for i in range(0,day_count):
