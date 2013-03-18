@@ -1003,6 +1003,11 @@
     <div id="submitUrlDiv">
     </div>
     <div>
+        未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
+        <input type="button" onclick="getMissionList(0,0);" value="赶紧做任务" />
+        <!--input type="button" onclick="getMissionList(1,1);" value="集中做任务" /-->
+        <!--input type="button" onclick="getMissionList(1);" value="过滤任务" /-->
+        <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
         <form action="javascript:queryMissionInfo();">
             {% csrf_token %}
           <div>
@@ -1010,11 +1015,7 @@
             <input type="submit" value="query">
             <input type="button" value="up" onclick="upQueryUrls()">
           </div>
-          未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
-          <input type="button" onclick="getMissionList(0,0);" value="赶紧做任务" />
-          <input type="button" onclick="getMissionList(1,1);" value="集中做任务" />
-           <input type="button" onclick="getMissionList(1);" value="过滤任务" />
-          <input type="button" onclick="clearDoneBuffer();" value="clear doneBuffer" />
+          
         </form>    
     </div>
     <div id="missionInfoDiv" style="padding:10px;background-color:white;width:100%; overflow:auto;">
