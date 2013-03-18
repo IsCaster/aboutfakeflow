@@ -8,6 +8,16 @@
         td.money {
             color:#0000CD;
         }
+        td.incre
+        {
+            color:red ;
+            font-size: 50%;
+        }
+        td.decre
+        {
+            color:green ;
+            font-size: 50%;
+        }
         tr.incre
         {
             color:red ;
@@ -92,6 +102,17 @@
                 increMoneySpeed=(increMoney/increTime*60).toFixed(2)
             }
             
+            todayMoneySpeed=0
+            todayIncreTime=parseInt(endTime_h)*60+parseInt(endTime_m)-9*60
+            if(todayIncreTime<0)
+            {
+                todayIncreTime=todayIncreTime+24*60
+            }
+            if(todayIncreTime!=0)
+            {
+                todayMoneySpeed=(data.money/todayIncreTime*60).toFixed(2)
+            }
+            
             hiStr=$("#statisticsDataTab tr:eq(1) td ")[2].innerHTML
             hi_pieces = hiStr.split("/")
             hi_sum=hi_pieces[0]
@@ -127,7 +148,7 @@
             newline.innerHTML=newlineInnerHTML
                                         
             var incrementlineInnerHTML="<tr>"+
-                                        "<td>+"+increTime+"m</td>"+
+                                        "<td>+"+increTime+"m,"+todayMoneySpeed+"/h</td>"+
                                         "<td>+"+increMoney.toFixed(2)+"("+increMoneySpeed+"/h)</td>"+
                                         "<td>+"+increHi_sum+"/"+increHi_money.toFixed(2)+"</td>"+
                                         "<td>+"+increNmi_sum.toFixed(2)+"/"+increNmi_money.toFixed(2)+"</td>"
@@ -135,13 +156,18 @@
             for(var i=0;i<data.gold.length;++i)
             {
                 var increGold=parseFloat(data.gold[i])-parseFloat($("#statisticsDataTab tr:eq(1) td ")[4+i].innerHTML)
+                var markClass="incre"
+                if (increGold.toFixed(2) == 0)
+                {
+                    markClass="decre"
+                }
                 incrementlineInnerHTML=  incrementlineInnerHTML + 
-                                        "<td class='"+data.site[i]+"'>+"+increGold.toFixed(2)+"</td>"
+                                        "<td class='"+data.site[i]+" "+markClass+"'>+"+increGold.toFixed(2)+"</td>"
             }
             incrementlineInnerHTML=  incrementlineInnerHTML + 
                                         "</tr>"
             incrementline.innerHTML=incrementlineInnerHTML 
-            incrementline.className="incre"
+            incrementline.className="increTr"
 
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(incrementline,$("#statisticsDataTab tr:eq(1)")[0])
             $("#statisticsDataTab tr:eq(1)")[0].parentNode.insertBefore(newline,$("#statisticsDataTab tr:eq(1)")[0])
