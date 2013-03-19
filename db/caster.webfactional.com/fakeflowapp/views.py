@@ -1043,7 +1043,7 @@ def checkout(request):
     
     entries=WorkerPerformance.objects.filter(date=todayStatisticsData.label)
     if entries.count() > 0:
-        return HttpResponse("提交失败, 已经checkout过了, 如有疑问请联系管理员")
+        return HttpResponse("fail !! Already checkout, please contact  administrator")
     newWorkerPerformance=WorkerPerformance()
     newWorkerPerformance.date=todayStatisticsData.label
     newWorkerPerformance.money=float('%.4f'%todayStatisticsData.money)
