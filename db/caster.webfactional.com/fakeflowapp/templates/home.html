@@ -998,7 +998,7 @@
         {
             $.post("/missiontodaystatistics",function(data)
                 {
-                    $("#todaymoney")[0].innerHTML="金额："+data.money
+                    $("#todaymoney")[0].innerHTML="金额："+data.money.toFixed(4)
                 }
                 ,"json")
         }
