@@ -27,3 +27,9 @@ class MissionCompleteList(models.Model):
     client = models.CharField(max_length=100);
     price = models.FloatField();
     updateTime = models.DateTimeField(auto_now_add=True);
+    
+class WorkerPerformance(models.Model):
+    date = models.CharField(max_length=100);
+    money = models.FloatField();
+    checkoutTime = models.DateTimeField();
+    updateTime = models.DateTimeField(auto_now=True);

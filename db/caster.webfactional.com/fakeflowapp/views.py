@@ -2,7 +2,7 @@
 # coding: gbk
 from django.http import HttpResponse
 from django.template import Context, loader
-from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList, MissionCompleteList
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList, MissionCompleteList, WorkerPerformance
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -1036,55 +1036,39 @@ def missionTodayStatistics(request):
 
     return HttpResponse(simplejson.dumps(response_data));
     
-# @login_required()    
-# def missionDailyStatistics(request):
-    # if request.GET.has_key("t"):
-        # end_time=float(request.GET["t"])
-        # margin_time=end_time-3
+def checkout(request): 
+    dt_now=datetime.now()
+    monthlyStatisticsData,clients=missionStatisticsFun(dt_now,6,6,1)
+    todayStatisticsData=monthlyStatisticsData[0]
+    
+    entries=WorkerPerformance.objects.filter(date=todayStatisticsData.label)
+    if entries.count() > 0:
+        return HttpResponse("已经checkout过了, 有疑问请联系管理员")
+    newWorkerPerformance=WorkerPerformance()
+    newWorkerPerformance.date=todayStatisticsData.label
+    newWorkerPerformance.money=float('%.4f'%todayStatisticsData.money)
+    newWorkerPerformance.checkoutTime=dt_now
+    newWorkerPerformance.save()
+    return HttpResponse("success")
+
+class DailyWorkerData:
+    pass 
+def performanceMonthlyData(request):
+    if request.GET.has_key("o"):
+        offset=int(request.GET["o"])
+    else :
+        offset=0
+    dt_end=datetime.now()-timedelta(days=offset)
+    dt_start=datetime.now()-timedelta(days=offset)-timedelta(days=40)
+    entries=WorkerPerformance.objects.filter(checkoutTime__lte=dt_end,checkoutTime__gte=dt_start).order_by("-checkoutTime")[:40]
+    daysData=[]
+    for entry in entries:
+        dailyWorkerData=DailyWorkerData()
+        dailyWorkerData.date=entry.date
+        dailyWorkerData.checkoutTime=entry.checkoutTime
+        dailyWorkerData.money=entry.money
+        daysData.append(dailyWorkerData)
+    template_values={   "daysData":daysData,
+                    }
+    return render_to_response('performancemonthlydata.html', template_values);
         
-        # if margin_time <= 0 :
-            # margin_time=margin_time+24
-    # else:
-        # margin_time=24
-    
-    # dt_now=datetime.now()
-    # dt_line=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
-    # if dt_now >dt_line:
-        # date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)
-    # else:
-        # date_latest=datetime(dt_now.year,dt_now.month,dt_now.day,3,0)-timedelta(days=1)
-    
-    # clients=MissionCompleteList.objects.filter(updateTime__lte=date_latest+timedelta(days=1),updateTime__gt=date_latest-timedelta(days=30)).distinct('site','client') 
-    
-    # monthlyStatisticsData=[]
-    # for i in range(0,31):
-        # dailydata=DailyData()
-        # dt_start=date_latest-timedelta(days=i)
-        # dt_end=date_latest-timedelta(days=i)+timedelta(hours=margin_time)
-        # dailydata.label=dt_start.strftime("%Y %m %d")
-        # dailydata.clientsData=[]
-        # dailydata.hi_sum=0
-        # dailydata.nmi_sum=0
-        # for item in clients:
-            # gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
-            # gold=gold_contain["price__sum"]
-            # if gold==None :
-                # gold=0
-            # if item.site=="nmimi" :
-                # gold=gold/100.0
-                # dailydata.nmi_sum=dailydata.nmi_sum+gold
-            # if item.site=="hiwinwin" :
-                # dailydata.hi_sum=dailydata.hi_sum+gold
-            # dailyClientData=DailyClientData()
-            # dailyClientData.site=item.site
-            # dailyClientData.gold=gold
-            # dailydata.clientsData.append(dailyClientData)
-        # dailydata.hi_money=dailydata.hi_sum*0.248*0.4
-        # dailydata.nmi_money=dailydata.nmi_sum*0.4
-        # dailydata.money=dailydata.hi_money+dailydata.nmi_money
-        # monthlyStatisticsData.append(dailydata)
-        
-    # template_values={   "statisticsData":monthlyStatisticsData,
-                        # "headline":clients,
-                    # }
-    # return render_to_response('statisticsdata.html', template_values);

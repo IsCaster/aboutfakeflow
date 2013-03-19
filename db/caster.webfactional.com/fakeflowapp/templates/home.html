@@ -984,6 +984,11 @@
         {
             element.style.display="none"
         }
+        
+        function checkout()
+        {
+        
+        }
 	</script>
   </head>
   <body >
@@ -1003,7 +1008,10 @@
     <div id="submitUrlDiv">
     </div>
     <div>
+        <input type="button" onclick="checkout();" value="checkout" />
         未处理任务数：{{unhandledMissionCount}}，进行中任务数：{{undergoMissionCount}} &nbsp;
+        <span style="font-weight: bold" id="todaymoney" onclick="updateTodayMoney()" >金额：0</span>
+        <a href="/performancemonthlydata" target="_blank" >工作统计</a>
         <input type="button" onclick="getMissionList(0,0);" value="赶紧做任务" />
         <!--input type="button" onclick="getMissionList(1,1);" value="集中做任务" /-->
         <!--input type="button" onclick="getMissionList(1);" value="过滤任务" /-->
