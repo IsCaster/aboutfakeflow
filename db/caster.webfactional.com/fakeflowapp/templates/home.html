@@ -987,7 +987,20 @@
         
         function checkout()
         {
+            $.post("/checkout",function(data)
+                {
+                    $("#callback_message")[0].innerHTML=data
+                    $("#callback_message")[0].style.display="block"
+                })
+        }
         
+        function updateTodayMoney()
+        {
+            $.post("/missiontodaystatistics",function(data)
+                {
+                    $("#todaymoney")[0].innerHTML="金额："+data.money
+                }
+                ,"json")
         }
 	</script>
   </head>
