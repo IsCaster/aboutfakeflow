@@ -62,6 +62,17 @@ def missionInfo(request):
     mid2_keyword = unquote(mid_keyword)
     keyword = mid2_keyword.decode('utf8')
 
+    if keyword == "about:blank" :
+        # query invalid misson
+        query=MissionInfo.objects.filter(
+                valid=False
+            ).order_by("-updateTime")[:50]#retrieve max :50;
+        template_values={
+                'missionInfos'  : query,
+                'keyword'   : keyword,  
+            };
+        return render_to_response('missioninfo.html', template_values);
+        
     query=MissionInfo.objects.filter(
             Q(shopkeeper__contains=keyword)|Q(message__contains=keyword)|Q(url__contains=keyword)
         ).order_by("-updateTime")[:20]#retrieve max :20;
