@@ -40,7 +40,7 @@ function handleFakeVisitPage()
     if(keyword=="")
     {
         unsafeWindow.open(itemUrl)
-        setTimeout(function(){unsafeWindow.close()},2000)
+        //setTimeout(function(){unsafeWindow.close()},2000)
     }
     else
     {
@@ -58,7 +58,7 @@ function handleFakeVisitPage()
 			$("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
 			$("#searchpageframe")[0].contentWindow.open(url)
 		}
-        setTimeout(function(){unsafeWindow.close()},2000)
+        //setTimeout(function(){unsafeWindow.close()},2000)
     }
 }
 
@@ -81,7 +81,7 @@ function handleTaobaoSearchPage()
 			}
         }
         openContainP.click()
-		setTimeout(function(){unsafeWindow.close()},50000)
+		//setTimeout(function(){unsafeWindow.close()},50000)
     }
 	
 	function getUrlParam(name)
@@ -123,7 +123,7 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt1);
 		obj.dispatchEvent(evt2);
 		obj.dispatchEvent(evt3);
-		setTimeout(function(){unsafeWindow.close()},50000)
+		//setTimeout(function(){unsafeWindow.close()},50000)
     }
     document.body.insertBefore(clickContainP,null);  	
  
@@ -150,7 +150,7 @@ function handleTaobaoSearchPage()
     
     if(unsafeWindow.opener)
     {
-        unsafeWindow.opener.close()
+        //unsafeWindow.opener.close()
     }
 	
 	if(itemId=="")
@@ -169,7 +169,7 @@ function handleTaobaoSearchPage()
     GM_log("handleTaobaoSearchPage,url="+url+",itemId="+itemId)
     if(url==""&&itemId=="")
     {
-        unsafeWindow.close()
+        //unsafeWindow.close()
         return;
     }
 	
@@ -278,7 +278,7 @@ function handleTaobaoItemPage()
  
 	if(unsafeWindow.opener)
     {
-        unsafeWindow.opener.close()
+        //unsafeWindow.opener.close()
     }  
  
 	itemTitle=""
@@ -324,5 +324,5 @@ function handleTaobaoItemPage()
 
 function handleInvalidItemPage()
 {
-	setTimeout(function(){unsafeWindow.close()},2000)
+	//setTimeout(function(){unsafeWindow.close()},2000)
 }
