@@ -828,7 +828,7 @@ function handleMission()
                         fakeVisitDiv=document.createElement("div")
                         fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
                                                     <input name='url' type='hidden' value='"+url+"'/>\
-                                                    <input name='keyword' type='hidden' value='"+keyword+"'/>\
+                                                    <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
                                                     <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
                                                     <input name='site' type='hidden' value='hiwinwin'/>\
                                                 </form>"

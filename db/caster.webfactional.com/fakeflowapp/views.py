@@ -735,7 +735,7 @@ def fakeVisit(request):
     searchTips=""
     itemId=""
     if request.POST.has_key("keyword") :
-        keyword=request.POST["keyword"]
+        keyword=unquote(request.POST["keyword"].encode('ascii','ignore')).decode('utf8')
     
     if request.POST.has_key("site") :
         site=request.POST["site"]
