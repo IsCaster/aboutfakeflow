@@ -675,6 +675,8 @@ function handleMission()
         $(".link_t ")[0].onclick();
         $("iframe")[0].loadtime=0
 		$("iframe")[0].urls=new Array()
+        $("iframe")[0].hi_mission_id=$(".link_t ")[0].parentNode.parentNode.firstChild.innerHTML
+        GM_log("hi_mission_id="+$("iframe")[0].hi_mission_id)
         $("iframe")[0].onload = function()
         {		
 			this.loadtime=this.loadtime+1
@@ -765,7 +767,8 @@ function handleMission()
                         //submit success url
                         input = "message="+encodeURIComponent(message)+";shopkeeper="+encodeURIComponent(shopkeeper)+
                             ";itemId="+itemId+";url="+encodeURIComponent(url)+
-                            ";site="+encodeURIComponent(site)+";client="+encodeURIComponent(client)
+                            ";site="+encodeURIComponent(site)+";client="+encodeURIComponent(client)+
+                            ";idInSite="+$("iframe")[0].hi_mission_id
                         
                         GM_log("input="+input)
                         GM_xmlhttpRequest({
@@ -879,6 +882,7 @@ function handleMission()
                             fetchResultTime=this.fetchResultTime
                             //submit success url
                             input = "message="+encodeURIComponent(message)+";itemId="+itemId+";url="+encodeURIComponent(url)+";site="+site+";fetchResultTime="+fetchResultTime
+                                    +";idInSite="+$("iframe")[0].hi_mission_id
                             GM_log("submitresultfail:"+input)
                             GM_xmlhttpRequest({
                                     method: "POST",
@@ -1054,7 +1058,8 @@ function handleMission()
                         ';shopkeeper='+encodeURIComponent(shopkeeper)+
                         ';site='+site+
                         ';local='+GM_getValue("bLocal","90002")+
-                        ";client="+encodeURIComponent(client)
+                        ";client="+encodeURIComponent(client)+
+                        ";idInSite="+$("iframe")[0].hi_mission_id
                 
 				// request=$.get("http://caster.webfactional.com/queryurl",input,function(data){
                 // GM_log("query return");

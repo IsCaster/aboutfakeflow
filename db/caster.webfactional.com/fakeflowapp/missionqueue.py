@@ -123,6 +123,7 @@ class MissionItem:
         self.firstVisitUrl="" # to do
         self.inshopUrl="" # to do
         self.searchTips="" # to do
+        self.idInSite="" # mission id in the specific site
     def toJson(self):
         jsonData={}
         jsonData["message"]=self.raw_message

@@ -1,8 +1,10 @@
 <table id="missionInfoTab" >
     <tr>
         <td>序列</td>
+        <td>任务ID</td>
         <td>掌柜名</td>
         <td>提示信息</td>
+        <td>搜索关键词</td>
         <td>访问url</td>
         <td>任务网站</td>
         <td>可用</td>
@@ -12,8 +14,10 @@
 {% for missionInfo in missionInfos %}
     <tr class="missionInfoTr" >
         <td>{{ forloop.counter }}.</td>
+        <td class="idInSite" >{{ missionInfo.idInSite }}</td>
         <td class="shopkeeper">{{ missionInfo.shopkeeper }}</td>
         <td class="message" >{{ missionInfo.message }}</td>
+        <td class="keyword" >{{ missionInfo.keyword }}</td>
         <td class="url" onclick="setTdValue(this,'{{missionInfo.url}}')" >{{ missionInfo.url }}&nbsp;<input value='Go' type='button' onclick='openItemPage("{{ missionInfo.url }}")' /></td>
         <td class="site" >{{ missionInfo.site|linebreaksbr }}</td>
         <td class="valid" >{{ missionInfo.valid }}</td>

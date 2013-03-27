@@ -173,7 +173,11 @@ def queryUrl(request):
         client=request.POST["client"]
     else:
         client=""
-        
+    
+    if request.POST.has_key("idinsite"):
+        idInSite=request.POST["idinsite"]
+    else:
+        idInSite=""
     # shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
     # site=unquote(raw_site.encode('ascii','ignore')).decode('utf8')
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
@@ -185,6 +189,7 @@ def queryUrl(request):
     
     # query cache first 
     newMission=MissionItem(raw_message,site,shopkeeper);
+    newMission.idInSite=idInSite
     with GetMissionQueue().bufferLock:
         location,theMission=GetMissionQueue().query(newMission)
     if location != "none":
@@ -448,6 +453,12 @@ def submitResultSuccess(request):
     site = request.POST["site"]
     client=request.POST["client"]
     
+    if request.POST.has_key("idinsite"):
+        idInSite=request.POST["idinsite"]
+    else:
+        idInSite=""
+    
+    
     if site=="nmimi" :
         if request.POST.has_key("price") and request.POST["price"]!="" :
             price=float(request.POST["price"])
@@ -498,6 +509,7 @@ def submitResultSuccess(request):
             newMissionInfo.url=url
             newMissionInfo.site=site
             newMissionInfo.shopkeeper=shopkeeper
+            newMissionInfo.idInSite=idInSite
             newMissionInfo.save()
             return HttpResponse("mission info saved "); 
         else:
@@ -515,6 +527,10 @@ def submitResultSuccess(request):
                     newMissionInfo.shopkeeper=theMission.shopkeeper
                     newMissionInfo.site=theMission.site
                     newMissionInfo.keyword=theMission.keyword
+                    if idInSite != "" :
+                        newMissionInfo.idInSite=idInSite
+                    else:
+                        newMissionInfo.idInSite=theMission.idInSite
                     newMissionInfo.save()
                     # move theMission to doneBuffer ,after pop theMission can only in the undergoBuffer
                     entries=MissionInfo.objects.filter(message=message,site=theMission.site).order_by("-updateTime")[:20]#retrieve max :20
@@ -544,6 +560,7 @@ def submitResultSuccess(request):
                     newMissionInfo.url=url
                     newMissionInfo.site=site
                     newMissionInfo.shopkeeper=shopkeeper
+                    newMissionInfo.idInSite=idInSite
                     newMissionInfo.save()
                 logger.debug("mission don't exist ,should abandon result ,but save first ")    
                 return HttpResponse("mission don't exist ,should abandon result ,but save first ");  
@@ -650,6 +667,11 @@ def submitResultFail(request):
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
     
+    if request.POST.has_key("idinsite"):
+        idInSite=request.POST["idinsite"]
+    else:
+        idInSite=""
+    
     message=re.sub(r"\s*","",raw_message)
     
     if len(itemId) != 0 :
@@ -669,10 +691,13 @@ def submitResultFail(request):
     else:
         #error url in db or doneBuffer 
         newMission=MissionItem(raw_message,site);
+        newMission.idInSite=idInSite
         with GetMissionQueue().bufferLock:
             location,theMission=GetMissionQueue().push(newMission)
             if location == "done" :
                 theMission.init()
+                if idInSite != "":
+                    theMission.idInSite=idInSite
                 del GetMissionQueue().doneBuffer[theMission.itemId]
                 GetMissionQueue().unhandledBuffer[theMission.itemId]=theMission
                 GetMissionQueue().missionQueueSema.release()

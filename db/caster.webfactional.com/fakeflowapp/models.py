@@ -12,6 +12,7 @@ class MissionInfo(models.Model):
     searchTips = models.CharField(max_length=2000,default="");# the additional conditions of taobao homepage search 
     valid = models.BooleanField(default=True);
     updateTime = models.DateTimeField(auto_now_add=True);
+    idInSite = models.CharField(max_length=100,default="");# now is for hiwinwin only
 	
 class VerificationCode(models.Model):
     code = models.CharField(max_length=10);
