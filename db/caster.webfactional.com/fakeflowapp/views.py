@@ -780,7 +780,7 @@ def fakeVisit(request):
     
     template_values=Context({
         'url':url,
-        'keyword':quote(keyword.encode("gbk"), safe='~()*!.\'?'),
+        'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
         'firstVisitUrl':firstVisitUrl,
         'inshopUrl':inshopUrl,
         'searchTips':searchTips,
