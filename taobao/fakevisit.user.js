@@ -185,7 +185,7 @@ function handleTaobaoSearchPage()
         GM_log("handleTaobaoSearchPage,set blank")
 	}
 	
-    if(unsafeWindow.gotoPage.toString().indexOf("window.location = url")!=0)
+    if(unsafeWindow.gotoPage.toString().indexOf("window.location = url")!=-1)
     {
         unsafeWindow.gotoPage= function(form) {
             var page = 6;
@@ -205,7 +205,7 @@ function handleTaobaoSearchPage()
             form.action = url;
             //window.location = url;
             //form.submit();
-            
+            GM_log("open url="+url)
             unsafeWindow.open(url)
             
             return false;
