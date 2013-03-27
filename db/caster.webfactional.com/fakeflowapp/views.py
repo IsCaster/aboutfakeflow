@@ -74,7 +74,8 @@ def missionInfo(request):
         return render_to_response('missioninfo.html', template_values);
         
     query=MissionInfo.objects.filter(
-            Q(shopkeeper__contains=keyword)|Q(message__contains=keyword)|Q(url__contains=keyword)
+            Q(shopkeeper__contains=keyword)|Q(message__contains=keyword)
+            |Q(url__contains=keyword)|Q(idInSite__contains=keyword)
         ).order_by("-updateTime")[:20]#retrieve max :20;
 
     template_values={
@@ -174,8 +175,8 @@ def queryUrl(request):
     else:
         client=""
     
-    if request.POST.has_key("idinsite"):
-        idInSite=request.POST["idinsite"]
+    if request.POST.has_key("idInSite"):
+        idInSite=request.POST["idInSite"]
     else:
         idInSite=""
     # shopkeeper=unquote(raw_shopkeeper.encode('ascii','ignore')).decode('utf8')
@@ -453,8 +454,8 @@ def submitResultSuccess(request):
     site = request.POST["site"]
     client=request.POST["client"]
     
-    if request.POST.has_key("idinsite"):
-        idInSite=request.POST["idinsite"]
+    if request.POST.has_key("idInSite"):
+        idInSite=request.POST["idInSite"]
     else:
         idInSite=""
     logger.debug("submitResultSuccess() idInSite="+idInSite)
@@ -667,8 +668,8 @@ def submitResultFail(request):
     fail_url = request.POST["url"]
     fetchResultTime = request.POST["fetchResultTime"]
     
-    if request.POST.has_key("idinsite"):
-        idInSite=request.POST["idinsite"]
+    if request.POST.has_key("idInSite"):
+        idInSite=request.POST["idInSite"]
     else:
         idInSite=""
     
