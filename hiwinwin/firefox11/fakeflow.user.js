@@ -675,7 +675,7 @@ function handleMission()
         $(".link_t ")[0].onclick();
         $("iframe")[0].loadtime=0
 		$("iframe")[0].urls=new Array()
-        $("iframe")[0].hi_mission_id=$(".link_t ")[0].parentNode.parentNode.firstChild.innerHTML
+        $("iframe")[0].hi_mission_id=$(".link_t ")[0].parentNode.parentNode.firstChild.nextSibling.innerHTML
         GM_log("hi_mission_id="+$("iframe")[0].hi_mission_id)
         $("iframe")[0].onload = function()
         {		

@@ -457,7 +457,7 @@ def submitResultSuccess(request):
         idInSite=request.POST["idinsite"]
     else:
         idInSite=""
-    
+    logger.debug("submitResultSuccess() idInSite="+idInSite)
     
     if site=="nmimi" :
         if request.POST.has_key("price") and request.POST["price"]!="" :
