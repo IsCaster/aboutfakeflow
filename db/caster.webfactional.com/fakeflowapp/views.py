@@ -774,9 +774,13 @@ def fakeVisit(request):
     itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     logger.debug("fakeVisit keyword="+keyword)
+    
+    #fix the bug of some Unicode encode error 
+    keyword=re.sub("\u2022",".",keyword)
+    
     template_values=Context({
         'url':url,
-        'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
+        'keyword':quote(keyword.encode("gbk"), safe='~()*!.\'?'),
         'firstVisitUrl':firstVisitUrl,
         'inshopUrl':inshopUrl,
         'searchTips':searchTips,

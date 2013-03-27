@@ -81,7 +81,7 @@ function handleTaobaoSearchPage()
 			}
         }
         openContainP.click()
-		setTimeout(function(){unsafeWindow.close()},50000)
+		//setTimeout(function(){unsafeWindow.close()},50000)
     }
 	
 	function getUrlParam(name)
@@ -123,7 +123,7 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt1);
 		obj.dispatchEvent(evt2);
 		obj.dispatchEvent(evt3);
-		setTimeout(function(){unsafeWindow.close()},50000)
+		//setTimeout(function(){unsafeWindow.close()},50000)
     }
     document.body.insertBefore(clickContainP,null);  	
  
