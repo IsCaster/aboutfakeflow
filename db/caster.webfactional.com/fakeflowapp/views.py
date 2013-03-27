@@ -776,7 +776,7 @@ def fakeVisit(request):
     logger.debug("fakeVisit keyword="+keyword)
     
     #fix the bug of some Unicode encode error 
-    keyword=re.sub("\u2022",".",keyword)
+    keyword=re.sub(u"\u2022",u".",keyword)
     
     template_values=Context({
         'url':url,
