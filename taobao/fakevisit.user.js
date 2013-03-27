@@ -40,7 +40,7 @@ function handleFakeVisitPage()
     if(keyword=="")
     {
         unsafeWindow.open(itemUrl)
-        //setTimeout(function(){unsafeWindow.close()},2000)
+        setTimeout(function(){unsafeWindow.close()},2000)
     }
     else
     {
@@ -58,7 +58,7 @@ function handleFakeVisitPage()
 			$("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
 			$("#searchpageframe")[0].contentWindow.open(url)
 		}
-        //setTimeout(function(){unsafeWindow.close()},2000)
+        setTimeout(function(){unsafeWindow.close()},2000)
     }
 }
 
@@ -81,7 +81,7 @@ function handleTaobaoSearchPage()
 			}
         }
         openContainP.click()
-		//setTimeout(function(){unsafeWindow.close()},50000)
+		setTimeout(function(){unsafeWindow.close()},50000)
     }
 	
 	function getUrlParam(name)
@@ -123,17 +123,21 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt1);
 		obj.dispatchEvent(evt2);
 		obj.dispatchEvent(evt3);
-		//setTimeout(function(){unsafeWindow.close()},50000)
+		setTimeout(function(){unsafeWindow.close()},50000)
     }
     document.body.insertBefore(clickContainP,null);  	
  
 	url=""
 	itemId=""
 	jumpto_para=getUrlParam("jumpto")
-	if(jumpto_para=="")//first_page
+    //new taobao style
+    s_para=getUrlParam("s")
+    n_para=getUrlParam("n")
+    
+	if(jumpto_para==""&&(s_para==""||s_para=="0"))//first_page
 	{
 		fake_spm=getUrlParam("spm")
-	
+        GM_log("handleTaobaoSearchPage,fake_spm="+fake_spm)
 		itemId_s=fake_spm.replace(/a230r\.1\.8\.5\./,"")
 		if(fake_spm!=itemId_s)
 		{
@@ -150,7 +154,7 @@ function handleTaobaoSearchPage()
     
     if(unsafeWindow.opener)
     {
-        //unsafeWindow.opener.close()
+        unsafeWindow.opener.close()
     }
 	
 	if(itemId=="")
@@ -169,85 +173,205 @@ function handleTaobaoSearchPage()
     GM_log("handleTaobaoSearchPage,url="+url+",itemId="+itemId)
     if(url==""&&itemId=="")
     {
-        //unsafeWindow.close()
+        unsafeWindow.close()
         return;
     }
 	
 	if($("#filterPageForm").length>0)
 	{
 		$("#filterPageForm")[0].target="_blank"
+        //for the new version of taobao
+        //$("#filterPageForm").target="_blank"
+        GM_log("handleTaobaoSearchPage,set blank")
 	}
 	
-    if(itemId!="")
+    if(unsafeWindow.gotoPage.toString().indexOf("window.location = url")!=0)
     {
-        if($("a.EventCanSelect[href*='"+itemId+"&']").length>=1)
-        {
-            GM_log("1.find url")
-            var evt1 = document.createEvent("MouseEvents");
-            evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            var evt2 = document.createEvent("MouseEvents");     
-            evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            $("a.EventCanSelect[href*='"+itemId+"&']")[0].id="toClick"
-            setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
-			
-            return;
-        }
-        else if($("a.EventCanSelect[href$='"+itemId+"']").length>=1)
-        {
-            GM_log("2.find url")
-            $("a.EventCanSelect[href$='"+itemId+"']")[0].id="toClick"
-            setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
-            return;
-        }
-    }
-    else if($("a.EventCanSelect[href*='"+url+"']").length>=1)
-    {
-        GM_log("3.find url")
-        var evt1 = document.createEvent("MouseEvents");
-        evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-        var evt2 = document.createEvent("MouseEvents");     
-        evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-        $("a.EventCanSelect[href*='"+url+"']")[0].id="toClick"
-        setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
-        return;
-    }
+        unsafeWindow.gotoPage= function(form) {
+            var page = 6;
+            var pageSize = 40;
+            var tNum = 4000;
+            var start = 200;
+            var maxPage = 100;
+            var newPage = document.getElementById('jumpto').value;
 
-    if($(".page-info").length==0)
-    {
-        //only one page
-        openItemPage()
+            if(parseInt(newPage) > maxPage) {
+                newPage = maxPage;
+            }
+
+            var newStart = start + (newPage - page) * pageSize;
+            if (newStart < 0) newStart = 0;
+            var url = form.action + '&s=' + newStart + '&n=' + pageSize;
+            form.action = url;
+            //window.location = url;
+            //form.submit();
+            
+            unsafeWindow.open(url)
+            
+            return false;
+
+        }
     }
-    else
+    
+    function checkUrlInPage()
     {
-        pageinfo=$(".page-info")[0].innerHTML.split("/")
-        pageIndex=parseInt(pageinfo[0],10)
-        pageTotalNum=parseInt(pageinfo[1],10)
-        GM_log("pageNum="+$(".page-info")[0].innerHTML)
-        if(pageIndex==pageTotalNum)
+        if($("a.s80").length>0) 
+        //for the new version of taobao 1
         {
-            //last page
-            openItemPage();
+            GM_log("s80")
+            if(itemId!="")
+            {
+
+                if($("a.s80[href*='"+itemId+"&']").length>=1)
+                {
+                    GM_log("1.find url")
+                    var evt1 = document.createEvent("MouseEvents");
+                    evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    var evt2 = document.createEvent("MouseEvents");     
+                    evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    $("a.s80[href*='"+itemId+"&']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    
+                    return;
+                }
+                else if($("a.s80[href$='"+itemId+"']").length>=1)
+                {
+                    GM_log("2.find url")
+                    $("a.s80[href$='"+itemId+"']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    return;
+                }
+            }
+            else if($("a.s80[href*='"+url+"']").length>=1)
+            {
+                GM_log("3.find url")
+                var evt1 = document.createEvent("MouseEvents");
+                evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                var evt2 = document.createEvent("MouseEvents");     
+                evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                $("a.s80[href*='"+url+"']")[0].id="toClick"
+                setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                return;
+            }
         }
-        else if(pageIndex<tryPageNum)
-        {
-            // go to next page
-            GM_log($("#jumpto ")[0].nextSibling.nextSibling)
-            //$("#jumpto")[0].nextSibling.nextSibling.click()
-			setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+        //for the new version of taobao 2
+        else if ($("a.s170").length>0) 
+        {   
+            GM_log("s170")
+            if(itemId!="")
+            {
+
+                if($("a.s170[href*='"+itemId+"&']").length>=1)
+                {
+                    GM_log("1.find url")
+                    var evt1 = document.createEvent("MouseEvents");
+                    evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    var evt2 = document.createEvent("MouseEvents");     
+                    evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    $("a.s170[href*='"+itemId+"&']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    
+                    return;
+                }
+                else if($("a.s170[href$='"+itemId+"']").length>=1)
+                {
+                    GM_log("2.find url")
+                    $("a.s170[href$='"+itemId+"']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    return;
+                }
+            }
+            else if($("a.s170[href*='"+url+"']").length>=1)
+            {
+                GM_log("3.find url")
+                var evt1 = document.createEvent("MouseEvents");
+                evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                var evt2 = document.createEvent("MouseEvents");     
+                evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                $("a.s170[href*='"+url+"']")[0].id="toClick"
+                setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                return;
+            }
         }
-        else if(pageIndex==tryPageNum)//go to random page 
+        else
         {
-            randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
-            $("#jumpto")[0].value=randomPageIndex
-            //$("#jumpto")[0].nextSibling.nextSibling.click()
-			setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+            if(itemId!="")
+            {
+                if($("a.EventCanSelect[href*='"+itemId+"&']").length>=1)
+                {
+                    GM_log("1.find url")
+                    var evt1 = document.createEvent("MouseEvents");
+                    evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    var evt2 = document.createEvent("MouseEvents");     
+                    evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    $("a.EventCanSelect[href*='"+itemId+"&']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    
+                    return;
+                }
+                else if($("a.EventCanSelect[href$='"+itemId+"']").length>=1)
+                {
+                    GM_log("2.find url")
+                    $("a.EventCanSelect[href$='"+itemId+"']")[0].id="toClick"
+                    setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                    return;
+                }
+            }
+            else if($("a.EventCanSelect[href*='"+url+"']").length>=1)
+            {
+                GM_log("3.find url")
+                var evt1 = document.createEvent("MouseEvents");
+                evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                var evt2 = document.createEvent("MouseEvents");     
+                evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                $("a.EventCanSelect[href*='"+url+"']")[0].id="toClick"
+                setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
+                return;
+            }
         }
-        else if(pageIndex>tryPageNum)
+        
+        if($(".page-info").length==0)
         {
-            //just jump to item url without finding the item url in search page
+            //only one page
             openItemPage()
         }
-    }  
+        else
+        {
+            pageinfo=$(".page-info")[0].innerHTML.split("/")
+            pageIndex=parseInt(pageinfo[0],10)
+            pageTotalNum=parseInt(pageinfo[1],10)
+            GM_log("pageNum="+$(".page-info")[0].innerHTML)
+            if(pageIndex==pageTotalNum)
+            {
+                //last page
+                openItemPage();
+            }
+            else if(pageIndex<tryPageNum)
+            {
+                // go to next page
+                GM_log($("#jumpto ")[0].nextSibling.nextSibling)
+                //$("#jumpto")[0].nextSibling.nextSibling.click()
+                setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+            }
+            else if(pageIndex==tryPageNum)//go to random page 
+            {
+                randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
+                $("#jumpto")[0].value=randomPageIndex
+                //$("#jumpto")[0].nextSibling.nextSibling.click()
+                setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+            }
+            else if(pageIndex>tryPageNum)
+            {
+                //just jump to item url without finding the item url in search page
+                openItemPage()
+            }
+        }
+    }
+    
+    setTimeout(function()
+        {
+            checkUrlInPage()
+        },1000)
 }
 
 function handleTaobaoItemPage()
@@ -278,7 +402,7 @@ function handleTaobaoItemPage()
  
 	if(unsafeWindow.opener)
     {
-        //unsafeWindow.opener.close()
+        unsafeWindow.opener.close()
     }  
  
 	itemTitle=""
@@ -324,5 +448,5 @@ function handleTaobaoItemPage()
 
 function handleInvalidItemPage()
 {
-	//setTimeout(function(){unsafeWindow.close()},2000)
+	setTimeout(function(){unsafeWindow.close()},2000)
 }
