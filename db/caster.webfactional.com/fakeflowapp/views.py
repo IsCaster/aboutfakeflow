@@ -75,7 +75,7 @@ def missionInfo(request):
         
     query=MissionInfo.objects.filter(
             Q(shopkeeper__contains=keyword)|Q(message__contains=keyword)
-            |Q(url__contains=keyword)|Q(idInSite__contains=keyword)
+            |Q(url__contains=keyword)|Q(idInSite__contains=keyword)|Q(keyword__contains=keyword)
         ).order_by("-updateTime")[:20]#retrieve max :20;
 
     template_values={

@@ -129,12 +129,29 @@ function handleTaobaoSearchPage()
  
 	url=""
 	itemId=""
-	jumpto_para=getUrlParam("jumpto")
+	//jumpto_para=getUrlParam("jumpto")
     //new taobao style
-    s_para=getUrlParam("s")
-    n_para=getUrlParam("n")
+    //s_para=getUrlParam("s")
+    //n_para=getUrlParam("n")
     
-	if(jumpto_para==""&&(s_para==""||s_para=="0"))//first_page
+    bFirstPage=false
+    if($(".page-info").length==0)
+    {
+        bFirstPage=true
+    }
+    else
+    {
+        pageinfo=$(".page-info")[0].innerHTML.split("/")
+        pageIndex=parseInt(pageinfo[0],10)
+        pageTotalNum=parseInt(pageinfo[1],10)
+        if(pageIndex==1)
+        {
+            bFirstPage=true
+        }
+    }
+    
+	//if(jumpto_para==""&&(s_para==""||s_para=="0"))//first_page
+    if(bFirstPage)
 	{
 		fake_spm=getUrlParam("spm")
         GM_log("handleTaobaoSearchPage,fake_spm="+fake_spm)
@@ -146,10 +163,23 @@ function handleTaobaoSearchPage()
 	}
 	else
 	{
-		if(unsafeWindow.opener.document.getElementById("itemId")!=null)
-		{
-			itemId=unsafeWindow.opener.document.getElementById("itemId").innerHTML
-		}
+        if(unsafeWindow.opener!=null)
+        {
+            if(unsafeWindow.opener.document.getElementById("itemId")!=null)
+            {
+                itemId=unsafeWindow.opener.document.getElementById("itemId").innerHTML
+            }
+        }
+        else
+        {
+            fake_spm=getUrlParam("spm")
+            GM_log("handleTaobaoSearchPage,not first ,fake_spm="+fake_spm)
+            itemId_s=fake_spm.replace(/a230r\.1\.8\.5\./,"")
+            if(fake_spm!=itemId_s)
+            {
+                itemId="id="+itemId_s
+            }
+        }
 	}
     
     if(unsafeWindow.opener)
@@ -296,7 +326,9 @@ function handleTaobaoSearchPage()
             setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
             return;
         }   
-            
+        
+        
+        GM_log("search in next page")
         if($(".page-info").length==0)
         {
             //only one page
@@ -316,16 +348,37 @@ function handleTaobaoSearchPage()
             else if(pageIndex<tryPageNum)
             {
                 // go to next page
-                GM_log($("#jumpto ")[0].nextSibling.nextSibling)
-                //$("#jumpto")[0].nextSibling.nextSibling.click()
-                setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+                if($("#jumpto ").length>0)
+                {
+                    GM_log($("#jumpto ")[0].nextSibling.nextSibling)
+                    //$("#jumpto")[0].nextSibling.nextSibling.click()
+                    setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+                }
+                else if($(".btn-jump").length>0)
+                {
+                    GM_log("btn-jump")
+                    setTimeout(function(){clickContainP.onclick($(".btn-jump")[0])},1000)
+                }
             }
             else if(pageIndex==tryPageNum)//go to random page 
             {
                 randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
-                $("#jumpto")[0].value=randomPageIndex
-                //$("#jumpto")[0].nextSibling.nextSibling.click()
-                setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+                if(randomPageIndex>pageTotalNum)
+                {
+                    randomPageIndex=pageTotalNum
+                }
+                if($("#jumpto ").length>0)
+                {
+                    $("#jumpto")[0].value=randomPageIndex
+                    //$("#jumpto")[0].nextSibling.nextSibling.click()
+                    setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+                }
+                else if($(".btn-jump").length>0)
+                {
+                    GM_log("btn-jump random")
+                    $(".page-num")[0].value=randomPageIndex
+                    setTimeout(function(){clickContainP.onclick($(".btn-jump")[0])},1000)
+                }
             }
             else if(pageIndex>tryPageNum)
             {
