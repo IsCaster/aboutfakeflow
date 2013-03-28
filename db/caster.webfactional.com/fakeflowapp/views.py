@@ -790,7 +790,7 @@ def fakeVisit(request):
     
     #url=re.sub(r"&$","",url)
     #remove spm
-    #url=re.sub(r"\?spm=[a-z0-9\.]*&","",url)
+    #url=re.sub(r"\?spm=[a-zA-z0-9\.]*&","",url)
     #transform to standard item url pattern ,maybe start with http://ju.atpanel.com/
     url=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
     url=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
@@ -838,7 +838,8 @@ def submitShopkeeper(request):
     for entry in entries:
         entry.shopkeeper=shopkeeper
         # use itemTitle as keyword,if fake visit fail
-        entry.keyword=itemTitle
+        if itemTitle != "" :
+            entry.keyword=itemTitle
         entry.save()
         with GetMissionQueue().bufferLock:
             for id,item in GetMissionQueue().doneBuffer.items():
