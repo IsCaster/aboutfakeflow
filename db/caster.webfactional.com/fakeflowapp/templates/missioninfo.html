@@ -12,7 +12,7 @@
         <td>操作</td>
     </tr>
 {% for missionInfo in missionInfos %}
-    <tr class="missionInfoTr {{ missionInfo.idInSite }}Tr" >
+    <tr class="missionInfoTr {{ missionInfo.site }}Tr" >
         <td>{{ forloop.counter }}.</td>
         <td class="idInSite" >{{ missionInfo.idInSite }}</td>
         <td class="shopkeeper">{{ missionInfo.shopkeeper }}</td>
