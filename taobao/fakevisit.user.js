@@ -247,33 +247,20 @@ function handleTaobaoSearchPage()
     function checkUrlInPage()
     {
         tagA_class=""
-        if($("a.s80").length>0) 
-        {
-            tagA_class=".s80"
-        }
-        else if($("a.s70").length>0) 
-        {
-            tagA_class=".s70"
-        }
-        else if($("a.s90").length>0) 
-        {
-            tagA_class=".s90"
-        }
-        else if($("a.s170").length>0) 
-        {
-            tagA_class=".s170"
-        }
-        else if($("a.s190").length>0) 
-        {
-            tagA_class=".s190"
-        }
-        else if($("a.s180").length>0) 
-        {
-            tagA_class=".s180"
-        }
-        else if($("a.EventCanSelect").length>0) 
+        
+        if($("a.EventCanSelect").length>0) 
         {
             tagA_class=".EventCanSelect"
+        }
+        else
+        {
+            for(var i=10;i<990;i=i+10)
+            {
+                if($("a.s"+i).length>0) 
+                {
+                    tagA_class="a.s"+i
+                }
+            }
         }
         
         if(tagA_class=="")
@@ -286,6 +273,10 @@ function handleTaobaoSearchPage()
                 {
                     checkUrlInPage()
                 },1000)
+                return
+            }
+            else
+            {
                 return
             }
         }

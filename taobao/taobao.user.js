@@ -110,134 +110,209 @@ function main_search() {
         }
     };
 
-    console.info($(".list-item .seller > a:first-child").length)
-    
-    var shopkeepers=";"
-    var shopkeepersHtml=";"
-    for(var i=0 ;i<$(".list-item .seller > a:first-child").length;++i )
-    {
-        if(shopkeepers.indexOf(";"+$(".seller > a:first-child")[i].innerHTML+";")==-1)
+    var retryTimes=0
+    function ShowShopkeeper()
+    {    
+        tagA_class=""
+        
+        if($("a.EventCanSelect").length>0) 
         {
-            shopkeepers=shopkeepers+$(".seller > a:first-child")[i].innerHTML+";"
-            shopkeepersHtml=shopkeepersHtml+"<a href='javascript:showShopkeeperUrls(\""+$(".seller > a:first-child")[i].innerHTML +"\")'>"+$(".seller > a:first-child")[i].innerHTML+"</a>"+";"
+            tagA_class=".EventCanSelect"
         }
-    }
-    
-    resultDiv=document.createElement("div")
-    resultDiv.innerHTML=shopkeepersHtml
-    unsafeWindow.shopkeepers=shopkeepers
-    $("#page")[0].insertBefore(resultDiv,$("#W-Content")[0]);
-	
-	resultUrlsDiv=document.createElement("p")
-    resultUrlsDiv.id="resultUrls"
-    $("#page")[0].insertBefore(resultUrlsDiv,$("#W-Content")[0]);
-	
-	anchorInput=document.createElement("input")
-	anchorInput.type="text"
-	anchorInput.id="anchorOfUrls"
-	
-	$("#page")[0].insertBefore(anchorInput,$("#W-Content")[0])
-	anchorInput.onkeydown =  function (event)
-    {
-        event = event||window.event;
-        //console.info("press key ="+event.keyCode);
-        if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+        else
         {
-            $("#getUrlsBtn")[0].click()
-            //console.info("invalid keepReflash");
-        }
-    }
-    
-    unsafeWindow.showShopkeeperUrls=function(shopkeeper)
-    {
-        //query by the shopkeeper
-        var resultUrls=""
-        for(var i=0 ;i<$(".list-item .seller > a:first-child").length;++i )
-        {
-            if($(".list-item .seller > a:first-child")[i].innerHTML==shopkeeper)
+            for(var i=10;i<990;i=i+10)
             {
-                resultUrls=resultUrls+$(".list-item .EventCanSelect")[i].href+";"
-            }
-        }
-        resultUrls=resultUrls.replace(/;$/,"")
-		$("#resultUrls")[0].innerHTML=resultUrls
-    }
-    
-	getUrlsBtn=document.createElement("input")
-	getUrlsBtn.type="button"
-	getUrlsBtn.value="获取urls"
-    getUrlsBtn.id="getUrlsBtn"
-	getUrlsBtn.onclick=function()
-	{
-		var anchor=$("#anchorOfUrls")[0].value.replace(/\s*$/,"").replace(/^\s*/,"").replace(/\*+/,"*")
-        if(anchor!=""&&anchor.indexOf("*")!=-1)
-        {
-            //part1***part2
-            parts=anchor.split("*")
-            shopkeeperArray=unsafeWindow.shopkeepers.split(";")
-            
-            for(var i=0;i<shopkeeperArray.length;++i)
-            {
-                //start with part1 and end with part2
-                //console.info("index="+ shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length))
-                if(shopkeeperArray[i].indexOf(parts[0])==0&&shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length)==shopkeeperArray[i].length-parts[1].length)
+                if($("a.s"+i).length>0) 
                 {
-                    unsafeWindow.showShopkeeperUrls(shopkeeperArray[i])
-                    return;
+                    tagA_class="a.s"+i
                 }
             }
-            $("#resultUrls")[0].innerHTML="不存在的掌柜名"
-            return;
         }
-		else if(anchor!=""&&unsafeWindow.shopkeepers.indexOf(";"+anchor+";")!=-1)
-		{
-            unsafeWindow.showShopkeeperUrls(anchor)
-			return;
-		}
-        else if(anchor=="")
+        
+        console.info("tagA_class="+tagA_class)
+        if(tagA_class=="")
         {
-            anchor=0
+            retryTimes=retryTimes+1
+            console.info("ShowShopkeeper() no urls recheck later.  No."+retryTimes)
+            if(retryTimes<120)
+            {
+                setTimeout(function()
+                {
+                    ShowShopkeeper()
+                },500)
+                return
+            }
+            else
+            {
+                return
+            }
         }
-		else
-		{
-			anchor=parseInt(anchor,10)-1
-		}
-		
-        if(isNaN(anchor))
+        
+        console.info("orgin item number:"+$(".list-item .seller > a:first-child").length)
+        console.info("new version item number:"+$(".item .seller > a:first-child").length)
+        
+        shopkeeper_selector=""
+        
+        if($(".list-item .seller > a:first-child").length>0)
         {
-            $("#resultUrls")[0].innerHTML="不存在的掌柜名"
-            return;
+            shopkeeper_selector=".list-item .seller > a:first-child"
         }
-		var resultUrls=""
-		
-		if(anchor>=0 && anchor<=$(".EventCanSelect").length-1)
-		{
-			resultUrls=resultUrls+$(".EventCanSelect")[anchor].href+";"
-		}
-		
-		
-		for(var i=1;i<44;i++)
-		{
-			if( anchor+i >=0 && anchor+i <= $(".EventCanSelect").length-1)
-			{
-				resultUrls=resultUrls+$(".EventCanSelect")[anchor+i].href+";"
-			}
-			if( anchor-i >=0 && anchor-i <= $(".EventCanSelect").length-1)
-			{
-				resultUrls=resultUrls+$(".EventCanSelect")[anchor-i].href+";"
-			}
-		}
-        resultUrls=resultUrls.replace(/;$/,"")
-		$("#resultUrls")[0].innerHTML=resultUrls
-	}
-	$("#page")[0].insertBefore(getUrlsBtn,$("#W-Content")[0])
-    
-    //add No.* for urls
-    for(var i=0;i<$(".EventCanSelect").length;++i)
-    {
-        numberNode=document.createTextNode("NO."+(i+1)+" ")
-        $(".EventCanSelect")[i].parentNode.insertBefore(numberNode,$(".EventCanSelect")[i])
+        else if($(".item .seller > a:first-child").length>0)
+        {
+            shopkeeper_selector=".item .seller > a:first-child"
+        }
+        else
+        {
+            //alert("外挂程序出错，请联系管理员")
+        }
+        
+        var shopkeepers=";"
+        var shopkeepersHtml=";"
+        for(var i=0 ;i<$(shopkeeper_selector).length;++i )
+        {
+            if(shopkeepers.indexOf(";"+$(shopkeeper_selector)[i].innerHTML+";")==-1)
+            {
+                shopkeepers=shopkeepers+$(shopkeeper_selector)[i].innerHTML+";"
+                shopkeepersHtml=shopkeepersHtml+"<a href='javascript:showShopkeeperUrls(\""+$(shopkeeper_selector)[i].innerHTML +"\")'>"+$(shopkeeper_selector)[i].innerHTML+"</a>"+";"
+            }
+        }
+        
+        if($("#W-Content").length>0)
+        {
+            addAreaIn=$("#W-Content")[0]
+        }
+        else if($(".tb-container").length>0)
+        {
+            addAreaIn=$(".tb-container")[0]
+        }
+        else
+        {
+            alert("外挂程序出错，请联系管理员")
+        }
+        
+        resultDiv=document.createElement("div")
+        resultDiv.innerHTML=shopkeepersHtml
+        unsafeWindow.shopkeepers=shopkeepers
+        $("#page")[0].insertBefore(resultDiv,addAreaIn);
+        
+        resultUrlsDiv=document.createElement("p")
+        resultUrlsDiv.id="resultUrls"
+        $("#page")[0].insertBefore(resultUrlsDiv,addAreaIn);
+        
+        anchorInput=document.createElement("input")
+        anchorInput.type="text"
+        anchorInput.id="anchorOfUrls"
+        
+        $("#page")[0].insertBefore(anchorInput,addAreaIn)
+        anchorInput.onkeydown =  function (event)
+        {
+            event = event||window.event;
+            //console.info("press key ="+event.keyCode);
+            if(event.keyCode==13 && !event.altKey && !event.shiftKey&& !event.ctrlKey)//press F7	
+            {
+                $("#getUrlsBtn")[0].click()
+                //console.info("invalid keepReflash");
+            }
+        }
+        
+        unsafeWindow.showShopkeeperUrls=function(shopkeeper)
+        {
+            //query by the shopkeeper
+            var resultUrls=""
+            for(var i=0 ;i<$(shopkeeper_selector).length;++i )
+            {
+                if($(shopkeeper_selector)[i].innerHTML==shopkeeper)
+                {
+                    resultUrls=resultUrls+$(tagA_class)[i].href+";"
+                }
+            }
+            resultUrls=resultUrls.replace(/;$/,"")
+            $("#resultUrls")[0].innerHTML=resultUrls
+        }
+        
+        getUrlsBtn=document.createElement("input")
+        getUrlsBtn.type="button"
+        getUrlsBtn.value="获取urls"
+        getUrlsBtn.id="getUrlsBtn"
+        getUrlsBtn.onclick=function()
+        {
+            var anchor=$("#anchorOfUrls")[0].value.replace(/\s*$/,"").replace(/^\s*/,"").replace(/\*+/,"*")
+            if(anchor!=""&&anchor.indexOf("*")!=-1)
+            {
+                //part1***part2
+                parts=anchor.split("*")
+                shopkeeperArray=unsafeWindow.shopkeepers.split(";")
+                
+                for(var i=0;i<shopkeeperArray.length;++i)
+                {
+                    //start with part1 and end with part2
+                    //console.info("index="+ shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length))
+                    if(shopkeeperArray[i].indexOf(parts[0])==0&&shopkeeperArray[i].indexOf(parts[1],shopkeeperArray[i].length-parts[1].length)==shopkeeperArray[i].length-parts[1].length)
+                    {
+                        unsafeWindow.showShopkeeperUrls(shopkeeperArray[i])
+                        return;
+                    }
+                }
+                $("#resultUrls")[0].innerHTML="不存在的掌柜名"
+                return;
+            }
+            else if(anchor!=""&&unsafeWindow.shopkeepers.indexOf(";"+anchor+";")!=-1)
+            {
+                unsafeWindow.showShopkeeperUrls(anchor)
+                return;
+            }
+            else if(anchor=="")
+            {
+                anchor=0
+            }
+            else
+            {
+                anchor=parseInt(anchor,10)-1
+            }
+            
+            if(isNaN(anchor))
+            {
+                $("#resultUrls")[0].innerHTML="不存在的掌柜名"
+                return;
+            }
+            var resultUrls=""
+            
+            if(anchor>=0 && anchor<=$(tagA_class).length-1)
+            {
+                resultUrls=resultUrls+$(tagA_class)[anchor].href+";"
+            }
+            
+            
+            for(var i=1;i<44;i++)
+            {
+                if( anchor+i >=0 && anchor+i <= $(tagA_class).length-1)
+                {
+                    resultUrls=resultUrls+$(tagA_class)[anchor+i].href+";"
+                }
+                if( anchor-i >=0 && anchor-i <= $(tagA_class).length-1)
+                {
+                    resultUrls=resultUrls+$(tagA_class)[anchor-i].href+";"
+                }
+            }
+            resultUrls=resultUrls.replace(/;$/,"")
+            $("#resultUrls")[0].innerHTML=resultUrls
+        }
+        $("#page")[0].insertBefore(getUrlsBtn,addAreaIn)
+        
+        //add No.* for urls
+        for(var i=0;i<$(tagA_class).length;++i)
+        {
+            numberNode=document.createTextNode("NO."+(i+1)+" ")
+            $(tagA_class)[i].parentNode.insertBefore(numberNode,$(tagA_class)[i])
+            $(".item-box .summary")[i].insertBefore(numberNode,$(".item-box .summary")[i].firstChild)
+        }
     }
+    
+    setTimeout(function()
+        {
+            ShowShopkeeper()
+        },500)
 }
 
 function inshop_search()
