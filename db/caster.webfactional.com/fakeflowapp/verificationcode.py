@@ -15,15 +15,17 @@ def decodeVerificaton(datauri):
     new_pixels_rows=[]
     for row in pixels_rows:
         new_pixels_rows.append(row)
+    # cut the unnecessary area
+    new_pixels_rows=cutter(new_pixels_rows)    
     new_pixels_rows=filter(new_pixels_rows)
-    # with open('filter.png' , 'wb') as f:
-        # w = png.Writer(
-            # width=width,
-            # height=height,
-            # alpha=True,
-            # bitdepth=8,
-            # )
-        # w.write(f,new_pixels_rows)
+    with open('filter.png' , 'wb') as f:
+        w = png.Writer(
+            width=width,
+            height=height,
+            alpha=True,
+            bitdepth=8,
+            )
+        w.write(f,new_pixels_rows)
 
     #split image
     splitImgs=[[ ],[ ],[ ],[ ],[]]
@@ -109,9 +111,9 @@ def decodeVerificaton(datauri):
             [1,1,0,0,0,0,0,0],#line 2
             [1,0,0,1,1,1,0,0],#line 3
             [1,1,1,1,1,1,0,0],#line 4
-            [1,1,1,1,1,0,0,0],#line 5
-            [1,1,1,0,0,0,0,1],#line 6
-            [1,1,1,0,0,0,0,1],#line 7
+            [1,1,1,1,1,1,0,0],#line 5
+            [1,1,1,1,0,0,0,1],#line 6
+            [1,1,1,1,0,0,1,1],#line 7
             [1,1,1,1,1,0,0,1],#line 8
             [1,1,1,1,1,0,0,1],#line 9
             [0,0,1,1,0,0,0,1],#line 10
@@ -274,6 +276,33 @@ def filter(imgData) :
         output.append(output_r)
     return output
 
+def isPointIn(i,j):
+    if j>=5 or j<=16 :
+        if ( i>=6 and i<=13 ) or ( i>=15 and i<=22 ) or ( i>=24 and i<=31 ) or ( i>=33 and i<=40 ) :
+            return True
+    return False
+
+def cutter(imgData) :
+    output = [] 
+    for j in range(0,len(imgData)) :
+        output_r =[]
+        for i in range(0,len(imgData[0])/4) :
+            if isPointIn(i,j):
+                r=imgData[0][i*4]
+                g=imgData[0][i*4+1]
+                b=imgData[0][i*4+2]
+                alpha=imgData[0][i*4+3]   
+            else:
+                r=255
+                g=255
+                b=255
+                alpha=imgData[0][j*4+3]
+            output_r.append(r)
+            output_r.append(g)
+            output_r.append(b)
+            output_r.append(alpha)
+        output.append(output_r)
+    return output
 
 def getPixData(imgData,x,y) :
     if x<0 :
