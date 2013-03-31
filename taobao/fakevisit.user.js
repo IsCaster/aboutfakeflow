@@ -267,7 +267,7 @@ function handleTaobaoSearchPage()
         {
             retryTimes=retryTimes+1
             GM_log("checkUrlInPage() no urls recheck later.  No."+retryTimes)
-            if(retryTimes<60)
+            if(retryTimes<20)
             {
                 setTimeout(function()
                 {
@@ -277,6 +277,8 @@ function handleTaobaoSearchPage()
             }
             else
             {
+                // visit the page now
+                openItemPage()
                 return
             }
         }

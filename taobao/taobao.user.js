@@ -305,7 +305,10 @@ function main_search() {
         {
             numberNode=document.createTextNode("NO."+(i+1)+" ")
             $(tagA_class)[i].parentNode.insertBefore(numberNode,$(tagA_class)[i])
-            $(".item-box .summary")[i].insertBefore(numberNode,$(".item-box .summary")[i].firstChild)
+            if($(".item-box .summary").length>0)
+            {
+                $(".item-box .summary")[i].insertBefore(numberNode,$(".item-box .summary")[i].firstChild)
+            }
         }
     }
     

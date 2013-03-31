@@ -725,27 +725,35 @@ def deleteMissionInfo(request):
 
 @login_required()
 def showCode(request):
-    entries=VerificationCode.objects.filter(checked=False)  
+    if request.POST.has_key("m"):
+        max=int(request.POST["m"])
+    else:
+        max=50
+    entries=VerificationCode.objects.filter(checked=False).order_by("-updateTime")[:max]
     
     sum=VerificationCode.objects.count()
     output=[]
     for entry in entries:
         decoded_code=decodeVerificaton(entry.codeImg)
-        if decoded_code != entry.code:
-            entry.decoded_code=decoded_code
-            output.append(entry)
-        else:
-            entry.checked==True
-            entry.save()
+        
+        entry.decoded_code=decoded_code
+        output.append(entry)
+        
     template_values = {"codes"  :   output,
                        "sum"    :   sum,
-                       "wrong"  :   len(output)}
+                       }
     return render_to_response('showcode.html',template_values)
 
 @csrf_exempt 
 def queryCode(request):
     code_img = request.POST["codeImg"]
     decoded_code=decodeVerificaton(code_img)
+    
+    newVerificationCode=VerificationCode()
+    newVerificationCode.codeImg=code_img
+    newVerificationCode.code=decoded_code
+    newVerificationCode.save()
+    
     response_data={"code":decoded_code}
     return HttpResponse(simplejson.dumps(response_data));
     
