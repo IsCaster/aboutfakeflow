@@ -725,8 +725,8 @@ def deleteMissionInfo(request):
 
 @login_required()
 def showCode(request):
-    if request.POST.has_key("m"):
-        max=int(request.POST["m"])
+    if request.GET.has_key("m"):
+        max=int(request.GET["m"])
     else:
         max=50
     entries=VerificationCode.objects.filter(checked=False).order_by("-updateTime")[:max]
