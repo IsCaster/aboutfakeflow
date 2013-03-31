@@ -277,7 +277,7 @@ def filter(imgData) :
     return output
 
 def isPointIn(i,j):
-    if j>=5 or j<=16 :
+    if j>=5 and j<=16 :
         if ( i>=6 and i<=13 ) or ( i>=15 and i<=22 ) or ( i>=24 and i<=31 ) or ( i>=33 and i<=40 ) :
             return True
     return False
