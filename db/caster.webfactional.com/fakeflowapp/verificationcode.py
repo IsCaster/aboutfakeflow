@@ -18,14 +18,14 @@ def decodeVerificaton(datauri):
     # cut the unnecessary area
     #new_pixels_rows=cutter(new_pixels_rows)    
     new_pixels_rows=filter(new_pixels_rows)
-    with open('filter.png' , 'wb') as f:
-        w = png.Writer(
-            width=width,
-            height=height,
-            alpha=True,
-            bitdepth=8,
-            )
-        w.write(f,new_pixels_rows)
+    # with open('filter.png' , 'wb') as f:
+        # w = png.Writer(
+            # width=width,
+            # height=height,
+            # alpha=True,
+            # bitdepth=8,
+            # )
+        # w.write(f,new_pixels_rows)
 
     #split image
     splitImgs=[[ ],[ ],[ ],[ ],[]]
