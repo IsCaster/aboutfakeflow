@@ -151,14 +151,14 @@ def decodeVerificaton(datauri):
     contrast_6=[
             [1,1,1,0,0,0,0,1],#line 1
             [1,1,0,0,0,0,0,0],#line 2
-            [1,1,0,0,1,1,0,0],#line 3
+            [1,0,0,0,1,1,0,0],#line 3
             [1,0,0,1,1,1,1,1],#line 4
-            [1,0,0,0,0,1,1,1],#line 5
-            [1,0,0,0,0,0,1,1],#line 6
-            [1,0,0,1,0,0,0,1],#line 7
-            [1,0,0,1,1,0,0,1],#line 8
-            [1,0,0,1,1,0,0,1],#line 9
-            [1,0,0,1,0,0,0,1],#line 10
+            [0,0,0,0,0,1,1,1],#line 5
+            [0,0,0,0,0,0,1,1],#line 6
+            [0,0,1,1,0,0,0,1],#line 7
+            [0,0,1,1,1,0,0,1],#line 8
+            [0,0,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
             [1,0,0,0,0,0,1,1],#line 11
             [1,1,0,0,0,1,1,1],#line 12
         ]      
@@ -179,12 +179,12 @@ def decodeVerificaton(datauri):
     contrast_8=[
             [1,1,1,0,0,0,0,1],#line 1
             [1,1,0,0,0,0,0,0],#line 2
-            [1,1,0,0,1,1,0,0],#line 3
-            [1,1,0,0,1,1,0,0],#line 4
-            [1,1,0,0,1,0,0,0],#line 5
+            [1,0,0,1,1,1,0,0],#line 3
+            [1,0,0,1,1,1,0,0],#line 4
+            [1,0,0,1,1,0,0,0],#line 5
             [1,1,0,0,0,0,0,1],#line 6
             [1,0,0,0,0,0,1,1],#line 7
-            [1,0,0,1,1,0,0,1],#line 8
+            [0,0,1,1,1,0,0,1],#line 8
             [0,0,1,1,1,0,0,1],#line 9
             [0,0,1,1,0,0,0,1],#line 10
             [0,0,0,0,0,0,1,1],#line 11
@@ -218,14 +218,6 @@ def decodeVerificaton(datauri):
                 code_num = number
             if offset_min == 0 :
                 break
-        # adjust 5 and 6        
-        if code_num==5 or code_num==6 :
-            #if item[7][0]+item[8][0]==0 or item[7][1]+item[8][1]==0 or item[7][2]+item[8][2]==0 :
-            if item[7][0]+item[8][0]+item[7][1]+item[8][1]+item[7][2]+item[8][2] <= 4 :
-                code_num=6
-            else:
-                code_num=5
-            
         ret_code = ret_code + str(code_num)
     
     return ret_code
