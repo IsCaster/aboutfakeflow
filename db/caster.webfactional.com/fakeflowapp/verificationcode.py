@@ -16,7 +16,7 @@ def decodeVerificaton(datauri):
     for row in pixels_rows:
         new_pixels_rows.append(row)
     # cut the unnecessary area
-    #new_pixels_rows=cutter(new_pixels_rows)    
+    new_pixels_rows=cutter(new_pixels_rows)    
     new_pixels_rows=filter(new_pixels_rows)
     # with open('filter.png' , 'wb') as f:
         # w = png.Writer(
@@ -288,10 +288,10 @@ def cutter(imgData) :
         output_r =[]
         for i in range(0,len(imgData[0])/4) :
             if isPointIn(i,j):
-                r=imgData[0][i*4]
-                g=imgData[0][i*4+1]
-                b=imgData[0][i*4+2]
-                alpha=imgData[0][i*4+3]   
+                r=imgData[j][i*4]
+                g=imgData[j][i*4+1]
+                b=imgData[j][i*4+2]
+                alpha=imgData[j][i*4+3]   
             else:
                 r=255
                 g=255

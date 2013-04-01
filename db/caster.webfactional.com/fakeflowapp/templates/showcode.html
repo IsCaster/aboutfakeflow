@@ -9,6 +9,7 @@
                 <td>验证码图片</td>
                 <td>验证码猜测1</td>
                 <td>验证码猜测2</td>
+                <td>uri</td>
             </tr>
         {% for code in codes %}
             <tr >
@@ -16,6 +17,7 @@
                 <td><img src="{{code.codeImg}}"></td>
                 <td>{{code.code}}</td>
                 <td>{{code.decoded_code}}</td>
+                <td>{{code.codeImg}}</td>
             </tr>    
         {% endfor %}
         </table>
