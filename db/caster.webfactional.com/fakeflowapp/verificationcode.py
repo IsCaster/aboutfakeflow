@@ -38,21 +38,31 @@ def decodeVerificaton(datauri):
 
     # for i in range(0,4):
         # with open('split%s.png' % i, 'wb') as f:
-                    # w = png.Writer(
-                        # width=8,
-                        # height=12,
-                        # alpha=True
-                        # )
-                    # w.write(f,splitImgs[i])
+            # w = png.Writer(
+                # width=8,
+                # height=12,
+                # alpha=True
+                # )
+            # w.write(f,splitImgs[i])
     #splitImgs[0][]
+    
+    
+#anchor
+#1st image #3300CC
+#2nd image #330099
+#3rd image #660066
+#4th image #660033
+
     anchors=[{"r":0x33,"g":0x33,"b":0xcc},
             {"r":0x66,"g":0x33,"b":0xcc},
             {"r":0x66,"g":0x00,"b":0x99},
             {"r":0x99,"g":0x33,"b":0x66},]
+
     
     normalizedImgs=[]
     for i in range(0,4):
         output = normalized(splitImgs[i],anchors[i])
+        output=sharpen(output)
         normalizedImgs.append(output)
         # with open('normalized%s.png' % i, 'wb') as f:
             # w = png.Writer(
@@ -211,18 +221,96 @@ def decodeVerificaton(datauri):
     for item in normalizedImgs:
         offset_min = 8*12
         code_num = 0
+        code_num_near = 0
         for number,standard in enumerate(contrast_imgs) :
             offset = contrastImage(item,standard)
             if offset < offset_min :
+                code_num_near = code_num
                 offset_min = offset
                 code_num = number
             if offset_min == 0 :
                 break
+            # adjust 5 and 6        
+            #if (code_num==5 and code_num_near == 6 ) or (code_num==6 and code_num_near == 5):
+            if code_num==5 or code_num==6:
+                lp_7=7
+                lp_8=7
+                for i in range(0,8):
+                    if item[7][i]==0:
+                        lp_7=i
+                        break
+                for i in range(0,8):
+                    if item[8][i]==0:
+                        lp_8=i
+                        break
+                if lp_7+lp_8>9:
+                    code_num=5
+                else:
+                    code_num=6
+            
+            # if (code_num==7 and code_num_near == 1 ) or (code_num==1 and code_num_near == 7):
+                # if tp(0) == 12 or tp(7) == 12:
+                    # code_num==1
+                # else:
+                    # code_num==7
+                        
         ret_code = ret_code + str(code_num)
-    
+            
+                    
     return ret_code
-    #normalizedImgs    
+  
+def tp(source,i):
+    tp_i=len(source)
+    for j in range(0,len(source)):
+        if source[j][i]==0:
+            tp_i=j
+            break
+    return tp_i
 
+def rp(source,j):
+    rp_j=-1
+    for i in range(0,len(source[0])):
+        if source[j][len(source[0])-1-i]==0:
+            rp_j=i
+            break
+    return rp_j    
+    
+def sharpen(source):
+    for j in range(0,len(source)):
+        for i in range(0,len(source[0])):
+            if beAlone(source,i,j) :
+                source[j][i]=(source[j][i]+1)%2
+    return source
+
+def beAlone(source,i,j):
+    if source[j][i]==0 and getLeft(source,i,j)==1 and getRight(source,i,j)==1 and getTop(source,i,j)==1 and getBottom(source,i,j)==1:
+        return True
+    elif source[j][i]==1 and getLeft(source,i,j)==0 and getRight(source,i,j)==0 and getTop(source,i,j)==0 and getBottom(source,i,j)==0:
+        return True
+    else:
+        return False
+
+def getLeft(source,i,j):
+    if i<=0:
+        return 1
+    else:
+        return source[j][i-1]
+def getRight(source,i,j):
+    if i>=len(source[0])-1:
+        return 1
+    else:
+        return source[j][i+1]        
+def getTop(source,i,j):
+    if j<=0:
+        return 1
+    else:
+        return source[j-1][i]
+def getBottom(source,i,j):
+    if j>=len(source)-1:
+        return 1
+    else:
+        return source[j+1][i]            
+    
 def contrastImage(source,standard):
     offset = 0
     for j in range(0,len(standard)) :
@@ -232,12 +320,8 @@ def contrastImage(source,standard):
     
     return offset    
 
-#anchor
-#1st image #3333CC
-#2nd image #330099
-#3rd image #660099
-#4th image #660066
 
+    #normalizedImgs  
 def normalized(imgData,anchor):
     output = []
     for row in imgData :
