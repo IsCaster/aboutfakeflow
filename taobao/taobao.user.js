@@ -115,7 +115,21 @@ function main_search() {
     {    
         tagA_class=""
         
-        if($("a.EventCanSelect").length>0) 
+        var atLeastNumber=9
+        if($("li.result-info").length>0)
+        {
+            sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
+            if (sumNumber<=30)
+            {
+                atLeastNumber=sumNumber
+            }
+            else
+            {
+                atLeastNumber=30
+            }
+        }
+        
+        if($("a.EventCanSelect").length>atLeastNumber) 
         {
             tagA_class=".EventCanSelect"
         }
@@ -123,7 +137,7 @@ function main_search() {
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>0) 
+                if($("a.s"+i).length>atLeastNumber) 
                 {
                     tagA_class="a.s"+i
                 }
@@ -135,12 +149,12 @@ function main_search() {
         {
             retryTimes=retryTimes+1
             console.info("ShowShopkeeper() no urls recheck later.  No."+retryTimes)
-            if(retryTimes<120)
+            if(retryTimes<60)
             {
                 setTimeout(function()
                 {
                     ShowShopkeeper()
-                },500)
+                },2000)
                 return
             }
             else

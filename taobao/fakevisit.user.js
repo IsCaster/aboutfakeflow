@@ -36,11 +36,13 @@ function handleFakeVisitPage()
     keyword=$("#keyword")[0].innerHTML
 	
 	itemUrl=itemUrl.replace(/spm=[^&]*&/,"&").replace(/spm=[^&]*$/,"")
-
+    
+    GM_log("handleFakeVisitPage,keyword="+keyword+",itemId="+itemId)
+        
     if(keyword=="")
     {
         unsafeWindow.open(itemUrl)
-        setTimeout(function(){unsafeWindow.close()},2000)
+        //setTimeout(function(){unsafeWindow.close()},2000)
     }
     else
     {
@@ -54,11 +56,11 @@ function handleFakeVisitPage()
 		else
 		{
 			itemId_s=itemId.replace(/id=/,"")
-			url="http://s.taobao.com/search?spm=a230r.1.8.5."+itemId_s+"&q="+keyword
+			url="http://s.taobao.com/search?q="+keyword+"&spm=a230r.1.8.5."+itemId_s
 			$("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
 			$("#searchpageframe")[0].contentWindow.open(url)
 		}
-        setTimeout(function(){unsafeWindow.close()},2000)
+        //setTimeout(function(){unsafeWindow.close()},2000)
     }
 }
 
@@ -203,7 +205,7 @@ function handleTaobaoSearchPage()
     GM_log("handleTaobaoSearchPage,url="+url+",itemId="+itemId)
     if(url==""&&itemId=="")
     {
-        unsafeWindow.close()
+        //unsafeWindow.close()
         return;
     }
 	
@@ -248,7 +250,21 @@ function handleTaobaoSearchPage()
     {
         tagA_class=""
         
-        if($("a.EventCanSelect").length>0) 
+        var atLeastNumber=9
+        if($("li.result-info").length>0)
+        {
+            sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
+            if (sumNumber<=30)
+            {
+                atLeastNumber=sumNumber
+            }
+            else
+            {
+                atLeastNumber=30
+            }
+        }
+        
+        if($("a.EventCanSelect").length>atLeastNumber) 
         {
             tagA_class=".EventCanSelect"
         }
@@ -256,7 +272,7 @@ function handleTaobaoSearchPage()
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>0) 
+                if($("a.s"+i).length>atLeastNumber) 
                 {
                     tagA_class="a.s"+i
                 }
@@ -267,12 +283,12 @@ function handleTaobaoSearchPage()
         {
             retryTimes=retryTimes+1
             GM_log("checkUrlInPage() no urls recheck later.  No."+retryTimes)
-            if(retryTimes<20)
+            if(retryTimes<15)
             {
                 setTimeout(function()
                 {
                     checkUrlInPage()
-                },1000)
+                },2000)
                 return
             }
             else
