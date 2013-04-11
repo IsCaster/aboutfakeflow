@@ -316,7 +316,16 @@ function handleGetMissionStaffPage()
             }
             
             var txt = xml.responseText;
+            if(txt.indexOf("<script")!=-1)
+            {
+                GM_log("txt="+txt);
+                unsafeWindow.getObj('taskLst').innerHTML = txt;
+                GM_setValue( "keepReflash",0 )
+                return;
+            }
             unsafeWindow.getObj('taskLst').innerHTML = txt;
+            
+            
             //GM_log("txt="+txt);
             
             GM_log('$(".tbl a").length='+$(".tbl a").length)

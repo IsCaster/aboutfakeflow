@@ -12,6 +12,7 @@
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 GM_log("enter GM script");
+init()
 if(location.href.indexOf("http://caster.webfactional.com/fakevisit")!=-1)
 {
 	handleFakeVisitPage()
@@ -27,6 +28,60 @@ else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.
 else if(location.href.indexOf("http://love.taobao.com/")!=-1 || location.href.indexOf("http://www.taobao.com/go")!=-1 )
 {
 	handleInvalidItemPage()
+}
+
+function init()
+{
+    unsafeWindow.setMap=function(mapName,key,value)
+    {
+        //pattern   : q=[keyword]=[itemId];
+        //example   : q=Kalode%D5%FD%C6%B7%C8%D5%B3%A3%D0%DD%CF%D0=123123123;
+        keyMap=GM_getValue(mapName,"")
+        if(keyMap.indexOf("q="+key+"=")!=-1)
+        {
+            re_str="q="+key+"=[^;]*;"
+            re = new RegExp(re_str);
+
+            keyMap=keyMap.replace(re,"q="+key+"="+value+";")
+            GM_setValue(mapName,keyMap)
+        }
+        else
+        {
+            keyMap=keyMap+"q="+key+"="+value+";"
+            GM_setValue(mapName,keyMap)
+        }
+    }
+    
+    unsafeWindow.getMap=function(mapName,key,defaultValue)
+    {
+        keyMap=GM_getValue(mapName,"")
+        if(keyMap.length>0)
+        {
+            i_start=keyMap.indexOf("q="+key+"=")
+            if(i_start!=-1)
+            {
+                i_start=i_start+key.length+3
+                i_end=keyMap.indexOf(";",i_start);
+                return keyMap.substring(i_start,i_end);
+            }
+        }
+
+        if(typeof(defaultValue)=="undefined")
+        {
+            defaultValue=""
+        }
+        return defaultValue
+    }
+    
+    //check if it's 02:00:00 reset Map:itemId
+    var d = new Date();
+    
+    resetDate=GM_getValue("resetDate","")
+    if(d.getHours()==2 && d.getMinutes()>0 && d.getMinutes()<30 && resetDate!= d.toDateString())
+    {
+        GM_setValue("itemId","")
+        GM_setValue("resetDate",d.toDateString())
+    }
 }
 
 function handleFakeVisitPage()
@@ -58,6 +113,10 @@ function handleFakeVisitPage()
 			itemId_s=itemId.replace(/id=/,"")
 			url="http://s.taobao.com/search?q="+keyword+"&spm=a230r.1.8.5."+itemId_s
 			$("#keyword")[0].innerHTML=$("#keyword")[0].innerHTML+";"+url
+            
+            
+            unsafeWindow.setMap("itemId",keyword,itemId_s)
+            
 			$("#searchpageframe")[0].contentWindow.open(url)
 		}
         ////setTimeout(function(){unsafeWindow.close()},2000)
@@ -86,16 +145,21 @@ function handleTaobaoSearchPage()
 		////setTimeout(function(){unsafeWindow.close()},50000)
     }
 	
-	function getUrlParam(name)
+	function getUrlParam(name,url="")
 	{
 		var regexS;
 		var regexl;
 		var results;
 		
+        if(url=="")
+        {
+            url=location.href
+        }
+        
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
 		regexS = "[\\?&]"+name+"=([^&#]*)";
 		regex = new RegExp(regexS);
-		results = regex.exec (location.href);
+		results = regex.exec (url);
 		//note: don't write space after command exec
 		
 		if ( results == null ) 
@@ -153,6 +217,7 @@ function handleTaobaoSearchPage()
     }
     
 	//if(jumpto_para==""&&(s_para==""||s_para=="0"))//first_page
+    GM_log("handleTaobaoSearchPage,bFirstPage="+bFirstPage)
     if(bFirstPage)
 	{
 		fake_spm=getUrlParam("spm")
@@ -188,16 +253,36 @@ function handleTaobaoSearchPage()
         }
 	}
     
-    if(unsafeWindow.opener)
+    
+    //handle page http://s.taobao.com/search?promote=0&tab=all***
+    // if(itemId=="")
+    // {
+        // GM_log("handleTaobaoSearchPage,document.referrer="+document.referrer)
+        // if(document.referrer!="about:blank")
+        // {
+            // fake_spm=getUrlParam("spm",document.referrer)
+            // GM_log("handleTaobaoSearchPage,refferer ,fake_spm="+fake_spm)
+            // itemId_s=fake_spm.replace(/a230r\.1\.8\.5\./,"")
+            // if(fake_spm!=itemId_s)
+            // {
+                // itemId="id="+itemId_s
+            // }
+        // }
+    // }
+    
+    if(itemId=="")
     {
-        unsafeWindow.opener.close()
-        if(unsafeWindow.opener.top)
+        GM_log("handleTaobaoSearchPage,getMap()")
+        keyword=getUrlParam("q")
+        itemId_s=unsafeWindow.getMap("itemId",keyword,"")
+        if(itemId_s!="")
         {
-            unsafeWindow.opener.top.close()
+            itemId='id='+itemId_s
         }
+        
     }
-	
-	if(itemId=="")
+    
+    if(itemId=="")
 	{
 		url=GM_getValue("url","")
 	}
@@ -208,7 +293,28 @@ function handleTaobaoSearchPage()
 		itemIdP.innerHTML=itemId
 		document.body.insertBefore(itemIdP,null);  
 	}
- 
+    
+    
+    GM_log("handleTaobaoSearchPage,close opener")
+    if(unsafeWindow.opener && itemId!="" )
+    {
+        if(bFirstPage)
+        {
+            if(unsafeWindow.opener.top && unsafeWindow.opener.top.close)
+            {
+                unsafeWindow.opener.top.close()
+            }
+        
+        }
+        else
+        {
+            if(unsafeWindow.opener.close)
+            {
+                unsafeWindow.opener.close()
+            }
+        }
+    }
+    
     var tryPageNum=4
     GM_log("handleTaobaoSearchPage,url="+url+",itemId="+itemId)
     if(url==""&&itemId=="")
@@ -262,17 +368,33 @@ function handleTaobaoSearchPage()
         if($("li.result-info").length>0)
         {
             sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
-            if (sumNumber<=30)
+
+        }
+        if($(".page-info").length!=0)
+        {
+            pageinfo=$(".page-info")[0].innerHTML.split("/")
+            pageIndex=parseInt(pageinfo[0],10)
+            pageTotalNum=parseInt(pageinfo[1],10)
+            if(pageTotalNum==1)
             {
                 atLeastNumber=sumNumber
             }
-            else
+            else if(pageIndex!=pageTotalNum)
             {
                 atLeastNumber=30
             }
+            else
+            {
+                atLeastNumber=sumNumber-44-40*(pageIndex-2)
+                if(atLeastNumber>30)
+                {
+                    atLeastNumber=30
+                }
+            }
         }
+        GM_log("handleTaobaoSearchPage,atLeastNumber="+atLeastNumber)
         
-        if($("a.EventCanSelect").length>atLeastNumber) 
+        if($("a.EventCanSelect").length>=atLeastNumber) 
         {
             tagA_class=".EventCanSelect"
         }
@@ -280,7 +402,7 @@ function handleTaobaoSearchPage()
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>atLeastNumber) 
+                if($("a.s"+i).length>=atLeastNumber) 
                 {
                     tagA_class="a.s"+i
                 }
