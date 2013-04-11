@@ -119,15 +119,32 @@ function main_search() {
         if($("li.result-info").length>0)
         {
             sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
-            if (sumNumber<=30)
+
+        }
+        if($(".page-info").length!=0)
+        {
+            pageinfo=$(".page-info")[0].innerHTML.split("/")
+            pageIndex=parseInt(pageinfo[0],10)
+            pageTotalNum=parseInt(pageinfo[1],10)
+            if(pageTotalNum==1)
             {
                 atLeastNumber=sumNumber
             }
-            else
+            else if(pageIndex!=pageTotalNum)
             {
                 atLeastNumber=30
             }
+            else
+            {
+                atLeastNumber=sumNumber-44-40*(pageIndex-2)
+                if(atLeastNumber>30)
+                {
+                    atLeastNumber=30
+                }
+            }
         }
+        console.info("ShowShopkeeper() atLeastNumber="+atLeastNumber)
+        
         
         if($("a.EventCanSelect").length>atLeastNumber) 
         {
