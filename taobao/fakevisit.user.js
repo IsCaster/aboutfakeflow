@@ -92,6 +92,7 @@ function handleFakeVisitPage()
 	
 	itemUrl=itemUrl.replace(/spm=[^&]*&/,"&").replace(/spm=[^&]*$/,"")
     
+    keyword=keyword.replace(/%20/g,"+")
     GM_log("handleFakeVisitPage,keyword="+keyword+",itemId="+itemId)
         
     if(keyword=="")
@@ -275,6 +276,7 @@ function handleTaobaoSearchPage()
         GM_log("handleTaobaoSearchPage,getMap()")
         keyword=getUrlParam("q")
         itemId_s=unsafeWindow.getMap("itemId",keyword,"")
+        GM_log("handleTaobaoSearchPage,getMap keyword="+keyword+",itemId_s="+itemId_s)
         if(itemId_s!="")
         {
             itemId='id='+itemId_s
@@ -381,14 +383,14 @@ function handleTaobaoSearchPage()
             }
             else if(pageIndex!=pageTotalNum)
             {
-                atLeastNumber=30
+                atLeastNumber=20
             }
             else
             {
                 atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>30)
+                if(atLeastNumber>20)
                 {
-                    atLeastNumber=30
+                    atLeastNumber=20
                 }
             }
         }

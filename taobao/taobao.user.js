@@ -132,14 +132,14 @@ function main_search() {
             }
             else if(pageIndex!=pageTotalNum)
             {
-                atLeastNumber=30
+                atLeastNumber=20
             }
             else
             {
                 atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>30)
+                if(atLeastNumber>20)
                 {
-                    atLeastNumber=30
+                    atLeastNumber=20
                 }
             }
         }
