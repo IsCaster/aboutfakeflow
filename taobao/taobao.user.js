@@ -146,7 +146,7 @@ function main_search() {
         console.info("ShowShopkeeper() atLeastNumber="+atLeastNumber)
         
         
-        if($("a.EventCanSelect").length>atLeastNumber) 
+        if($("a.EventCanSelect").length>=atLeastNumber) 
         {
             tagA_class=".EventCanSelect"
         }
@@ -154,7 +154,7 @@ function main_search() {
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>atLeastNumber) 
+                if($("a.s"+i).length>=atLeastNumber) 
                 {
                     tagA_class="a.s"+i
                 }
