@@ -39,7 +39,8 @@ function init()
         keyMap=GM_getValue(mapName,"")
         if(keyMap.indexOf("q="+key+"=")!=-1)
         {
-            re_str="q="+key+"=[^;]*;"
+            fix_key=key.replace(/\+/g,'\\+')
+            re_str="q="+fix_key+"=[^;]*;"
             re = new RegExp(re_str);
 
             keyMap=keyMap.replace(re,"q="+key+"="+value+";")
@@ -92,7 +93,7 @@ function handleFakeVisitPage()
 	
 	itemUrl=itemUrl.replace(/spm=[^&]*&/,"&").replace(/spm=[^&]*$/,"")
     
-    keyword=keyword.replace(/%20/g,"+")
+    keyword=keyword.replace(/\*+/g,'%20').replace(/\(/g,'%20').replace(/\)/g,'%20').replace(/%20/g,"+").replace(/\++/g,"+")
     GM_log("handleFakeVisitPage,keyword="+keyword+",itemId="+itemId)
         
     if(keyword=="")
@@ -380,17 +381,21 @@ function handleTaobaoSearchPage()
             if(pageTotalNum==1)
             {
                 atLeastNumber=sumNumber
+                if(atLeastNumber>9)
+                {
+                    atLeastNumber=9
+                }
             }
             else if(pageIndex!=pageTotalNum)
             {
-                atLeastNumber=20
+                atLeastNumber=9
             }
             else
             {
                 atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>20)
+                if(atLeastNumber>9)
                 {
-                    atLeastNumber=20
+                    atLeastNumber=9
                 }
             }
         }

@@ -129,17 +129,21 @@ function main_search() {
             if(pageTotalNum==1)
             {
                 atLeastNumber=sumNumber
+                if(atLeastNumber>9)
+                {
+                    atLeastNumber=9
+                }
             }
             else if(pageIndex!=pageTotalNum)
             {
-                atLeastNumber=20
+                atLeastNumber=9
             }
             else
             {
                 atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>20)
+                if(atLeastNumber>9)
                 {
-                    atLeastNumber=20
+                    atLeastNumber=9
                 }
             }
         }
