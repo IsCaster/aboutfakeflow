@@ -112,47 +112,71 @@ function main_search() {
 
     var retryTimes=0
     function ShowShopkeeper()
-    {    
-        tagA_class=""
-        
+    {       
         var atLeastNumber=9
         if($("li.result-info").length>0)
         {
             sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
 
         }
+        else if($(".result-count").length>0)
+        {
+            sumNumber=$(".result-count")[0].innerHTML.replace(/件宝贝/,"")
+            
+        }
+        sumNumber=parseInt(sumNumber)
+        
         if($(".page-info").length!=0)
         {
             pageinfo=$(".page-info")[0].innerHTML.split("/")
             pageIndex=parseInt(pageinfo[0],10)
             pageTotalNum=parseInt(pageinfo[1],10)
-            if(pageTotalNum==1)
-            {
-                atLeastNumber=sumNumber
-                if(atLeastNumber>9)
-                {
-                    atLeastNumber=9
-                }
-            }
-            else if(pageIndex!=pageTotalNum)
+        }
+        else
+        {
+            pageIndex=1
+            pageTotalNum=1
+        }
+
+        if(pageTotalNum==1)
+        {
+            atLeastNumber=sumNumber
+            if(atLeastNumber>9)
             {
                 atLeastNumber=9
             }
-            else
+        }
+        else if(pageIndex!=pageTotalNum)
+        {
+            atLeastNumber=9
+        }
+        else
+        {
+            atLeastNumber=sumNumber-44-40*(pageIndex-2)
+            if(atLeastNumber>9)
             {
-                atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>9)
-                {
-                    atLeastNumber=9
-                }
+                atLeastNumber=9
             }
         }
+
+
+        
         console.info("ShowShopkeeper() atLeastNumber="+atLeastNumber)
         
-        
-        if($("a.EventCanSelect").length>=atLeastNumber) 
+        tagA_class=""
+        listContent_class=""
+        if($(".tb-content").length>0)
         {
-            tagA_class=".EventCanSelect"
+            listContent_class=".tb-content "
+        }
+        else if($(".list-content").length>0)
+        {
+            listContent_class=".list-content "
+        }
+        
+        if($(listContent_class+"a.EventCanSelect").length>=atLeastNumber) 
+        {
+            tagA_class=listContent_class+"a.EventCanSelect"
         }
         else
         {
@@ -160,7 +184,7 @@ function main_search() {
             {
                 if($("a.s"+i).length>=atLeastNumber) 
                 {
-                    tagA_class="a.s"+i
+                    tagA_class=listContent_class+"a.s"+i
                 }
             }
         }

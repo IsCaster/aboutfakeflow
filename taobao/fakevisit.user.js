@@ -298,6 +298,14 @@ function handleTaobaoSearchPage()
 	}
     
     
+    //handle "淘喜欢"
+    
+    if(document.body.innerHTML.indexOf('淘喜欢')!=-1)
+    {
+        openItemPage()
+        return 
+    }
+
     GM_log("handleTaobaoSearchPage,close opener")
     if(unsafeWindow.opener && itemId!="" )
     {
@@ -326,6 +334,8 @@ function handleTaobaoSearchPage()
         return;
     }
 	
+    
+    
 	if($("#filterPageForm").length>0)
 	{
 		$("#filterPageForm")[0].target="_blank"
@@ -365,45 +375,73 @@ function handleTaobaoSearchPage()
     var  retryTimes=0
     function checkUrlInPage()
     {
-        tagA_class=""
-        
         var atLeastNumber=9
         if($("li.result-info").length>0)
         {
             sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
 
         }
+        else if($(".result-count").length>0)
+        {
+            sumNumber=$(".result-count")[0].innerHTML.replace(/件宝贝/,"")
+
+        }
+        sumNumber=parseInt(sumNumber)
+        
         if($(".page-info").length!=0)
         {
             pageinfo=$(".page-info")[0].innerHTML.split("/")
             pageIndex=parseInt(pageinfo[0],10)
             pageTotalNum=parseInt(pageinfo[1],10)
-            if(pageTotalNum==1)
-            {
-                atLeastNumber=sumNumber
-                if(atLeastNumber>9)
-                {
-                    atLeastNumber=9
-                }
-            }
-            else if(pageIndex!=pageTotalNum)
+        }
+        else
+        {
+            pageIndex=1
+            pageTotalNum=1
+        }
+
+        if(pageTotalNum==1)
+        {
+            atLeastNumber=sumNumber
+            if(atLeastNumber>9)
             {
                 atLeastNumber=9
             }
-            else
+        }
+        else if(pageIndex!=pageTotalNum)
+        {
+            atLeastNumber=9
+        }
+        else
+        {
+            atLeastNumber=sumNumber-44-40*(pageIndex-2)
+            if(atLeastNumber>9)
             {
-                atLeastNumber=sumNumber-44-40*(pageIndex-2)
-                if(atLeastNumber>9)
-                {
-                    atLeastNumber=9
-                }
+                atLeastNumber=9
             }
         }
         GM_log("handleTaobaoSearchPage,atLeastNumber="+atLeastNumber)
         
-        if($("a.EventCanSelect").length>=atLeastNumber) 
+        
+        tagA_class=""
+        listContent_class=""
+        if($(".tb-content").length>0)
         {
-            tagA_class=".EventCanSelect"
+            listContent_class=".tb-content "
+        }
+        else if($(".list-content").length>0)
+        {
+            listContent_class=".list-content "
+        }
+        
+        if(listContent_class=="" && retryTimes== 15)
+        {
+            alert("can't find list-content")
+        }
+        
+        if($(listContent_class+"a.EventCanSelect").length>=atLeastNumber) 
+        {
+            tagA_class=listContent_class+"a.EventCanSelect"
         }
         else
         {
@@ -411,7 +449,7 @@ function handleTaobaoSearchPage()
             {
                 if($("a.s"+i).length>=atLeastNumber) 
                 {
-                    tagA_class="a.s"+i
+                    tagA_class=listContent_class+"a.s"+i
                 }
             }
         }
@@ -441,34 +479,34 @@ function handleTaobaoSearchPage()
         if(itemId!="")
         {
 
-            if($("a"+tagA_class+"[href*='"+itemId+"&']").length>=1)
+            if($(tagA_class+"[href*='"+itemId+"&']").length>=1)
             {
                 GM_log("1.find url")
                 var evt1 = document.createEvent("MouseEvents");
                 evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
                 var evt2 = document.createEvent("MouseEvents");     
                 evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-                $("a"+tagA_class+"[href*='"+itemId+"&']")[0].id="toClick"
+                $(tagA_class+"[href*='"+itemId+"&']")[0].id="toClick"
                 setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
                 
                 return;
             }
-            else if($("a"+tagA_class+"[href$='"+itemId+"']").length>=1)
+            else if($(tagA_class+"[href$='"+itemId+"']").length>=1)
             {
                 GM_log("2.find url")
-                $("a"+tagA_class+"[href$='"+itemId+"']")[0].id="toClick"
+                $(tagA_class+"[href$='"+itemId+"']")[0].id="toClick"
                 setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
                 return;
             }
         }
-        else if($("a"+tagA_class+"[href*='"+url+"']").length>=1)
+        else if($(tagA_class+"[href*='"+url+"']").length>=1)
         {
             GM_log("3.find url")
             var evt1 = document.createEvent("MouseEvents");
             evt1.initMouseEvent("mousedown", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
             var evt2 = document.createEvent("MouseEvents");     
             evt2.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            $("a"+tagA_class+"[href*='"+url+"']")[0].id="toClick"
+            $(tagA_class+"[href*='"+url+"']")[0].id="toClick"
             setTimeout(function(){clickContainP.onclick($("#toClick")[0])},1000)
             return;
         }   
@@ -580,6 +618,13 @@ function handleTaobaoItemPage()
 		{
 			itemTitle=$(".tb-detail-hd h3")[0].lastChild.textContent
 		}
+        
+        //handle page like http://detail.tmall.com/item.htm?id=23782100953
+        // http://detail.tmall.com/item.htm?id=23788916003&
+        if($(".tb-detail-hd h3 a").length >0)
+        {
+            itemTitle=$(".tb-detail-hd h3 a")[0].lastChild.textContent
+        }
 	}
 
     var shopkeeper=""
