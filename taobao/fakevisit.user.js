@@ -298,13 +298,15 @@ function handleTaobaoSearchPage()
 	}
     
     
-    //handle "淘喜欢"
+    //handle "淘喜欢" '淘特色'
     
-    if(document.body.innerHTML.indexOf('淘喜欢')!=-1)
+    if(document.body.innerHTML.indexOf('淘喜欢')!=-1 || document.body.innerHTML.indexOf('淘特色')!=-1)
     {
         openItemPage()
         return 
     }
+    
+    
 
     GM_log("handleTaobaoSearchPage,close opener")
     if(unsafeWindow.opener && itemId!="" )
