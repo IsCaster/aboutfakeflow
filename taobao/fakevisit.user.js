@@ -456,7 +456,7 @@ function handleTaobaoSearchPage()
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>=atLeastNumber) 
+                if($(listContent_class+"a.s"+i).length>=atLeastNumber) 
                 {
                     tagA_class=listContent_class+"a.s"+i
                 }

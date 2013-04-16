@@ -182,7 +182,7 @@ function main_search() {
         {
             for(var i=10;i<990;i=i+10)
             {
-                if($("a.s"+i).length>=atLeastNumber) 
+                if($(listContent_class+"a.s"+i).length>=atLeastNumber) 
                 {
                     tagA_class=listContent_class+"a.s"+i
                 }
@@ -208,8 +208,7 @@ function main_search() {
             }
         }
         
-        console.info("orgin item number:"+$(".list-item .seller > a:first-child").length)
-        console.info("new version item number:"+$(".item .seller > a:first-child").length)
+        console.info("item number:"+$(tagA_class).length)
         
         shopkeeper_selector=""
         
@@ -225,6 +224,8 @@ function main_search() {
         {
             //alert("外挂程序出错，请联系管理员")
         }
+        
+        console.info("shopkeeper number:"+$(shopkeeper_selector).length)
         
         var shopkeepers=";"
         var shopkeepersHtml=";"
