@@ -375,7 +375,9 @@ function handleTaobaoSearchPage()
     var  retryTimes=0
     function checkUrlInPage()
     {
-        var atLeastNumber=9
+        
+        
+        var sumNumber="0"
         if($("li.result-info").length>0)
         {
             sumNumber=$("li.result-info")[0].innerHTML.replace(/件宝贝/,"")
@@ -385,6 +387,10 @@ function handleTaobaoSearchPage()
         {
             sumNumber=$(".result-count")[0].innerHTML.replace(/件宝贝/,"")
 
+        }
+        else if($(".result-count-cont em").length>0)
+        {
+            sumNumber=$(".result-count-cont em")[0].innerHTML
         }
         sumNumber=parseInt(sumNumber)
         
@@ -399,7 +405,8 @@ function handleTaobaoSearchPage()
             pageIndex=1
             pageTotalNum=1
         }
-
+        
+        var atLeastNumber=9
         if(pageTotalNum==1)
         {
             atLeastNumber=sumNumber
