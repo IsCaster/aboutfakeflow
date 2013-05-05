@@ -137,7 +137,7 @@ function handleGetMissionStaffPage()
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
         {
             $(".cursor ")[0].waitForLoadTime=$(".cursor ")[0].waitForLoadTime+1
-            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            timeoutId=setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
             $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
             GM_log("setTimeout ,wait For Load  ");
             $(".cursor ")[0].unique_flag=0
@@ -148,7 +148,7 @@ function handleGetMissionStaffPage()
         //need to wait for mission page ?
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
         {
-            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            timeoutId=setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
             $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
             GM_log("setTimeout ,wait For Success  ");
             $(".cursor ")[0].unique_flag=0
@@ -217,10 +217,10 @@ function handleGetMissionStaffPage()
                 
                 if( GM_getValue( "keepReflash",0 ) == 1 )
                 {
-                    //setTimeout("goPage(0);",2000+Math.random()*1000);
+                    //setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
                     //GM_log("setTimeout ,reflash ");
                     var refreshTimeout=0
-                    GM_log("goPage(0); calculate refreshTimeout")
+                    GM_log("goPage(pageIndex); calculate refreshTimeout")
                     if($(".tbl a").length>=2)
                     {   
                         refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,4000))
@@ -237,8 +237,8 @@ function handleGetMissionStaffPage()
                             refreshTimeout=0
                         }
                     }
-                    GM_log("goPage(0); refreshTimeout="+refreshTimeout)
-                    timeoutId=setTimeout("goPage(0);",refreshTimeout);
+                    GM_log("goPage(pageIndex); refreshTimeout="+refreshTimeout)
+                    timeoutId=setTimeout("goPage(pageIndex);",refreshTimeout);
                     $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
                 }
                 
@@ -250,6 +250,7 @@ function handleGetMissionStaffPage()
         xml.send('');
     }
     */
+    unsafeWindow.pageIndex=0
     unsafeWindow.goPage = function (n) {
         //to be the unique one
         if($(".cursor ")[0].unique_flag==0)
@@ -282,7 +283,7 @@ function handleGetMissionStaffPage()
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceLoaded")[0].need2wait) != "undefined" && $("#annouceLoaded")[0].need2wait == 1 && $(".cursor ")[0].waitForLoadTime < 60)
         {
             $(".cursor ")[0].waitForLoadTime=$(".cursor ")[0].waitForLoadTime+1
-            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            timeoutId=setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
             $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
             GM_log("setTimeout ,wait For Load  ");
             $(".cursor ")[0].unique_flag=0
@@ -293,7 +294,7 @@ function handleGetMissionStaffPage()
         //need to wait for mission page ?
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
         {
-            timeoutId=setTimeout("goPage(0);",2000+Math.random()*1000);
+            timeoutId=setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
             $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
             GM_log("setTimeout ,wait For Success  ");
             $(".cursor ")[0].unique_flag=0
@@ -305,7 +306,7 @@ function handleGetMissionStaffPage()
         unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
         var xml = unsafeWindow.makeXmlReq();
         var url = '../../ajax/GetCount.aspx?' + qs;
-        
+        unsafeWindow.pageIndex=n
         xml.onreadystatechange = function() {
         if (xml.readyState == 4) {
         if (xml.status == 200 || xml.status == 304) {
@@ -420,15 +421,33 @@ function handleGetMissionStaffPage()
                     GM_log("taskLst.innerHTML="+txt)
                     alert("出错错误，需要重新点刷新")
                 }
-
             }
-
+            if($(".p_l_20").length>0)
+            {
+                if($(".p_l_20").length>$(".tbl a").length)
+                //forward
+                {
+                    if(unsafeWindow.pageIndex > 0)
+                    {
+                        unsafeWindow.pageIndex = unsafeWindow.pageIndex-1
+                    }
+                    else
+                    {
+                        unsafeWindow.pageIndex = 0
+                    }
+                }
+                else
+                //backward
+                {
+                    unsafeWindow.pageIndex = unsafeWindow.pageIndex+1
+                }
+            }
             if( GM_getValue( "keepReflash",0 ) == 1 )
             {
-                //setTimeout("goPage(0);",2000+Math.random()*1000);
+                //setTimeout("goPage(pageIndex);",2000+Math.random()*1000);
                 //GM_log("setTimeout ,reflash ");
                 var refreshTimeout=0
-                GM_log("goPage(0); calculate refreshTimeout")
+                GM_log("goPage(pageIndex); calculate refreshTimeout")
                 if($(".tbl a").length>=2)
                 {   
                     refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(4000,3000))
@@ -445,8 +464,8 @@ function handleGetMissionStaffPage()
                         refreshTimeout=2124
                     }
                 }
-                GM_log("goPage(0); refreshTimeout="+refreshTimeout)
-                timeoutId=setTimeout("goPage(0);",refreshTimeout);
+                GM_log("goPage(pageIndex); refreshTimeout="+refreshTimeout)
+                timeoutId=setTimeout("goPage(pageIndex);",refreshTimeout);
                 $(".cursor ")[0].goPageTimeOutIds.push(timeoutId)
             }
 
@@ -466,7 +485,7 @@ function handleGetMissionStaffPage()
                                                             }
                                                             else
                                                             {
-                                                                unsafeWindow.goPage(0);
+                                                                unsafeWindow.goPage(pageIndex);
                                                             }
                                                         }
                                                     },60000)
@@ -483,7 +502,7 @@ function handleGetMissionStaffPage()
         if(GM_getValue("keepReflash",0)==0)
         {
             GM_setValue("keepReflash",1);//valid keepReflash
-            unsafeWindow.goPage(0);
+            unsafeWindow.goPage(pageIndex);
         }
     }
 
@@ -608,7 +627,7 @@ function handleGetMissionStaffPage()
         if( GM_getValue( "keepReflash" ) == 1 )
         {
             //setTimeout("alert('test setTimeout')",1000)
-            setTimeout("goPage(0);",4325+Math.random()*4000);
+            setTimeout("goPage(pageIndex);",4325+Math.random()*4000);
         }
     }
     //reflashMission()
@@ -1100,7 +1119,7 @@ function handleMission()
                         20003       same as 20002 ,just for debug to make it different
                         20004       same as 20002 ,just for debug to make it different
                         */
-                        
+                        GM_log("queryurl xhr.responseText = \n"+xhr.responseText);
                         data=eval('('+xhr.responseText+')')
                         GM_log("data.status = "+data.status)
                         if(typeof(data.itemId)!="undefined")

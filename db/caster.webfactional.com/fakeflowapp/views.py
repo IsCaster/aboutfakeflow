@@ -25,6 +25,8 @@ from datetime import timedelta
 
 from django.db.models import Sum
 
+import httplib, urllib
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -186,7 +188,8 @@ def queryUrl(request):
     site=raw_site
     message=re.sub(r"\s*","",raw_message)
     
-    recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+        recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     
     # query cache first 
     newMission=MissionItem(raw_message,site,shopkeeper);
@@ -468,7 +471,8 @@ def submitResultSuccess(request):
     else:
         price = 1
     
-    updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+        updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     recordMissionComplete(site,client,price)
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
@@ -843,16 +847,20 @@ def submitShopkeeper(request):
         entries=MissionInfo.objects.filter(url__contains=url)
     else :
         entries=MissionInfo.objects.filter(Q(url__contains=itemid+"&")|Q(url__endswith=itemid))
+    trim_keyword=""
     for entry in entries:
         entry.shopkeeper=shopkeeper
         # use itemTitle as keyword,if fake visit fail
-        if itemTitle != "" :
-            entry.keyword=itemTitle
-        entry.save()
-        with GetMissionQueue().bufferLock:
-            for id,item in GetMissionQueue().doneBuffer.items():
-                if len(item.urls) == 1 and itemid in item.urls[0]:
-                    item.keyword=itemTitle
+        if entry.searchTips == "" and itemTitle != "" :            
+            entry.searchTips=itemTitle
+            if trim_keyword=="":
+                trim_keyword=trimWord(itemTitle)
+            entry.keyword=trim_keyword
+            entry.save()
+            with GetMissionQueue().bufferLock:
+                for id,item in GetMissionQueue().doneBuffer.items():
+                    if len(item.urls) == 1 and itemid in item.urls[0]:
+                        item.keyword=trim_keyword
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    
@@ -959,8 +967,8 @@ def heartBeat(request):
             price=0.2
     else:
         price = 1
-    
-    updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+        updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     recordMissionComplete(site,client,price)
     return HttpResponse("success")
 
@@ -1121,4 +1129,108 @@ def performanceMonthlyData(request):
     template_values={   "daysData":daysData,
                     }
     return render_to_response('performancemonthlydata.html', template_values);
+
+def trimLeftWord(word_list,left,right):
+    new_left=right+1
+    for i in range(left+1,right+1) :
+        if len(word_list[i]["word"]) > 1 :
+            new_left=i
+            break
+    trim_keyword=""
+    for i in range(new_left,right+1) :
+        trim_keyword=trim_keyword+word_list[i]["word"]                
+    return new_left,right,trim_keyword
+
+def trimRightWord(word_list,left,right):
+    new_right=left-1
+    for i in range(left,right)[::-1] :
+        if len(word_list[i]["word"]) > 1 :
+            #logger.debug("i="+str(i)+",len="+str(len(word_list[len(word_list)-i-1]["word"])))
+            new_right=i
+            break
+    trim_keyword=""
+    for i in range(left,new_right+1) :
+        trim_keyword=trim_keyword+word_list[i]["word"]                
+    return left,new_right,trim_keyword    
+    
+def trimWord(keyword): 
+    logger.debug("trimWord()  keyword="+keyword)   
+    gbk_keyword=keyword.encode("utf8")
+
+    params = urllib.urlencode({'k': gbk_keyword, })
+    headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
+    conn = httplib.HTTPConnection("caster.sinaapp.com")
+    conn.request("POST", "/q", params, headers)
+    #conn.request("GET", "/q?"+ params)
+    response = conn.getresponse()
+    #print response.status, response.reason
+    
+    # get a trim keyword about 20 chars
+    return_word=keyword
+    if response.status==200:
+        data = response.read()
+        word_list=simplejson.loads(data)
+        left=0
+        right=len(word_list)-1
         
+        pre_word=return_word
+        bTrimLeft=True
+        logger.debug("len(return_word)=%d"%len(return_word) )
+        while len(return_word) > 20 :
+            pre_word=return_word
+            if bTrimLeft :
+                left,right,return_word=trimLeftWord(word_list,left,right)
+            else:
+                left,right,return_word=trimRightWord(word_list,left,right)
+            logger.debug("return_word="+return_word)    
+            bTrimLeft = not bTrimLeft
+        
+        if len(return_word) < 10 :
+            return_word=pre_word
+        # for i in range(0,len(word_list)) :
+            # if len(word_list[i]["word"]) > 1 :
+                # word_b=i
+                # break
+        
+        # for i in range(0,len(word_list)) :
+            # if len(word_list[len(word_list)-i-1]["word"]) > 1 :
+                # # logger.debug("i="+str(i)+",len="+str(len(word_list[len(word_list)-i-1]["word"])))
+                # word_e=len(word_list)-i-1
+                # break
+        # trim_keyword=""
+        # #logger.debug("word_b="+str(word_b)+",word_e="+str(word_e)+",list length ="+str(len(word_list)))
+        # for i in range(word_b,word_e+1) :
+            # trim_keyword=trim_keyword+word_list[i]["word"]
+        # if len(trim_keyword) < 15 :
+            # return_word=keyword
+        # elif len(trim_keyword) > 25 :
+            # #twice trim
+            # trim2_keyword=""
+            # word_b2=word_b
+            # for i in range(word_b+1,len(word_list)) :
+                # if len(word_list[i]["word"]) > 1 :
+                    # word_b2=i
+                    # break
+            # for i in range(word_b2,word_e+1) :
+                # trim2_keyword=trim2_keyword+word_list[i]["word"]
+            # if len(trim2_keyword) > 15 :
+                # return_word=trim2_keyword
+            # else:
+                # return_word=trim_keyword
+        # else:
+            # return_word=trim_keyword
+        
+    return return_word
+        
+def test(request):
+    entries=MissionInfo.objects.exclude(
+                keyword=""
+            ).order_by("-updateTime")[:10]
+    
+    trim_keyword=trimWord(entries[0].keyword)
+
+
+    return HttpResponse(entries[0].keyword+";"+trim_keyword)
+
+
+    

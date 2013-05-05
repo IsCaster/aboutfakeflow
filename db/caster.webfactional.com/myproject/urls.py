@@ -48,4 +48,5 @@ urlpatterns = patterns('',
     url(r'^missiontodaystatistics$', 'fakeflowapp.views.missionTodayStatistics'),
     url(r'^performancemonthlydata$', 'fakeflowapp.views.performanceMonthlyData'),
     url(r'^checkout$', 'fakeflowapp.views.checkout'),
+    url(r'^test$', 'fakeflowapp.views.test'),
 )

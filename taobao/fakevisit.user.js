@@ -130,7 +130,8 @@ function handleTaobaoSearchPage()
     function openItemPage()
     {
         var openContainP=document.createElement("p");
-        document.body.insertBefore(openContainP,null);
+        openContainP.innerHTML='open item page'
+        document.body.insertBefore(openContainP,null);  
 
         openContainP.onclick=function()
         {
@@ -300,13 +301,36 @@ function handleTaobaoSearchPage()
     
     //handle "淘喜欢" '淘特色'
     
-    if(document.body.innerHTML.indexOf('淘喜欢')!=-1 || document.body.innerHTML.indexOf('淘特色')!=-1)
+    // if(document.body.innerHTML.indexOf('淘喜欢')!=-1 || document.body.innerHTML.indexOf('淘特色')!=-1)
+    // {
+        // openItemPage()
+        // return 
+    // }
+    
+    if($('#J_filter li.active').length>0)
     {
+        // not select 所有宝贝
+        if($('#J_filter li')[0]!=$('#J_filter li.active')[0])
+        {
+            GM_log("handleTaobaoSearchPage,not select 所有宝贝")
+        
+            var logContainP=document.createElement("p");
+            logContainP.innerHTML="handleTaobaoSearchPage,not select 所有宝贝"
+            document.body.insertBefore(logContainP,null);
+            openItemPage()
+            return 
+        }
+    }
+    else
+    {
+        GM_log("handleTaobaoSearchPage,no active J_filter")
+        
+        var logContainP=document.createElement("p");
+        logContainP.innerHTML="handleTaobaoSearchPage,no active J_filter"
+        document.body.insertBefore(logContainP,null);
         openItemPage()
         return 
     }
-    
-    
 
     GM_log("handleTaobaoSearchPage,close opener")
     if(unsafeWindow.opener && itemId!="" )
@@ -653,7 +677,7 @@ function handleTaobaoItemPage()
         shopkeeper="invalid"
     }
 	
-	
+	GM_log("itemTitle="+itemTitle+",shopkeeper="+shopkeeper)
     
     submitShopkeeper=document.createElement("div")
     submitShopkeeper.innerHTML="<form id='submitshopkeeper' action='http://caster.webfactional.com/submitshopkeeper' method='post' >\
