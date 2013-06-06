@@ -9,8 +9,10 @@
 // @include       http://item.tmall.com/item.htm?*
 // @include       http://love.taobao.com/*
 // @include       http://www.taobao.com/go/*
+// @include       http://www.taobao.com/market/ae/fktz.php
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
+
 GM_log("enter GM script");
 init()
 if(location.href.indexOf("http://caster.webfactional.com/fakevisit")!=-1)
@@ -25,7 +27,8 @@ else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.
 {
 	handleTaobaoItemPage()
 }
-else if(location.href.indexOf("http://love.taobao.com/")!=-1 || location.href.indexOf("http://www.taobao.com/go")!=-1 )
+else if(location.href.indexOf("http://love.taobao.com/")!=-1 || location.href.indexOf("http://www.taobao.com/go")!=-1 
+    || location.href.indexOf("http://www.taobao.com/market/ae/fktz.php")!=-1 )
 {
 	handleInvalidItemPage()
 }
@@ -131,7 +134,7 @@ function handleTaobaoSearchPage()
     {
         var openContainP=document.createElement("p");
         openContainP.innerHTML='open item page'
-        document.body.insertBefore(openContainP,null);  
+        document.body.insertBefore(openContainP,document.body.firstChild);  
 
         openContainP.onclick=function()
         {
@@ -194,7 +197,7 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt3);
 		////setTimeout(function(){unsafeWindow.close()},50000)
     }
-    document.body.insertBefore(clickContainP,null);  	
+    document.body.insertBefore(clickContainP,document.body.firstChild);  	
  
 	url=""
 	itemId=""
@@ -295,7 +298,7 @@ function handleTaobaoSearchPage()
 		var itemIdP=document.createElement("p");
 		itemIdP.id='itemId';
 		itemIdP.innerHTML=itemId
-		document.body.insertBefore(itemIdP,null);  
+		document.body.insertBefore(itemIdP,document.body.firstChild);  
 	}
     
     
@@ -316,7 +319,7 @@ function handleTaobaoSearchPage()
         
             var logContainP=document.createElement("p");
             logContainP.innerHTML="handleTaobaoSearchPage,not select 所有宝贝"
-            document.body.insertBefore(logContainP,null);
+            document.body.insertBefore(logContainP,document.body.firstChild);
             openItemPage()
             return 
         }
@@ -327,7 +330,7 @@ function handleTaobaoSearchPage()
         
         var logContainP=document.createElement("p");
         logContainP.innerHTML="handleTaobaoSearchPage,no active J_filter"
-        document.body.insertBefore(logContainP,null);
+        document.body.insertBefore(logContainP,document.body.firstChild);
         openItemPage()
         return 
     }
@@ -685,7 +688,7 @@ function handleTaobaoItemPage()
                                     <input name='shopkeeper' type='hidden' value='"+encodeURIComponent(shopkeeper)+"'/>\
 									<input name='itemTitle' type='hidden' value='"+encodeURIComponent(itemTitle)+"'/>\
                                 </form>"
-    document.body.insertBefore(submitShopkeeper,null)
+    document.body.insertBefore(submitShopkeeper,document.body.firstChild)
     GM_log("submitshopkeeper")
     setTimeout(function(){$("#submitshopkeeper")[0].submit()},6000)
 }

@@ -47,7 +47,7 @@ else if(location.href=="http://www.hiwinwin.com/member/")
         if(Math.random()>=0.5)//to do
         {
             setTimeout(function(){
-                    $("#ff_ss")[0].click()
+                    //$("#ff_ss")[0].click()
                     $("a[href='../finance/Exchange.aspx']")[0].click()
                 },1514+Math.random()*2000)
         }

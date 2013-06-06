@@ -302,7 +302,7 @@ function handleGetMissionStaffPage()
         }
 
 
-        var qs = 'page=' + n + '&cnd=1&nows=' + (new Date()).getTime();
+        var qs = 'page=' + n + '&cld=1&nows=' + (new Date()).getTime();
         unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
         var xml = unsafeWindow.makeXmlReq();
         var url = '../../ajax/GetCount.aspx?' + qs;
