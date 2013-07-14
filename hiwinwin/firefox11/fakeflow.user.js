@@ -33,11 +33,11 @@ if(location.href=="http://www.hiwinwin.com/task/count/"
 {
 	if( document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx?id=")!=-1)
 	{
-        handleAutoJumpTaskCountPage("annouceLoaded")
+        handleAutoJumpTaskCountPage(unsafeWindow.opener.opener.top,"annouceLoaded")
 	}
     else if (document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!=-1)
     {
-        handleAutoJumpTaskCountPage("annouceComplete")
+        handleAutoJumpTaskCountPage(unsafeWindow.opener.opener.top,"annouceComplete")
     }
     else if(document.referrer=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f"
         || document.referrer=="http://www.hiwinwin.com/member/"
@@ -45,7 +45,14 @@ if(location.href=="http://www.hiwinwin.com/task/count/"
     {
         handleGetMissionStaffPage()
     }
-	else
+    else if(document.referrer=="http://www.hiwinwin.com/task/count/" 
+        && $(".error_panel").length>=1 
+        && $(".error_panel")[0].innerHTML.indexOf("对不起,您在该发布者的黑名单中,不能接手该发布者的任务;请选择其他任务接手吧")>=0)
+    {
+        //对不起,您在该发布者的黑名单中,不能接手该发布者的任务;请选择其他任务接手吧
+        handleAutoJumpTaskCountPage(unsafeWindow.opener.top,"annouceLoaded")
+    }
+	else 
 	{
 		handleTooSlowPage()
 	}
@@ -102,7 +109,7 @@ else if(location.href.indexOf("http://www.hiwinwin.com/Error.aspx")!=-1)
 }
 	
 
-function handleAutoJumpTaskCountPage(annoucePart)
+function handleAutoJumpTaskCountPage(motherWindow,annoucePart)
 {
     unsafeWindow.checkNow=function()
     {
@@ -129,20 +136,20 @@ function handleAutoJumpTaskCountPage(annoucePart)
         goPageToString=GM_getValue( "goPageToString","")
         if(goPageToString!=unsafeWindow.goPage.toString())
         {
-            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceGoPageChange").onclick()
+            setTimeout(function(){motherWindow.document.getElementById("annouceGoPageChange").onclick()
                 },0)
             GM_setValue( "newGoPageToString",unsafeWindow.goPage.toString())
         }
         else if($("a[href='javascript:goPage(6);']").length<=0)
         {
             GM_log($("a[href='javascript:goPage(6);']").length)
-            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceGoPageChange").onclick()
+            setTimeout(function(){motherWindow.document.getElementById("annouceGoPageChange").onclick()
                 },0)
             GM_setValue( "newGoPageToString","no gopage(6)")
         }
         else
         {
-            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById(annoucePart).onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+            setTimeout(function(){motherWindow.document.getElementById(annoucePart).onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
         }
     }
     unsafeWindow.checkNow()
@@ -747,7 +754,9 @@ function handleTooSlowPage()
     confirm("外挂未知领域，请联系管理员")
     //just to stop botter
     unsafeWindow.opener.top.document.getElementById("annouceSuccess").onclick() 
+    unsafeWindow.opener.opener.top.document.getElementById("annouceSuccess").onclick() 
     //unsafeWindow.opener.top.document.getElementById("annouceLoaded").onclick() 
+    return
 }
 
 
