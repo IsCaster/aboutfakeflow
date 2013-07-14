@@ -33,12 +33,11 @@ if(location.href=="http://www.hiwinwin.com/task/count/"
 {
 	if( document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx?id=")!=-1)
 	{
-        setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceLoaded").onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
-		return;
+        handleAutoJumpTaskCountPage("annouceLoaded")
 	}
     else if (document.referrer.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!=-1)
     {
-        setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceComplete").onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+        handleAutoJumpTaskCountPage("annouceComplete")
     }
     else if(document.referrer=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=http%3a%2f%2fwww.hiwinwin.com%2fmember%2f"
         || document.referrer=="http://www.hiwinwin.com/member/"
@@ -102,8 +101,60 @@ else if(location.href.indexOf("http://www.hiwinwin.com/Error.aspx")!=-1)
     handleAlreadyGotPage()
 }
 	
+
+function handleAutoJumpTaskCountPage(annoucePart)
+{
+    unsafeWindow.checkNow=function()
+    {
+        //check gopage()return
+        GM_log("$('#taskLst')[0].innerHTML="+$('#taskLst')[0].innerHTML)
+        if($('#taskLst')[0].innerHTML=="" || $('#taskLst')[0].innerHTML=='<div class="submiting">任务加载中.....<p></p></div>')
+        {
+            setTimeout(function(){unsafeWindow.checkNow()},1000)
+            return
+        }
+        //<center><span class="f_blue f_14 f_b">对不起,您接手到任务后10秒内将无法刷新
+        else if ($('#taskLst')[0].innerHTML.indexOf('对不起,您接手到任务后10秒内将无法刷新')>=0)
+        {   
+            GM_log("error 对不起,您接手到任务后10秒内将无法刷新")
+
+            setTimeout(function()
+                { 
+                    $('.cursor')[0].onclick()
+                    unsafeWindow.checkNow()
+                }, 3543+Math.random()*3000)
+            return
+        }
+        //check if gopage() changed
+        goPageToString=GM_getValue( "goPageToString","")
+        if(goPageToString!=unsafeWindow.goPage.toString())
+        {
+            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceGoPageChange").onclick()
+                },0)
+            GM_setValue( "newGoPageToString",unsafeWindow.goPage.toString())
+        }
+        else if($("a[href='javascript:goPage(6);']").length<=0)
+        {
+            GM_log($("a[href='javascript:goPage(6);']").length)
+            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById("annouceGoPageChange").onclick()
+                },0)
+            GM_setValue( "newGoPageToString","no gopage(6)")
+        }
+        else
+        {
+            setTimeout(function(){unsafeWindow.opener.opener.top.document.getElementById(annoucePart).onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+        }
+    }
+    unsafeWindow.checkNow()
+    return
+}
+
 function handleGetMissionStaffPage()
 {
+    //unsafeWindow.newAlert= function(str)
+    //{
+    //    unsafeWindow.getObj('taskLst').innerHTML = "<font color = 'red'> "+str+"</font>"
+    //}
     //reset invalidMissionIdList oldMissionIdList
     GM_setValue("invalidMissionId","")
     GM_setValue("oldMissionId","")
@@ -121,7 +172,7 @@ function handleGetMissionStaffPage()
 
     if(allReflashImages.snapshotLength != 1 )
     {
-            //alert("程序出错，可能是hiwinwin改版了");
+            confirm("程序出错，可能是hiwinwin改版了");
             GM_log("fake flow#common 程序出错，可能是hiwinwin改版了");
     }	
 
@@ -250,8 +301,24 @@ function handleGetMissionStaffPage()
         xml.send('');
     }
     */
+	magicWord="dic"
+    var goPageToString="function goPage(n) {\n    var qs = 'page=' + n + '&dic=1&nows=' + (new Date()).getTime();\n    getObj('taskLst').innerHTML = '<div class=\\'submiting\\'>任务加载中.....</p>';\n    var xml = makeXmlReq();\n    var url = '../../ajax/GetCount.aspx?' + qs;\n    xml.onreadystatechange = function () {\n      if (xml.readyState == 4) {\n        if (xml.status == 200 || xml.status == 304) {\n          var txt = xml.responseText;\n          getObj('taskLst').innerHTML = txt;\n        }\n      }\n    };\n    xml.open('get', url, true);\n    xml.setRequestHeader('If-Modified-Since', '0');\n    xml.send('');\n  }"
+	if(unsafeWindow.goPage.toString()!=goPageToString)
+	{
+		GM_setValue( "keepReflash",0 )
+		confirm("外挂需要更新，请联系管理员")
+		return
+	}
+    GM_setValue( "goPageToString",goPageToString)
+    
     unsafeWindow.pageIndex=0
     unsafeWindow.goPage = function (n) {
+        //check 1
+        if( GM_getValue( "keepReflash",0 ) == 0 )
+        {
+            return;
+        }
+    
         //to be the unique one
         if($(".cursor ")[0].unique_flag==0)
         {
@@ -291,6 +358,8 @@ function handleGetMissionStaffPage()
         }
         $(".cursor ")[0].waitForLoadTime=0
         
+        
+        
         //need to wait for mission page ?
         if( GM_getValue( "keepReflash",0 ) == 1 && typeof($("#annouceSuccess")[0].need2wait) != "undefined" && $("#annouceSuccess")[0].need2wait == 1)
         {
@@ -301,8 +370,13 @@ function handleGetMissionStaffPage()
             return 
         }
 
+        //check 2
+        if( GM_getValue( "keepReflash",0 ) == 0 )
+        {
+            return;
+        }
 
-        var qs = 'page=' + n + '&cld=1&nows=' + (new Date()).getTime();
+        var qs = 'page=' + n + '&'+magicWord+'=1&nows=' + (new Date()).getTime();
         unsafeWindow.getObj('taskLst').innerHTML = '<div class=\'submiting\'>任务加载中.....</p>';
         var xml = unsafeWindow.makeXmlReq();
         var url = '../../ajax/GetCount.aspx?' + qs;
@@ -322,6 +396,7 @@ function handleGetMissionStaffPage()
                 GM_log("txt="+txt);
                 unsafeWindow.getObj('taskLst').innerHTML = txt;
                 GM_setValue( "keepReflash",0 )
+                confirm("外挂出错，请联系管理员")
                 return;
             }
             unsafeWindow.getObj('taskLst').innerHTML = txt;
@@ -419,25 +494,26 @@ function handleGetMissionStaffPage()
                     //stop fresh
                     GM_setValue( "keepReflash",0 )
                     GM_log("taskLst.innerHTML="+txt)
-                    alert("出错错误，需要重新点刷新")
+                    confirm("外挂出错，请联系管理呗")
                 }
             }
             if($(".p_l_20").length>0)
             {
-                if($(".p_l_20").length>$(".tbl a").length)
-                //forward
+                if($(".p_l_20").length>$(".tbl a").length || unsafeWindow.pageIndex > 6 )
+                //backward
                 {
-                    if(unsafeWindow.pageIndex > 0)
+                    unsafeWindow.pageIndex = Math.round(Math.random()*(unsafeWindow.pageIndex-1))
+                    if(unsafeWindow.pageIndex > 6)
                     {
-                        unsafeWindow.pageIndex = unsafeWindow.pageIndex-1
+                        unsafeWindow.pageIndex=6
                     }
-                    else
+                    else if (unsafeWindow.pageIndex < 0)
                     {
                         unsafeWindow.pageIndex = 0
                     }
                 }
                 else
-                //backward
+                //forward
                 {
                     unsafeWindow.pageIndex = unsafeWindow.pageIndex+1
                 }
@@ -450,7 +526,7 @@ function handleGetMissionStaffPage()
                 GM_log("goPage(pageIndex); calculate refreshTimeout")
                 if($(".tbl a").length>=2)
                 {   
-                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(4000,3000))
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,2000))
                     if(refreshTimeout<2124)
                     {
                         refreshTimeout=2124
@@ -458,7 +534,7 @@ function handleGetMissionStaffPage()
                 }
                 else
                 {
-                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,5000))
+                    refreshTimeout=Math.round(unsafeWindow.gaussianGenerate(7000,5000))
                     if(refreshTimeout<2124)
                     {
                         refreshTimeout=2124
@@ -473,6 +549,12 @@ function handleGetMissionStaffPage()
         }
         };        
         
+        //check 3
+        if( GM_getValue( "keepReflash",0 ) == 0 )
+        {
+            return;
+        }
+
         //set reload timeout before send ajax
         $(".cursor ")[0].reloadTimeoutId=setTimeout(function(){
                                                         //confirm('annouceSuccess='+$('annouceSuccess')[0].need2wait,"1","2")
@@ -579,6 +661,16 @@ function handleGetMissionStaffPage()
     }
     document.body.insertBefore(annouceAlreadyGotP,null);
     
+    var annouceGoPageChangeP=document.createElement("p");
+    annouceGoPageChangeP.id='annouceGoPageChange';
+    annouceGoPageChangeP.onclick=function()
+    {
+        GM_log("<p>.onclick annouce annouce goPage() Change")
+        GM_setValue( "keepReflash",0 )
+        confirm("goPage()出错变化 外挂需要更新，请联系管理员")
+    }
+    document.body.insertBefore(annouceGoPageChangeP,null);
+    
 	//switch run mode
 	//1: manual 2: auto
 	var switchModeBtn=document.createElement("input");
@@ -636,7 +728,10 @@ function handleGetMissionStaffPage()
 
 function handleTooSlowPage()
 {
-    unsafeWindow.opener.top.document.getElementById("annouceLoaded").onclick() 
+    confirm("外挂未知领域，请联系管理员")
+    //just to stop botter
+    unsafeWindow.opener.top.document.getElementById("annouceSuccess").onclick() 
+    //unsafeWindow.opener.top.document.getElementById("annouceLoaded").onclick() 
 }
 
 
@@ -1348,7 +1443,7 @@ function handleAlreadyGotPage()
         }
         else
         {
-            alert(error_info);
+            confirm(error_info);
             GM_log("fake flow#alreadyGot 错误信息有误，error_info="+error_info);
         }
     }
