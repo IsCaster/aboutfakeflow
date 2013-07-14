@@ -45,12 +45,21 @@ if(location.href=="http://www.hiwinwin.com/task/count/"
     {
         handleGetMissionStaffPage()
     }
-    else if(document.referrer=="http://www.hiwinwin.com/task/count/" 
-        && $(".error_panel").length>=1 
-        && $(".error_panel")[0].innerHTML.indexOf("对不起,您在该发布者的黑名单中,不能接手该发布者的任务;请选择其他任务接手吧")>=0)
+    else if(document.referrer=="http://www.hiwinwin.com/task/count/" )
     {
-        //对不起,您在该发布者的黑名单中,不能接手该发布者的任务;请选择其他任务接手吧
-        handleAutoJumpTaskCountPage(unsafeWindow.opener.top,"annouceLoaded")
+        GM_log("$('.error_panel')[0].innerHTML="+$(".error_panel")[0].innerHTML)
+        GM_log("...黑名单...at "+$(".error_panel")[0].innerHTML.indexOf("对不起，您在该发布者的黑名单中，不能接手该发布者的任务；请选择其他任务接手吧"))
+        if( $(".error_panel").length>=1 
+            && $(".error_panel")[0].innerHTML.indexOf("对不起，您在该发布者的黑名单中，不能接手该发布者的任务；请选择其他任务接手吧")>=0)
+        {
+            //对不起,您在该发布者的黑名单中,不能接手该发布者的任务;请选择其他任务接手吧
+            //对不起，您在该发布者的黑名单中，不能接手该发布者的任务；请选择其他任务接手吧
+            handleAutoJumpTaskCountPage(unsafeWindow.opener.top,"annouceLoaded")
+        }
+        else
+        {
+            handleTooSlowPage()
+        }
     }
 	else 
 	{
@@ -121,7 +130,7 @@ function handleAutoJumpTaskCountPage(motherWindow,annoucePart)
             return
         }
         //<center><span class="f_blue f_14 f_b">对不起,您接手到任务后10秒内将无法刷新
-        else if ($('#taskLst')[0].innerHTML.indexOf('对不起,您接手到任务后10秒内将无法刷新')>=0)
+        else if ($('#taskLst')[0].innerHTML.indexOf('您接手到任务后10秒内将无法刷新')>=0)
         {   
             GM_log("error 对不起,您接手到任务后10秒内将无法刷新")
 
@@ -148,8 +157,15 @@ function handleAutoJumpTaskCountPage(motherWindow,annoucePart)
             GM_setValue( "newGoPageToString","no gopage(6)")
         }
         else
-        {
-            setTimeout(function(){motherWindow.document.getElementById(annoucePart).onclick(),location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+        {    
+            if(motherWindow==unsafeWindow.opener.top)
+            {
+                setTimeout(function(){motherWindow.document.getElementById(annoucePart).onclick()}, 2543+Math.random()*3000)
+            }
+            else
+            {
+                setTimeout(function(){motherWindow.document.getElementById(annoucePart).onclick();location.href="javascript:window.close()"}, 2543+Math.random()*3000)
+            }
         }
     }
     unsafeWindow.checkNow()
