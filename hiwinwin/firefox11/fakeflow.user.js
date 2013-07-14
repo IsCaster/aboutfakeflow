@@ -507,7 +507,7 @@ function handleGetMissionStaffPage()
                     {
                         unsafeWindow.pageIndex=6
                     }
-                    else if (unsafeWindow.pageIndex < = 1)
+                    else if (unsafeWindow.pageIndex <= 1)
                     {
                         unsafeWindow.pageIndex = 0
                     }
