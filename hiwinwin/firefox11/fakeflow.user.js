@@ -507,15 +507,31 @@ function handleGetMissionStaffPage()
                     {
                         unsafeWindow.pageIndex=6
                     }
-                    else if (unsafeWindow.pageIndex < 0)
+                    else if (unsafeWindow.pageIndex < = 1)
                     {
                         unsafeWindow.pageIndex = 0
                     }
                 }
                 else
                 //forward
+                {    
+                    if(unsafeWindow.pageIndex==0||unsafeWindow.pageIndex==1)
+                    {
+                        unsafeWindow.pageIndex=2
+                    }
+                    else
+                    {
+                        unsafeWindow.pageIndex = unsafeWindow.pageIndex+1
+                    }
+                }
+                
+                if( unsafeWindow.pageIndex >=2 && $("a[href='javascript:goPage("+unsafeWindow.pageIndex+");']").length<=0 )
                 {
-                    unsafeWindow.pageIndex = unsafeWindow.pageIndex+1
+                    confirm("外挂出错，没有goPage("+unsafeWindow.pageIndex+")")
+                }
+                else if(unsafeWindow.pageIndex ==1)
+                {
+                    confirm("外挂出错，禁止出现goPage("+unsafeWindow.pageIndex+")")
                 }
             }
             if( GM_getValue( "keepReflash",0 ) == 1 )
