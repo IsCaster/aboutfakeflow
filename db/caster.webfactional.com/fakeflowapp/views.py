@@ -804,11 +804,14 @@ def fakeVisit(request):
     #remove spm
     #url=re.sub(r"\?spm=[a-zA-z0-9\.]*&","",url)
     #transform to standard item url pattern ,maybe start with http://ju.atpanel.com/
+    url=re.sub(r".*http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"http://bang.taobao.com/detail.htm?\1",url)
     url=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
     url=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
     url=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
     
-    itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    
+    itemId=re.sub(r"http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     logger.debug("fakeVisit keyword="+keyword)
@@ -839,7 +842,8 @@ def submitShopkeeper(request):
         itemTitle=unquote(request.POST["itemTitle"].encode('ascii','ignore')).decode('utf8')
     
     # set url = itemid , maybe start with http://ju.atpanel.com/
-    itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     itemid=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     
@@ -1033,7 +1037,7 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
             dailyClientData.site=item.site
             dailyClientData.gold=gold
             dailydata.clientsData.append(dailyClientData)
-        dailydata.hi_money=dailydata.hi_sum*0.248*0.4
+        dailydata.hi_money=dailydata.hi_sum*0.22*0.4
         dailydata.nmi_money=dailydata.nmi_sum*0.4
         dailydata.money=dailydata.hi_money+dailydata.nmi_money
         daysStatisticsData.append(dailydata)
