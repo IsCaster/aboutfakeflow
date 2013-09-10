@@ -7,6 +7,7 @@
 // @include       http://item.taobao.com/item.htm?*
 // @include       http://detail.tmall.com/item.htm?*
 // @include       http://item.tmall.com/item.htm?*
+// @include       http://bang.taobao.com/detail.htm?*
 // @include       http://love.taobao.com/*
 // @include       http://www.taobao.com/go/*
 // @include       http://www.taobao.com/market/ae/fktz.php
@@ -23,7 +24,7 @@ else if(location.href.indexOf("http://s.taobao.com/search?")!=-1)
 {
 	handleTaobaoSearchPage()
 }
-else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1||location.href.indexOf("http://item.tmall.com/item.htm?")!=-1)
+else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1||location.href.indexOf("http://item.tmall.com/item.htm?")!=-1||location.href.indexOf("http://bang.taobao.com/detail.htm?")!=-1)
 {
 	handleTaobaoItemPage()
 }
@@ -213,9 +214,18 @@ function handleTaobaoSearchPage()
     }
     else
     {
-        pageinfo=$(".page-info")[0].innerHTML.split("/")
-        pageIndex=parseInt(pageinfo[0],10)
-        pageTotalNum=parseInt(pageinfo[1],10)
+        if($(".page-info strong ").length==0)
+        {
+            pageinfo=$(".page-info")[0].innerHTML.split("/")
+            pageIndex=parseInt(pageinfo[0],10)
+            pageTotalNum=parseInt(pageinfo[1],10)
+        }
+        else
+        {
+            pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
+            pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+        }
+        
         if(pageIndex==1)
         {
             bFirstPage=true
@@ -425,9 +435,17 @@ function handleTaobaoSearchPage()
         
         if($(".page-info").length!=0)
         {
-            pageinfo=$(".page-info")[0].innerHTML.split("/")
-            pageIndex=parseInt(pageinfo[0],10)
-            pageTotalNum=parseInt(pageinfo[1],10)
+            if($(".page-info strong ").length==0)
+            {
+                pageinfo=$(".page-info")[0].innerHTML.split("/")
+                pageIndex=parseInt(pageinfo[0],10)
+                pageTotalNum=parseInt(pageinfo[1],10)
+            }
+            else
+            {
+                pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
+                pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+            }
         }
         else
         {
@@ -556,9 +574,17 @@ function handleTaobaoSearchPage()
         }
         else
         {
-            pageinfo=$(".page-info")[0].innerHTML.split("/")
-            pageIndex=parseInt(pageinfo[0],10)
-            pageTotalNum=parseInt(pageinfo[1],10)
+            if($(".page-info strong ").length==0)
+            {
+                pageinfo=$(".page-info")[0].innerHTML.split("/")
+                pageIndex=parseInt(pageinfo[0],10)
+                pageTotalNum=parseInt(pageinfo[1],10)
+            }
+            else
+            {
+                pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
+                pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+            }
             GM_log("pageNum="+$(".page-info")[0].innerHTML)
             if(pageIndex==pageTotalNum)
             {
@@ -650,16 +676,21 @@ function handleTaobaoItemPage()
 	spm=getUrlParam("spm")
 	if(spm=="")//direct visit
 	{
-		if($(".tb-detail-hd h3").length>0)
-		{
-			itemTitle=$(".tb-detail-hd h3")[0].lastChild.textContent
-		}
-        
-        //handle page like http://detail.tmall.com/item.htm?id=23782100953
-        // http://detail.tmall.com/item.htm?id=23788916003&
+    
         if($(".tb-detail-hd h3 a").length >0)
         {
+            //handle page like http://detail.tmall.com/item.htm?id=23782100953
+            // http://detail.tmall.com/item.htm?id=23788916003&
             itemTitle=$(".tb-detail-hd h3 a")[0].lastChild.textContent
+        }
+        else if($(".tb-detail-hd h3").length>0)
+		{
+			itemTitle=$(".tb-detail-hd h3")[0].lastChild.textContent
+		}        
+        //handle page like http://bang.taobao.com/detail.htm?id=10603816136&spm=a230r.1.14.300.qJEVRM
+        else if($("h2.item-title").length >0)
+        {
+            itemTitle=$("h2.item-title")[0].lastChild.textContent
         }
 	}
 
@@ -673,6 +704,10 @@ function handleTaobaoItemPage()
     {
         shopkeeper=$(".shop-title a")[0].innerHTML
         
+    }
+    else if($("#mallLogo .slogo a").length>0 )
+    {
+        shopkeeper=$("#mallLogo .slogo a")[0].firstChild.textContent
     }
     else
     {

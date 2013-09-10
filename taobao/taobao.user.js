@@ -442,10 +442,15 @@ function inshop_search()
         itemListElements=$(".shop-hesper-bd ")
         addBeforeElement=itemListElements[0]
 	}
-    else
+    else if($(".shop-list ").length>=1)
     {
         itemListElements=$(".shop-list ")
         addBeforeElement=itemListElements[1]
+    }
+    else if($(".J_TItems ").length>=1)
+    {
+        itemListElements=$(".J_TItems ")
+        addBeforeElement=itemListElements[0]
     }
     
 	
