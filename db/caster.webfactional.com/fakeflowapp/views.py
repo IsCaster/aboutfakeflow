@@ -190,6 +190,8 @@ def queryUrl(request):
     
     if request.META.has_key("HTTP_X_FORWARDED_FOR"):
         recordClientIP(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    elif request.META.has_key("REMOTE_ADDR"): 
+        updateClientStatus(site,client,request.META['REMOTE_ADDR'])
     
     # query cache first 
     newMission=MissionItem(raw_message,site,shopkeeper);
@@ -473,6 +475,9 @@ def submitResultSuccess(request):
     
     if request.META.has_key("HTTP_X_FORWARDED_FOR"):
         updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    elif request.META.has_key("REMOTE_ADDR"): 
+        updateClientStatus(site,client,request.META['REMOTE_ADDR'])
+        
     recordMissionComplete(site,client,price)
     # message=unquote(raw_message.encode('ascii','ignore')).decode('utf8')
     # itemId=unquote(raw_itemId.encode('ascii','ignore')).decode('utf8')
@@ -973,6 +978,8 @@ def heartBeat(request):
         price = 1
     if request.META.has_key("HTTP_X_FORWARDED_FOR"):
         updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
+    elif request.META.has_key("REMOTE_ADDR"): 
+        updateClientStatus(site,client,request.META['REMOTE_ADDR'])
     recordMissionComplete(site,client,price)
     return HttpResponse("success")
 
