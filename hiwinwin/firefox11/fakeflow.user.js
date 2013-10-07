@@ -12,6 +12,26 @@
 
 //disable log
 //GM_log=function(){}
+
+db_server1="http://caster.webfactional.com"
+db_server2="http://www.fakeflowdb.com:9080"
+
+db_server_flag=GM_getValue("db_server_flag","undefined")
+
+if(db_server_flag=="undefined")
+{
+    GM_setValue("db_server_flag",2)
+    db_server=db_server2
+}
+else if(db_server_flag==1)
+{
+    db_server=db_server1
+}
+else if(db_server_flag==2)
+{
+    db_server=db_server2
+}
+
 unsafeWindow.gaussianGenerate = function (mean, stdev)
 {
     function rnd_snd() {
@@ -937,7 +957,7 @@ function handleMission()
                         GM_log("input="+input)
                         GM_xmlhttpRequest({
                             method: "POST",
-                            url: "http://caster.webfactional.com/submitresultsuccess",
+                            url: db_server+"/submitresultsuccess",
                             data: input,
                             headers: {
                             "Accept": "application/json",
@@ -953,7 +973,7 @@ function handleMission()
                         // GM_log("input="+input)
                         // GM_xmlhttpRequest({
                             // method: "POST",
-                            // url: "http://caster.webfactional.com/submitcode",
+                            // url: db_server+"/submitcode",
                             // data: input,
                             // headers: {
                             // "Accept": "application/json",
@@ -973,7 +993,7 @@ function handleMission()
                         GM_log("input="+input)
                         GM_xmlhttpRequest({
                             method: "POST",
-                            url: "http://caster.webfactional.com/heartbeat",
+                            url: db_server+"/heartbeat",
                             data: input,
                             headers: {
                             "Accept": "application/json",
@@ -993,7 +1013,7 @@ function handleMission()
                         keyword=message.split(";")[1]
                         keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
                         fakeVisitDiv=document.createElement("div")
-                        fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
+                        fakeVisitDiv.innerHTML="<form id='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
                                                     <input name='url' type='hidden' value='"+url+"'/>\
                                                     <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
                                                     <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
@@ -1050,7 +1070,7 @@ function handleMission()
                             GM_log("submitresultfail:"+input)
                             GM_xmlhttpRequest({
                                     method: "POST",
-                                    url: "http://caster.webfactional.com/submitresultfail",
+                                    url: db_server+"/submitresultfail",
                                     data: input,
                                     headers: {
                                     "Accept": "application/json",
@@ -1125,7 +1145,7 @@ function handleMission()
             GM_log(input)
             GM_xmlhttpRequest({
                 method: "POST",
-                url: "http://caster.webfactional.com/querycode",
+                url: db_server+"/querycode",
                 data: input,
                 headers: {
                 "Accept": "application/json",
@@ -1225,7 +1245,7 @@ function handleMission()
                         ";client="+encodeURIComponent(client)+
                         ";idInSite="+$("iframe")[0].hi_mission_id
                 
-				// request=$.get("http://caster.webfactional.com/queryurl",input,function(data){
+				// request=$.get(db_server+"/queryurl",input,function(data){
                 // GM_log("query return");
                 // },"json")
                 
@@ -1233,7 +1253,7 @@ function handleMission()
                 GM_log(input)
                 GM_xmlhttpRequest({
                     method: "POST",
-                    url: "http://caster.webfactional.com/queryurl",
+                    url: db_server+"/queryurl",
                     data: input,
                     headers: {
                     "Accept": "application/json",

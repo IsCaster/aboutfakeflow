@@ -13,6 +13,26 @@
 
 //disable log
 //GM_log=function(){}
+db_server1="http://caster.webfactional.com"
+db_server2="http://www.fakeflowdb.com:9080"
+
+db_server_flag=GM_getValue("db_server_flag","undefined")
+
+if(db_server_flag=="undefined")
+{
+    GM_setValue("db_server_flag",2)
+    db_server=db_server2
+}
+else if(db_server_flag==1)
+{
+    db_server=db_server1
+}
+else if(db_server_flag==2)
+{
+    db_server=db_server2
+}
+
+
 
 //init
 if(GM_getValue("userName","")=="")
@@ -139,7 +159,7 @@ function handleLoginPage()
                 GM_log(input)
                 GM_xmlhttpRequest({
                     method: "POST",
-                    url: "http://caster.webfactional.com/querycode",
+                    url: db_server+"/querycode",
                     data: input,
                     headers: {
                     "Accept": "application/json",

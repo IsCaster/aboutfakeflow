@@ -3,6 +3,7 @@
 // @namespace     http://www.caster.org
 // @description   1. fake visit item url on taobao.com , maybe reduce the chance of being added to blacklist 2. submit the shopkeeper information
 // @include       http://caster.webfactional.com/fakevisit
+// @include       http://www.fakeflowdb.com:9080/fakevisit
 // @include       http://s.taobao.com/search?*
 // @include       http://item.taobao.com/item.htm?*
 // @include       http://detail.tmall.com/item.htm?*
@@ -15,8 +16,28 @@
 // ==/UserScript==
 
 GM_log("enter GM script");
+db_server1="http://caster.webfactional.com"
+db_server2="http://www.fakeflowdb.com:9080"
+
+db_server_flag=GM_getValue("db_server_flag","undefined")
+
+if(db_server_flag=="undefined")
+{
+    GM_setValue("db_server_flag",2)
+    db_server=db_server2
+}
+else if(db_server_flag==1)
+{
+    db_server=db_server1
+}
+else if(db_server_flag==2)
+{
+    db_server=db_server2
+}
+
+
 init()
-if(location.href.indexOf("http://caster.webfactional.com/fakevisit")!=-1)
+if(location.href.indexOf(db_server+"/fakevisit")!=-1 )
 {
 	handleFakeVisitPage()
 }
@@ -184,6 +205,12 @@ function handleTaobaoSearchPage()
     clickContainP.id='clickContain';
     clickContainP.onclick=function(obj)
     {
+        if(typeof(obj.click)!="undefined")
+        {
+            GM_log(obj.click)
+            obj.click();
+            return
+        }
         var evt1 = document.createEvent("MouseEvents");
         evt1.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         var evt2 = document.createEvent("MouseEvents");
@@ -197,6 +224,7 @@ function handleTaobaoSearchPage()
 		obj.dispatchEvent(evt2);
 		obj.dispatchEvent(evt3);
 		////setTimeout(function(){unsafeWindow.close()},50000)
+
     }
     document.body.insertBefore(clickContainP,document.body.firstChild);  	
  
@@ -585,7 +613,7 @@ function handleTaobaoSearchPage()
                 pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
                 pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
             }
-            GM_log("pageNum="+$(".page-info")[0].innerHTML)
+            GM_log("pageNum="+$(".page-info")[0].innerHTML+";pageIndex="+pageIndex+";pageTotalNum="+pageTotalNum)
             if(pageIndex==pageTotalNum)
             {
                 //last page
@@ -596,25 +624,40 @@ function handleTaobaoSearchPage()
                 // go to next page
                 if($("#jumpto ").length>0)
                 {
-                    GM_log($("#jumpto ")[0].nextSibling.nextSibling)
+                    GM_log("#jumpto ")
                     //$("#jumpto")[0].nextSibling.nextSibling.click()
                     setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+                }
+                else if($(".page-next").length>0)
+                {
+                    GM_log("page-next")
+                    setTimeout(function(){clickContainP.onclick($(".page-next")[0])},1000)
                 }
                 else if($(".btn-jump").length>0)
                 {
                     GM_log("btn-jump")
                     setTimeout(function(){clickContainP.onclick($(".btn-jump")[0])},1000)
                 }
+                else
+                {
+                    setTimeout(function()
+                    {
+                        checkUrlInPage()
+                    },2000)
+                }
             }
             else if(pageIndex==tryPageNum)//go to random page 
             {
+                GM_log("go to random page")
                 randomPageIndex=Math.round(Math.random()*(pageTotalNum-tryPageNum))%pageTotalNum+tryPageNum+1
+                GM_log("randomPageIndex="+randomPageIndex+",.btn-jump length ="+$(".btn-jump ").length)
                 if(randomPageIndex>pageTotalNum)
                 {
                     randomPageIndex=pageTotalNum
                 }
                 if($("#jumpto ").length>0)
                 {
+                    GM_log("jumpto random")
                     $("#jumpto")[0].value=randomPageIndex
                     //$("#jumpto")[0].nextSibling.nextSibling.click()
                     setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
@@ -624,6 +667,13 @@ function handleTaobaoSearchPage()
                     GM_log("btn-jump random")
                     $(".page-num")[0].value=randomPageIndex
                     setTimeout(function(){clickContainP.onclick($(".btn-jump")[0])},1000)
+                }
+                else
+                {
+                    setTimeout(function()
+                    {
+                        checkUrlInPage()
+                    },2000)
                 }
             }
             else if(pageIndex>tryPageNum)
@@ -718,7 +768,7 @@ function handleTaobaoItemPage()
 	GM_log("itemTitle="+itemTitle+",shopkeeper="+shopkeeper)
     
     submitShopkeeper=document.createElement("div")
-    submitShopkeeper.innerHTML="<form id='submitshopkeeper' action='http://caster.webfactional.com/submitshopkeeper' method='post' >\
+    submitShopkeeper.innerHTML="<form id='submitshopkeeper' action='"+db_server+"/submitshopkeeper' method='post' >\
                                     <input name='url' type='hidden' value='"+location.href+"'/>\
                                     <input name='shopkeeper' type='hidden' value='"+encodeURIComponent(shopkeeper)+"'/>\
 									<input name='itemTitle' type='hidden' value='"+encodeURIComponent(itemTitle)+"'/>\

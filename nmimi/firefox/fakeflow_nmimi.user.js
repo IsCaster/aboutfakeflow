@@ -19,6 +19,26 @@
 //disable log
 GM_log=function(){}
 
+db_server1="http://caster.webfactional.com"
+db_server2="http://www.fakeflowdb.com:9080"
+
+db_server_flag=GM_getValue("db_server_flag","undefined")
+
+if(db_server_flag=="undefined")
+{
+    GM_setValue("db_server_flag",2)
+    db_server=db_server2
+}
+else if(db_server_flag==1)
+{
+    db_server=db_server1
+}
+else if(db_server_flag==2)
+{
+    db_server=db_server2
+}
+
+
 
 //set run mode
 //1: local 2: remote
@@ -484,7 +504,7 @@ function handleValidPage()
                 //keyword=message.split(";")[1]
                 //keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
                 fakeVisitDiv=document.createElement("div")
-                fakeVisitDiv.innerHTML="<form id='fakevisit' action='http://caster.webfactional.com/fakevisit' method='post' target='_blank' >\
+                fakeVisitDiv.innerHTML="<form id='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
                                             <input name='url' type='hidden' value='"+url+"'/>\
                                             <input name='message' type='hidden' value='"+message+"'/>\
                                             <input name='site' type='hidden' value='nmimi'/>\
@@ -507,7 +527,7 @@ function handleValidPage()
 					var validResultWindow=this
 					GM_xmlhttpRequest({
 						method: "POST",
-						url: "http://caster.webfactional.com/submitresultsuccess",
+						url: db_server+"/submitresultsuccess",
 						data: input,
 						headers: {
 						"Accept": "application/json",
@@ -537,7 +557,7 @@ function handleValidPage()
                     GM_log("input="+input)
                     GM_xmlhttpRequest({
                         method: "POST",
-                        url: "http://caster.webfactional.com/heartbeat",
+                        url: db_server+"/heartbeat",
                         data: input,
                         headers: {
                         "Accept": "application/json",
@@ -592,7 +612,7 @@ function handleValidPage()
                     var validResultWindow=this
                     GM_xmlhttpRequest({
                             method: "POST",
-                            url: "http://caster.webfactional.com/submitresultfail",
+                            url: db_server+"/submitresultfail",
                             data: input,
                             headers: {
                             "Accept": "application/json",
@@ -651,7 +671,7 @@ function handleValidPage()
         GM_log(input)
         GM_xmlhttpRequest({
             method: "POST",
-            url: "http://caster.webfactional.com/invalidmission",
+            url: db_server+"/invalidmission",
             data: input,
             headers: {
             "Accept": "application/json",
@@ -751,7 +771,7 @@ function handleValidPage()
             GM_log(input)
             GM_xmlhttpRequest({
                 method: "POST",
-                url: "http://caster.webfactional.com/queryurl",
+                url: db_server+"/queryurl",
                 data: input,
                 headers: {
                 "Accept": "application/json",

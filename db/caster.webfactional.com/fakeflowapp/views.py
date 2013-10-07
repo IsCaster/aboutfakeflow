@@ -980,7 +980,8 @@ def heartBeat(request):
         updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     elif request.META.has_key("REMOTE_ADDR"): 
         updateClientStatus(site,client,request.META['REMOTE_ADDR'])
-    recordMissionComplete(site,client,price)
+    if site=="hiwinwin" or site=="nmimi" :
+        recordMissionComplete(site,client,price)
     return HttpResponse("success")
 
 @login_required()
