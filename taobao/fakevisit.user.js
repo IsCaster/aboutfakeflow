@@ -736,6 +736,10 @@ function handleTaobaoItemPage()
         else if($(".tb-detail-hd h3").length>0)
 		{
 			itemTitle=$(".tb-detail-hd h3")[0].lastChild.textContent
+            if(itemTitle.replace(/\s*/,"")=="")
+            {
+                itemTitle=$(".tb-detail-hd h3 a")[0].lastChild.textContent
+            }
 		}        
         //handle page like http://bang.taobao.com/detail.htm?id=10603816136&spm=a230r.1.14.300.qJEVRM
         else if($("h2.item-title").length >0)
