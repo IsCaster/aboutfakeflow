@@ -617,6 +617,7 @@
         function showClientStatus(clientStatusBuffer)
         {
             theClientListHTML=""
+            thewowClientListHTML=""
             
             var d = new Date();
             var time_now = d.getTime()/1000.0
@@ -625,34 +626,66 @@
             {
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
                 var timeoffHTML=""
+                var wowtimeoffHTML=""
                 
-				if (timeoff>1363345447)
-				{
-					timeoffHTML="<span style='background-color:blue;'>N/A</span>"    
-				}
-                else if (timeoff>420&&timeoff<=840)
+                if(clientStatusBuffer[i].site=="wow")
                 {
-                    timeoffHTML="<span style='background-color:pink;'>"+timeoff+"s</span>"    
-                }
-                else if(timeoff>840)
-                {
-                    timeoffHTML="<span style='background-color:red;'>"+timeoff+"s</span>"    
-                    bWarn=true
+                    if (timeoff>1363345447)
+                    {
+                        wowtimeoffHTML="<span style='background-color:blue;'>N/A</span>"    
+                    }
+                    else if (timeoff>150&&timeoff<=300)
+                    {
+                        wowtimeoffHTML="<span style='background-color:pink;'>"+timeoff+"s</span>"    
+                    }
+                    else if(timeoff>300)
+                    {
+                        wowtimeoffHTML="<span style='background-color:red;'>"+timeoff+"s</span>"    
+                        bWarn=true
+                    }
+                    else
+                    {
+                        wowtimeoffHTML="<span >"+timeoff+"s</span>"    
+                    }
+                    thewowClientListHTML=thewowClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "&nbsp;<span style='color:gray'>"+clientStatusBuffer[i].ip+
+                        "</span>&nbsp;"+timeoffHTML+                    
+                        "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
+                        "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "' type='button' value='删除' onclick='removeClient(this)' />"
                 }
                 else
                 {
-                    timeoffHTML="<span >"+timeoff+"s</span>"    
+                    if (timeoff>1363345447)
+                    {
+                        timeoffHTML="<span style='background-color:blue;'>N/A</span>"    
+                    }
+                    else if (timeoff>420&&timeoff<=840)
+                    {
+                        timeoffHTML="<span style='background-color:pink;'>"+timeoff+"s</span>"    
+                    }
+                    else if(timeoff>840)
+                    {
+                        timeoffHTML="<span style='background-color:red;'>"+timeoff+"s</span>"    
+                        bWarn=true
+                    }
+                    else
+                    {
+                        timeoffHTML="<span >"+timeoff+"s</span>"    
+                    }
+                    theClientListHTML=theClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "&nbsp;<span style='color:gray'>"+clientStatusBuffer[i].ip+
+                        "</span>&nbsp;"+timeoffHTML+                    
+                        "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
+                        "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
+                        "' type='button' value='删除' onclick='removeClient(this)' />"
                 }
-                theClientListHTML=theClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
-                    "&nbsp;<span style='color:gray'>"+clientStatusBuffer[i].ip+
-                    "</span>&nbsp;"+timeoffHTML+                    
-                    "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
-                    "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
-                    "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
-                    "' type='button' value='删除' onclick='removeClient(this)' />"
+                
                 
             }
-            $("#theClientList")[0].innerHTML=theClientListHTML
+            $("#theClientList")[0].innerHTML=theClientListHTML+"<br/>"+thewowClientListHTML
                         
             if(bWarn)
             {
