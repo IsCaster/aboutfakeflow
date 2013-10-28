@@ -344,8 +344,8 @@ function handleGetMissionStaffPage()
         xml.send('');
     }
     */
-	magicWord="dic"
-    var goPageToString="function goPage(n) {\n    var qs = 'page=' + n + '&dic=1&nows=' + (new Date()).getTime();\n    getObj('taskLst').innerHTML = '<div class=\\'submiting\\'>任务加载中.....</p>';\n    var xml = makeXmlReq();\n    var url = '../../ajax/GetCount.aspx?' + qs;\n    xml.onreadystatechange = function () {\n      if (xml.readyState == 4) {\n        if (xml.status == 200 || xml.status == 304) {\n          var txt = xml.responseText;\n          getObj('taskLst').innerHTML = txt;\n        }\n      }\n    };\n    xml.open('get', url, true);\n    xml.setRequestHeader('If-Modified-Since', '0');\n    xml.send('');\n  }"
+	magicWord="ffc"
+    var goPageToString="function goPage(n) {\n    var qs = 'page=' + n + '&ffc=1&nows=' + (new Date()).getTime();\n    getObj('taskLst').innerHTML = '<div class=\\'submiting\\'>任务加载中.....</p>';\n    var xml = makeXmlReq();\n    var url = '../../ajax/GetCount.aspx?' + qs;\n    xml.onreadystatechange = function () {\n      if (xml.readyState == 4) {\n        if (xml.status == 200 || xml.status == 304) {\n          var txt = xml.responseText;\n          getObj('taskLst').innerHTML = txt;\n        }\n      }\n    };\n    xml.open('get', url, true);\n    xml.setRequestHeader('If-Modified-Since', '0');\n    xml.send('');\n  }"
 	if(unsafeWindow.goPage.toString()!=goPageToString)
 	{
 		GM_setValue( "keepReflash",0 )

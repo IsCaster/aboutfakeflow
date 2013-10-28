@@ -17,7 +17,9 @@
 // @include       http://*.tmall.com//search.htm*
 // @include       http://*.tmall.com/?search=*
 // @include       http://*.tmall.com//?search=*
+// @include       http://*.tmall.com/shop/view_shop.htm?tsearch=*
 // @include       http://*.tmall.com/shop/view_shop.htm?q=*
+// @include       http://*.tmall.com/shop/viewShop.htm?q=*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 
@@ -124,6 +126,14 @@ function main_search() {
             sumNumber=$(".result-count")[0].innerHTML.replace(/件宝贝/,"")
             
         }
+        else if($(".result-count-cont em").length>0)
+        {
+            sumNumber=$(".result-count-cont em")[0].innerHTML
+        }
+        else if($(".nav-topbar-content span.h").length==1)
+        {
+            sumNumber=$(".nav-topbar-content span.h")[0].innerHTML
+        }
         sumNumber=parseInt(sumNumber)
         
         if($(".page-info").length!=0)
@@ -177,6 +187,10 @@ function main_search() {
         if($(listContent_class+"a.EventCanSelect").length>=atLeastNumber) 
         {
             tagA_class=listContent_class+"a.EventCanSelect"
+        }
+        else if($(listContent_class+"h3.summary a").length>=atLeastNumber)
+        {
+            tagA_class=listContent_class+"h3.summary a"
         }
         else
         {
@@ -637,7 +651,9 @@ else if(location.href.indexOf(".taobao.com/?q=")!=-1
 	||location.href.indexOf(".tmall.com/?search=")!=-1  
     ||location.href.indexOf(".tmall.com//?search=")!=-1  
     ||location.href.indexOf(".taobao.com/?order=")!=-1  
-    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?q=")!=-1  
+    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?tsearch=")!=-1  
+    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?q=")!=-1 
+    ||location.href.indexOf(".tmall.com/shop/viewShop.htm?q=")!=-1  
     ||location.href.indexOf(".tmall.com/?")!=-1  
     || location.href.indexOf(".taobao.com/?")!=-1 
 	)
