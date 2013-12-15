@@ -10,6 +10,7 @@
 // @include       http://item.tmall.com/item.htm?*
 // @include       http://bang.taobao.com/detail.htm?*
 // @include       http://bang.taobao.com/item.htm?*
+// @include       http://kezhan.trip.taobao.com/item.htm?*
 // @include       http://love.taobao.com/*
 // @include       http://www.taobao.com/go/*
 // @include       http://www.taobao.com/market/ae/fktz.php
@@ -46,7 +47,13 @@ else if(location.href.indexOf("http://s.taobao.com/search?")!=-1)
 {
 	handleTaobaoSearchPage()
 }
-else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1||location.href.indexOf("http://item.tmall.com/item.htm?")!=-1||location.href.indexOf("http://bang.taobao.com/detail.htm?")!=-1||location.href.indexOf("http://bang.taobao.com/item.htm?")!=-1)
+else if(location.href.indexOf("http://item.taobao.com/item.htm?")!=-1
+    ||location.href.indexOf("http://detail.tmall.com/item.htm?")!=-1
+    ||location.href.indexOf("http://item.tmall.com/item.htm?")!=-1
+    ||location.href.indexOf("http://bang.taobao.com/detail.htm?")!=-1
+    ||location.href.indexOf("http://bang.taobao.com/item.htm?")!=-1
+    ||location.href.indexOf("http://kezhan.trip.taobao.com/item.htm?")!=-1
+    )
 {
 	handleTaobaoItemPage()
 }
@@ -363,14 +370,32 @@ function handleTaobaoSearchPage()
             return 
         }
     }
+    else if ($(".tb-pagination-new").length>0)
+    {
+        // handle cellphone sell page like:
+        // http://s.taobao.com/search?q=%C8%FD%D0%C7+i9220+galaxy+note&app=detailproduct
+    }
     else
     {
-        GM_log("handleTaobaoSearchPage,no active J_filter")
+        GM_log("handleTaobaoSearchPage,no active J_filter ,no tb-pagination-new ")
+        
+        if($(".combobar-noresult")[0].textContent.indexOf("根据相关法律法规和政策，无法显示")>=0)
+        {
+            if(bFirstPage)
+            {
+                if(unsafeWindow.opener.top && unsafeWindow.opener.top.close)
+                {
+                    unsafeWindow.opener.top.close()
+                }
+            
+            }
+        }
         
         var logContainP=document.createElement("p");
-        logContainP.innerHTML="handleTaobaoSearchPage,no active J_filter"
+        logContainP.innerHTML="handleTaobaoSearchPage,no active J_filter ,no tb-pagination-new"
         document.body.insertBefore(logContainP,document.body.firstChild);
         openItemPage()
+  
         return 
     }
 
@@ -442,9 +467,7 @@ function handleTaobaoSearchPage()
     
     var  retryTimes=0
     function checkUrlInPage()
-    {
-        
-        
+    {  
         var sumNumber="0"
         if($("li.result-info").length>0)
         {
@@ -466,8 +489,11 @@ function handleTaobaoSearchPage()
         }
         sumNumber=parseInt(sumNumber)
         
-        if($(".page-info").length!=0)
+        GM_log("handleTaobaoSearchPage,sumNumber="+sumNumber)
+        
+        if($(".page-info").length>0)
         {
+            GM_log("handleTaobaoSearchPage,1xxx.")
             if($(".page-info strong ").length==0)
             {
                 pageinfo=$(".page-info")[0].innerHTML.split("/")
@@ -480,11 +506,30 @@ function handleTaobaoSearchPage()
                 pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
             }
         }
+        else if($(".tb-pagination-new .pagination").length>0)
+        {
+            GM_log("handleTaobaoSearchPage,21xx.")
+            if($(".tb-pagination-new span.b").length==0)
+            {
+                setTimeout(function()
+                {
+                    checkUrlInPage()
+                },2000)
+                return
+            }
+            GM_log("handleTaobaoSearchPage,22xx.")
+
+            pageTotalNum=parseInt($(".tb-pagination-new span.b")[0].innerHTML,10)
+            GM_log("handleTaobaoSearchPage,pageTotalNum="+pageTotalNum)
+            
+            pageIndex=parseInt($(".tb-pagination-new span.page-cur")[0].innerHTML,10)
+        }
         else
         {
             pageIndex=1
             pageTotalNum=1
         }
+        GM_log("handleTaobaoSearchPage,3xxx.")
         
         var atLeastNumber=9
         if(pageTotalNum==1)
@@ -604,25 +649,29 @@ function handleTaobaoSearchPage()
         
         
         GM_log("search in next page")
-        if($(".page-info").length==0)
+        if($(".page-info").length>0 || $(".tb-pagination-new .pagination").length>0)
         {
-            //only one page
-            openItemPage()
-        }
-        else
-        {
-            if($(".page-info strong ").length==0)
+            if($(".page-info").length>0)
             {
-                pageinfo=$(".page-info")[0].innerHTML.split("/")
-                pageIndex=parseInt(pageinfo[0],10)
-                pageTotalNum=parseInt(pageinfo[1],10)
+                if($(".page-info strong ").length==0)
+                {
+                    pageinfo=$(".page-info")[0].innerHTML.split("/")
+                    pageIndex=parseInt(pageinfo[0],10)
+                    pageTotalNum=parseInt(pageinfo[1],10)
+                }
+                else
+                {
+                    pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
+                    pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+                }
             }
-            else
+            else if($(".tb-pagination-new .pagination").length>0)
             {
-                pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
-                pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+                pageTotalNum=parseInt($(".tb-pagination-new span.b")[0].innerHTML,10)
+                pageIndex=parseInt($(".tb-pagination-new span.page-cur")[0].innerHTML,10)
             }
-            GM_log("pageNum="+$(".page-info")[0].innerHTML+";pageIndex="+pageIndex+";pageTotalNum="+pageTotalNum)
+            
+            GM_log("pageIndex="+pageIndex+";pageTotalNum="+pageTotalNum)
             if(pageIndex==pageTotalNum)
             {
                 //last page
@@ -690,6 +739,11 @@ function handleTaobaoSearchPage()
                 //just jump to item url without finding the item url in search page
                 openItemPage()
             }
+        }
+        else
+        {
+            //only one page
+            openItemPage()
         }
     }
     
@@ -761,6 +815,11 @@ function handleTaobaoItemPage()
         else if($("h2.item-title").length >0)
         {
             itemTitle=$("h2.item-title")[0].lastChild.textContent
+        }
+        //handle page like http://kezhan.trip.taobao.com/item.htm?item_id=20978999089&spm=a230r.1.14.15.UfRmRS&ad_id=&am_id=&cm_id=140105335569ed55e27b&pm_id=&userBucket=19
+        else if($("#J_HotelTitle").length >0)
+        {
+            itemTitle=$("#J_HotelTitle")[0].lastChild.textContent
         }
 	}
     
