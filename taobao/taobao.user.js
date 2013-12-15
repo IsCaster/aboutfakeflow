@@ -17,9 +17,8 @@
 // @include       http://*.tmall.com//search.htm*
 // @include       http://*.tmall.com/?search=*
 // @include       http://*.tmall.com//?search=*
-// @include       http://*.tmall.com/shop/view_shop.htm?tsearch=*
-// @include       http://*.tmall.com/shop/view_shop.htm?q=*
-// @include       http://*.tmall.com/shop/viewShop.htm?q=*
+// @include       http://*.tmall.com/shop/view_shop.htm?*
+// @include       http://*.tmall.com/shop/viewShop.htm?*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
 
@@ -651,9 +650,8 @@ else if(location.href.indexOf(".taobao.com/?q=")!=-1
 	||location.href.indexOf(".tmall.com/?search=")!=-1  
     ||location.href.indexOf(".tmall.com//?search=")!=-1  
     ||location.href.indexOf(".taobao.com/?order=")!=-1  
-    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?tsearch=")!=-1  
-    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?q=")!=-1 
-    ||location.href.indexOf(".tmall.com/shop/viewShop.htm?q=")!=-1  
+    ||location.href.indexOf(".tmall.com/shop/view_shop.htm?")!=-1 
+    ||location.href.indexOf(".tmall.com/shop/viewShop.htm?")!=-1  
     ||location.href.indexOf(".tmall.com/?")!=-1  
     || location.href.indexOf(".taobao.com/?")!=-1 
 	)
