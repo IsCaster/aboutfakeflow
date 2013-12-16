@@ -622,6 +622,7 @@
             var d = new Date();
             var time_now = d.getTime()/1000.0
             var bWarn=false
+            var localip="127.0.0.1"
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
@@ -648,7 +649,7 @@
                         wowtimeoffHTML="<span >"+timeoff+"s</span>"    
                     }
                     thewowClientListHTML=thewowClientListHTML+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
-                        "&nbsp;<span style='color:gray'>"+clientStatusBuffer[i].ip+
+                        "&nbsp;<span class='wow_ip' style='color:gray'>"+clientStatusBuffer[i].ip+
                         "</span>&nbsp;"+wowtimeoffHTML+                    
                         "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                         "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
@@ -681,12 +682,25 @@
                         "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
                         "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                         "' type='button' value='删除' onclick='removeClient(this)' />"
+                        
+                    if(clientStatusBuffer[i].site=='hiwinwin' && clientStatusBuffer[i].client=="harrypotter")
+                    {
+                        localip=clientStatusBuffer[i].ip
+                    }
                 }
                 
                 
             }
             $("#theClientList")[0].innerHTML=theClientListHTML+"<br/>"+thewowClientListHTML
-                        
+            
+            
+            for (var i=0 ;i< $(".wow_ip").length;i++)
+            {
+                if($(".wow_ip")[i].innerHTML==localip)
+                {
+                    $(".wow_ip")[i].style.color="Darkorange"
+                }  
+            }
             if(bWarn)
             {
                 $("#playAudioClientOffline")[0].volume=0.3;
