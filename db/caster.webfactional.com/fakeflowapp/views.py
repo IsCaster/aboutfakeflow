@@ -819,6 +819,8 @@ def fakeVisit(request):
     itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
+    itemId=re.sub(r".*http://detail.ju.taobao.com/home.htm.*[\?&](itemId=[0-9]*).*$",r"\1",itemId)
+    itemId=re.sub(r"itemId=","id=",itemId)
     logger.debug("fakeVisit keyword="+keyword)
     
     #fix the bug of some Unicode encode error 

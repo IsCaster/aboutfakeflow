@@ -379,7 +379,8 @@ function handleTaobaoSearchPage()
     {
         GM_log("handleTaobaoSearchPage,no active J_filter ,no tb-pagination-new ")
         
-        if($(".combobar-noresult")[0].textContent.indexOf("根据相关法律法规和政策，无法显示")>=0)
+        if($(".combobar-noresult").length > 0 && 
+            $(".combobar-noresult")[0].textContent.indexOf("根据相关法律法规和政策，无法显示")>=0)
         {
             if(bFirstPage)
             {
