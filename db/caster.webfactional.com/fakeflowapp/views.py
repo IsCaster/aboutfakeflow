@@ -810,12 +810,14 @@ def fakeVisit(request):
     #url=re.sub(r"\?spm=[a-zA-z0-9\.]*&","",url)
     #transform to standard item url pattern ,maybe start with http://ju.atpanel.com/
     url=re.sub(r".*http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"http://bang.taobao.com/detail.htm?\1",url)
+    url=re.sub(r".*http://bang.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://bang.taobao.com/item.htm?\1",url)
     url=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://detail.tmall.com/item.htm?\1",url)
     url=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.taobao.com/item.htm?\1",url)
     url=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"http://item.tmall.com/item.htm?\1",url)
     
     
     itemId=re.sub(r"http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemId=re.sub(r"http://bang.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
     itemId=re.sub(r".*http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemId)
@@ -850,6 +852,7 @@ def submitShopkeeper(request):
     
     # set url = itemid , maybe start with http://ju.atpanel.com/
     itemid=re.sub(r"http://bang.taobao.com/detail.htm.*[\?&](id=[0-9]*).*$",r"\1",url)
+    itemid=re.sub(r"http://bang.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     itemid=re.sub(r"http://detail.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     itemid=re.sub(r"http://item.taobao.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
     itemid=re.sub(r"http://item.tmall.com/item.htm.*[\?&](id=[0-9]*).*$",r"\1",itemid)
