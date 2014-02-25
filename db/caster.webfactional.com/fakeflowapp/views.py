@@ -863,7 +863,10 @@ def submitShopkeeper(request):
         entries=MissionInfo.objects.filter(Q(url__contains=itemid+"&")|Q(url__endswith=itemid))
     trim_keyword=""
     for entry in entries:
-        entry.shopkeeper=shopkeeper
+        bNeedSave = False
+        if shopkeeper != entry.shopkeeper and shopkeeper !="invalid" and shopkeeper !="":
+            entry.shopkeeper=shopkeeper
+            bNeedSave = True
         # use itemTitle as keyword,if fake visit fail ,and keyword is blank
         if entry.searchTips == "" and itemTitle != "" and entry.keyword == "" :            
             entry.searchTips=itemTitle
@@ -876,7 +879,9 @@ def submitShopkeeper(request):
                 for id,item in GetMissionQueue().doneBuffer.items():
                     if len(item.urls) == 1 and itemid in item.urls[0]:
                         item.keyword=trim_keyword
-        entry.save()
+            bNeedSave = True
+        if bNeedSave :
+            entry.save()
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    
