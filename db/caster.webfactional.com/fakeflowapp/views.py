@@ -792,7 +792,7 @@ def fakeVisit(request):
             location,theMission=GetMissionQueue().query(newMission)
         logger.debug("fakeVisit location="+location)
         if location != "none" :
-            if theMission.keyword != "":
+            #if theMission.keyword != "":
                 keyword = theMission.keyword
                 #to do
         else:#no in the missionqueue maybe in the database
@@ -864,17 +864,19 @@ def submitShopkeeper(request):
     trim_keyword=""
     for entry in entries:
         entry.shopkeeper=shopkeeper
-        # use itemTitle as keyword,if fake visit fail
-        if entry.searchTips == "" and itemTitle != "" :            
+        # use itemTitle as keyword,if fake visit fail ,and keyword is blank
+        if entry.searchTips == "" and itemTitle != "" and entry.keyword == "" :            
             entry.searchTips=itemTitle
             if trim_keyword=="":
                 trim_keyword=trimWord(itemTitle)
+            
             entry.keyword=trim_keyword
-            entry.save()
+            
             with GetMissionQueue().bufferLock:
                 for id,item in GetMissionQueue().doneBuffer.items():
                     if len(item.urls) == 1 and itemid in item.urls[0]:
                         item.keyword=trim_keyword
+        entry.save()
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    

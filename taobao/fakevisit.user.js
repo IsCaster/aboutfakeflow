@@ -822,6 +822,10 @@ function handleTaobaoItemPage()
         {
             itemTitle=$("#J_HotelTitle")[0].lastChild.textContent
         }
+        else if($("h3.tb-item-title").length >0)
+        {
+            itemTitle=$("h3.tb-item-title")[0].lastChild.textContent
+        }
 	}
     
     itemTitle=itemTitle.replace(/^\s*/,"").replace(/\s*$/,"")
@@ -840,6 +844,15 @@ function handleTaobaoItemPage()
     else if($("#mallLogo .slogo a").length>0 )
     {
         shopkeeper=$("#mallLogo .slogo a")[0].firstChild.textContent
+    }
+    else if($(".seller-name").length>0 )
+    {
+        shopkeeper=$(".seller-name")[0].firstChild.textContent
+        shopkeeper=shopkeeper.replace(/掌柜：/,"")
+    }
+    else if($("li.shopkeeper a").length>0 )
+    {
+        shopkeeper=$("li.shopkeeper a")[0].firstChild.textContent
     }
     else
     {
