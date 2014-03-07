@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from fakeflowapp.missionqueue import MissionQueue,MissionItem,GetMissionQueue
 #import fakeflowapp.missionqueue
-from fakeflowapp.verificationcode import decodeVerificaton
+from fakeflowapp.verificationcode import decodeVerificaton,decodeNewVerificaton
 import re
 
 from django.contrib.auth.decorators import login_required
@@ -737,15 +737,14 @@ def showCode(request):
     if request.GET.has_key("m"):
         max=int(request.GET["m"])
     else:
-        max=50
+        max=30
     entries=VerificationCode.objects.filter(checked=False).order_by("-updateTime")[:max]
     
     # sum=VerificationCode.objects.count()
     sum=99999
     output=[]
     for entry in entries:
-        #decoded_code=decodeVerificaton(entry.codeImg)
-        decoded_code="1111"
+        decoded_code=decodeNewVerificaton(entry.codeImg)
         
         entry.decoded_code=decoded_code
         output.append(entry)
