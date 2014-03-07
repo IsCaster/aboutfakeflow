@@ -770,15 +770,14 @@ def queryCode(request):
 @csrf_exempt 
 def queryNewCode(request):
     code_img = request.POST["codeImg"]
-    #decoded_code=decodeNewVerificaton(code_img)
-    decoded_code="1111"
+    decoded_code=decodeNewVerificaton(code_img)
     
-    newVerificationCode=VerificationCode()
-    newVerificationCode.codeImg=code_img
-    newVerificationCode.code=decoded_code
-    newVerificationCode.save()
+    #newVerificationCode=VerificationCode()
+    #newVerificationCode.codeImg=code_img
+    #newVerificationCode.code=decoded_code
+    #newVerificationCode.save()
     
-    response_data={"code":""}
+    response_data={"code":decoded_code}
     return HttpResponse(simplejson.dumps(response_data));
     
 # def fuckmudooo(request):

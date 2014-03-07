@@ -1191,8 +1191,8 @@ function handleMission()
                                         checkUrlTimeout=2169
                                     }
                                     GM_log("route 1 : click,checkUrlTimeout="+checkUrlTimeout)
-                                    // update by 2014/03/07
-                                    //setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
+                                    
+                                    setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
                                 }
                                 break;
                             }
@@ -1339,8 +1339,8 @@ function handleMission()
                             }    
                             GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
                             //$("iframe").contents().find("#imgCode + input")[0].click()
-                            // update by 2014/03/07
-                            //setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
+                            
+                            setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
                             
                             
                         }
