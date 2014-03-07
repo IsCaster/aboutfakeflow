@@ -20,6 +20,12 @@ class NewVerificationCode(models.Model):
     checked = models.BooleanField(default=False);
     updateTime = models.DateTimeField(auto_now_add=True);    
     
+class VerificationCode(models.Model):
+    code = models.CharField(max_length=10);
+    codeImg = models.CharField(max_length=2000); #canvas.toDataURL
+    checked = models.BooleanField(default=False);
+    updateTime = models.DateTimeField(auto_now_add=True);        
+    
 class ShopkeeperWhiteList(models.Model):
     shopkeeper = models.CharField(max_length=100);
     updateTime = models.DateTimeField(auto_now_add=True);
