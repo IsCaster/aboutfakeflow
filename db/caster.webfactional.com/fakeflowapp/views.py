@@ -772,11 +772,12 @@ def queryCode(request):
 def queryNewCode(request):
     code_img = request.POST["codeImg"]
     #decoded_code=decodeNewVerificaton(code_img)
+    decoded_code="1111"
     
-    #newVerificationCode=VerificationCode()
-    #newVerificationCode.codeImg=code_img
-    #newVerificationCode.code=decoded_code
-    #newVerificationCode.save()
+    newVerificationCode=VerificationCode()
+    newVerificationCode.codeImg=code_img
+    newVerificationCode.code=decoded_code
+    newVerificationCode.save()
     
     response_data={"code":""}
     return HttpResponse(simplejson.dumps(response_data));
