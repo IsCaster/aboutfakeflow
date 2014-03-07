@@ -13,12 +13,12 @@ class MissionInfo(models.Model):
     valid = models.BooleanField(default=True);
     updateTime = models.DateTimeField(auto_now_add=True);
     idInSite = models.CharField(max_length=100,default="");# now is for hiwinwin only
-	
-class VerificationCode(models.Model):
+
+class NewVerificationCode(models.Model):
     code = models.CharField(max_length=10);
     codeImg = models.CharField(max_length=2000); #canvas.toDataURL
     checked = models.BooleanField(default=False);
-    updateTime = models.DateTimeField(auto_now_add=True);
+    updateTime = models.DateTimeField(auto_now_add=True);    
     
 class ShopkeeperWhiteList(models.Model):
     shopkeeper = models.CharField(max_length=100);
