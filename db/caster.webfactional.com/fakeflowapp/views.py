@@ -740,7 +740,8 @@ def showCode(request):
         max=50
     entries=VerificationCode.objects.filter(checked=False).order_by("-updateTime")[:max]
     
-    sum=VerificationCode.objects.count()
+    # sum=VerificationCode.objects.count()
+    sum=99999
     output=[]
     for entry in entries:
         #decoded_code=decodeVerificaton(entry.codeImg)
