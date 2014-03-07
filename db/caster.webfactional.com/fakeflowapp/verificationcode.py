@@ -258,7 +258,260 @@ def decodeVerificaton(datauri):
             
                     
     return ret_code
-  
+
+
+def decodeNewVerificaton(datauri):
+    pngByte=getPngByte(datauri)
+    (width,height,pixels_rows,meta) = png.Reader(bytes=pngByte).asRGBA8()
+    
+    # gauss filter image
+    new_pixels_rows=[]
+    for row in pixels_rows:
+        new_pixels_rows.append(row)
+    # cut the unnecessary area
+    new_pixels_rows=cutter(new_pixels_rows)    
+    new_pixels_rows=filter(new_pixels_rows)
+    # with open('filter.png' , 'wb') as f:
+        # w = png.Writer(
+            # width=width,
+            # height=height,
+            # alpha=True,
+            # bitdepth=8,
+            # )
+        # w.write(f,new_pixels_rows)
+
+    #split image
+    splitImgs=[[ ],[ ],[ ],[ ],[]]
+    for i,row in enumerate(new_pixels_rows):
+        if i >= 5 and i <= 16 :
+            splitImgs[0].append(row[6*4:6*4+8*4])
+            splitImgs[1].append(row[15*4:15*4+8*4])
+            splitImgs[2].append(row[24*4:24*4+8*4])
+            splitImgs[3].append(row[33*4:33*4+8*4])
+
+    # for i in range(0,4):
+        # with open('split%s.png' % i, 'wb') as f:
+            # w = png.Writer(
+                # width=8,
+                # height=12,
+                # alpha=True
+                # )
+            # w.write(f,splitImgs[i])
+    #splitImgs[0][]
+    
+    
+#anchor
+#1st image #3300CC
+#2nd image #330099
+#3rd image #660066
+#4th image #660033
+
+    anchors=[{"r":0x33,"g":0x33,"b":0xcc},
+            {"r":0x66,"g":0x33,"b":0xcc},
+            {"r":0x66,"g":0x00,"b":0x99},
+            {"r":0x99,"g":0x33,"b":0x66},]
+
+    
+    normalizedImgs=[]
+    for i in range(0,4):
+        output = normalized(splitImgs[i],anchors[i])
+        output=sharpen(output)
+        normalizedImgs.append(output)
+        # with open('normalized%s.png' % i, 'wb') as f:
+            # w = png.Writer(
+                # width=8,
+                # height=12,
+                # greyscale=True,
+                # bitdepth=1,
+                # )
+            # w.write(f,output)
+    
+    #contrast the standard image to get code    
+    contrast_0=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,0,1,1,0,0],#line 3
+            [1,0,0,1,1,1,0,0],#line 4
+            [0,0,0,1,1,1,0,0],#line 5
+            [0,0,1,1,1,1,0,0],#line 6
+            [0,0,1,1,1,1,0,0],#line 7
+            [0,0,1,1,1,0,0,0],#line 8
+            [0,0,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
+            [0,0,1,0,0,0,1,1],#line 11
+            [1,0,0,0,0,1,1,1],#line 12
+        ]
+    contrast_1=[
+            [1,1,1,1,1,0,0,1],#line 1
+            [1,1,1,1,0,0,0,1],#line 2
+            [1,1,0,0,0,0,0,1],#line 3
+            [1,0,0,0,0,0,0,1],#line 4
+            [1,0,0,1,0,0,1,1],#line 5
+            [1,1,1,1,0,0,1,1],#line 6
+            [1,1,1,1,0,0,1,1],#line 7
+            [1,1,1,1,0,0,1,1],#line 8
+            [1,1,1,1,0,0,1,1],#line 9
+            [1,1,1,0,0,0,1,1],#line 10
+            [1,1,1,0,0,1,1,1],#line 11
+            [1,1,1,0,0,1,1,1],#line 12
+        ]
+    contrast_2=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,0,1,1,0,0],#line 3
+            [1,0,0,1,1,1,0,0],#line 4
+            [1,1,1,1,1,1,0,0],#line 5
+            [1,1,1,1,1,0,0,0],#line 6
+            [1,1,1,1,0,0,0,1],#line 7
+            [1,1,1,0,0,0,1,1],#line 8
+            [1,1,0,0,0,1,1,1],#line 9
+            [1,0,0,0,1,1,1,1],#line 10
+            [0,0,0,0,0,0,0,1],#line 11
+            [0,0,0,0,0,0,0,1],#line 12
+        ]    
+    contrast_3=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,1,1,1,0,0],#line 3
+            [1,1,1,1,1,1,0,0],#line 4
+            [1,1,1,1,1,1,0,0],#line 5
+            [1,1,1,1,0,0,0,1],#line 6
+            [1,1,1,1,0,0,1,1],#line 7
+            [1,1,1,1,1,0,0,1],#line 8
+            [1,1,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
+            [0,0,0,0,0,0,1,1],#line 11
+            [1,0,0,0,0,1,1,1],#line 12
+        ]    
+    contrast_4=[
+            [1,1,1,1,1,1,1,0],#line 1
+            [1,1,1,1,1,1,0,0],#line 2
+            [1,1,1,1,1,0,0,0],#line 3
+            [1,1,1,1,0,0,0,1],#line 4
+            [1,1,1,0,0,0,0,1],#line 5
+            [1,1,0,0,1,0,0,1],#line 6
+            [1,0,0,1,1,0,0,1],#line 7
+            [0,0,1,1,1,0,0,1],#line 8
+            [0,0,0,0,0,0,0,0],#line 9
+            [0,0,0,0,0,0,0,0],#line 10
+            [1,1,1,1,0,0,1,1],#line 11
+            [1,1,1,1,0,0,1,1],#line 12
+        ]
+    contrast_5=[
+            [1,1,1,0,0,0,0,0],#line 1
+            [1,1,1,0,0,0,0,0],#line 2
+            [1,1,1,0,0,1,1,1],#line 3
+            [1,1,0,0,0,1,1,1],#line 4
+            [1,1,0,0,0,0,0,1],#line 5
+            [1,0,0,0,0,0,0,0],#line 6
+            [1,0,0,1,1,1,0,0],#line 7
+            [1,1,1,1,1,1,0,0],#line 8
+            [1,1,1,1,1,1,0,0],#line 9
+            [0,0,1,1,1,0,0,0],#line 10
+            [0,0,0,0,0,0,0,1],#line 11
+            [1,1,0,0,0,0,1,1],#line 12
+        ]        
+    contrast_6=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,0,1,1,0,0],#line 3
+            [1,0,0,1,1,1,1,1],#line 4
+            [0,0,0,0,0,1,1,1],#line 5
+            [0,0,0,0,0,0,1,1],#line 6
+            [0,0,1,1,0,0,0,1],#line 7
+            [0,0,1,1,1,0,0,1],#line 8
+            [0,0,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
+            [1,0,0,0,0,0,1,1],#line 11
+            [1,1,0,0,0,1,1,1],#line 12
+        ]      
+    contrast_7=[
+            [0,0,0,0,0,0,0,0],#line 1
+            [0,0,0,0,0,0,0,0],#line 2
+            [1,1,1,1,0,0,0,0],#line 3
+            [1,1,1,1,0,0,0,1],#line 4
+            [1,1,1,0,0,0,1,1],#line 5
+            [1,1,0,0,0,1,1,1],#line 6
+            [1,1,0,0,1,1,1,1],#line 7
+            [1,0,0,0,1,1,1,1],#line 8
+            [1,0,0,1,1,1,1,1],#line 9
+            [0,0,0,1,1,1,1,1],#line 10
+            [0,0,1,1,1,1,1,1],#line 11
+            [0,0,1,1,1,1,1,1],#line 12
+        ]
+    contrast_8=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,1,1,1,0,0],#line 3
+            [1,0,0,1,1,1,0,0],#line 4
+            [1,0,0,1,1,0,0,0],#line 5
+            [1,1,0,0,0,0,0,1],#line 6
+            [1,0,0,0,0,0,1,1],#line 7
+            [0,0,1,1,1,0,0,1],#line 8
+            [0,0,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
+            [0,0,0,0,0,0,1,1],#line 11
+            [1,0,0,0,0,1,1,1],#line 12
+        ]    
+    contrast_9=[
+            [1,1,1,0,0,0,0,1],#line 1
+            [1,1,0,0,0,0,0,0],#line 2
+            [1,0,0,0,1,1,0,0],#line 3
+            [1,0,0,1,1,1,0,0],#line 4
+            [1,0,0,1,1,1,0,0],#line 5
+            [1,0,0,1,1,1,0,0],#line 6
+            [1,0,0,0,0,0,0,0],#line 7
+            [1,1,0,0,0,0,0,0],#line 8
+            [1,1,1,1,1,0,0,1],#line 9
+            [0,0,1,1,0,0,0,1],#line 10
+            [0,0,0,0,0,0,1,1],#line 11
+            [1,0,0,0,0,1,1,1],#line 12
+        ]        
+    
+    contrast_imgs=[contrast_0,contrast_1,contrast_2,contrast_3,contrast_4,contrast_5,
+        contrast_6,contrast_7,contrast_8,contrast_9]
+    ret_code=""
+    for item in normalizedImgs:
+        offset_min = 8*12
+        code_num = 0
+        code_num_near = 0
+        for number,standard in enumerate(contrast_imgs) :
+            offset = contrastImage(item,standard)
+            if offset < offset_min :
+                code_num_near = code_num
+                offset_min = offset
+                code_num = number
+            if offset_min == 0 :
+                break
+            # adjust 5 and 6        
+            #if (code_num==5 and code_num_near == 6 ) or (code_num==6 and code_num_near == 5):
+            if code_num==5 or code_num==6:
+                lp_7=7
+                lp_8=7
+                for i in range(0,8):
+                    if item[7][i]==0:
+                        lp_7=i
+                        break
+                for i in range(0,8):
+                    if item[8][i]==0:
+                        lp_8=i
+                        break
+                if lp_7+lp_8>9:
+                    code_num=5
+                else:
+                    code_num=6
+            
+            # if (code_num==7 and code_num_near == 1 ) or (code_num==1 and code_num_near == 7):
+                # if tp(0) == 12 or tp(7) == 12:
+                    # code_num==1
+                # else:
+                    # code_num==7
+                        
+        ret_code = ret_code + str(code_num)
+            
+                    
+    return ret_code
+    
 def tp(source,i):
     tp_i=len(source)
     for j in range(0,len(source)):

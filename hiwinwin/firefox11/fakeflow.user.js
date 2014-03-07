@@ -1145,7 +1145,7 @@ function handleMission()
             GM_log(input)
             GM_xmlhttpRequest({
                 method: "POST",
-                url: db_server+"/querycode",
+                url: db_server+"/querynewcode",
                 data: input,
                 headers: {
                 "Accept": "application/json",
@@ -1191,7 +1191,8 @@ function handleMission()
                                         checkUrlTimeout=2169
                                     }
                                     GM_log("route 1 : click,checkUrlTimeout="+checkUrlTimeout)
-                                    setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
+                                    // update by 2014/03/07
+                                    //setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
                                 }
                                 break;
                             }
@@ -1338,7 +1339,8 @@ function handleMission()
                             }    
                             GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
                             //$("iframe").contents().find("#imgCode + input")[0].click()
-                            setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
+                            // update by 2014/03/07
+                            //setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
                             
                             
                         }

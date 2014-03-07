@@ -743,7 +743,8 @@ def showCode(request):
     sum=VerificationCode.objects.count()
     output=[]
     for entry in entries:
-        decoded_code=decodeVerificaton(entry.codeImg)
+        #decoded_code=decodeVerificaton(entry.codeImg)
+        decoded_code="1111"
         
         entry.decoded_code=decoded_code
         output.append(entry)
@@ -758,12 +759,25 @@ def queryCode(request):
     code_img = request.POST["codeImg"]
     decoded_code=decodeVerificaton(code_img)
     
-    newVerificationCode=VerificationCode()
-    newVerificationCode.codeImg=code_img
-    newVerificationCode.code=decoded_code
-    newVerificationCode.save()
+    #newVerificationCode=VerificationCode()
+    #newVerificationCode.codeImg=code_img
+    #newVerificationCode.code=decoded_code
+    #newVerificationCode.save()
     
     response_data={"code":decoded_code}
+    return HttpResponse(simplejson.dumps(response_data));
+    
+@csrf_exempt 
+def queryNewCode(request):
+    code_img = request.POST["codeImg"]
+    #decoded_code=decodeNewVerificaton(code_img)
+    
+    #newVerificationCode=VerificationCode()
+    #newVerificationCode.codeImg=code_img
+    #newVerificationCode.code=decoded_code
+    #newVerificationCode.save()
+    
+    response_data={"code":""}
     return HttpResponse(simplejson.dumps(response_data));
     
 # def fuckmudooo(request):
