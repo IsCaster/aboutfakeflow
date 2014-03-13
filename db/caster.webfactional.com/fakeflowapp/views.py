@@ -2,7 +2,7 @@
 # coding: gbk
 from django.http import HttpResponse
 from django.template import Context, loader
-from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList, MissionCompleteList, WorkerPerformance
+from fakeflowapp.models import MissionInfo, VerificationCode, ShopkeeperWhiteList, MissionCompleteList, WorkerPerformance,DailyStatistics
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -24,6 +24,8 @@ from datetime import datetime
 from datetime import timedelta
 
 from django.db.models import Sum
+from django.core.exceptions import ObjectDoesNotExist
+
 
 import httplib, urllib
 
@@ -1058,8 +1060,24 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
         dailydata.hi_sum=0
         dailydata.nmi_sum=0
         for item in clients:
-            gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
-            gold=gold_contain["price__sum"]
+            # query database table DailyStatistics first, disclude today
+            if start_time==6 and end_time== 6 and i > 0:
+                try:
+                    entry=DailyStatistics.objects.get(date=dailydata.label,site=item.site,client=item.client)
+                    gold = entry.gold
+                except ObjectDoesNotExist:
+                    gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
+                    gold=gold_contain["price__sum"]
+                    # save data
+                    newDailyStatistics=DailyStatistics()
+                    newDailyStatistics.site=item.site
+                    newDailyStatistics.client=item.client
+                    newDailyStatistics.date=dailydata.label
+                    newDailyStatistics.gold=gold
+                    newDailyStatistics.save()
+            else:
+                gold_contain=MissionCompleteList.objects.filter(updateTime__lte=dt_end,updateTime__gt=dt_start,site=item.site,client=item.client).aggregate(Sum('price'))
+                gold=gold_contain["price__sum"]
             if gold==None :
                 gold=0
             if item.site=="nmimi" :
@@ -1071,7 +1089,7 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
             dailyClientData.site=item.site
             dailyClientData.gold=gold
             dailydata.clientsData.append(dailyClientData)
-        dailydata.hi_money=dailydata.hi_sum*0.22*0.4
+        dailydata.hi_money=dailydata.hi_sum*0.2*0.4
         dailydata.nmi_money=dailydata.nmi_sum*0.4
         dailydata.money=dailydata.hi_money+dailydata.nmi_money
         daysStatisticsData.append(dailydata)

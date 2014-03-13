@@ -33,7 +33,14 @@ class ShopkeeperWhiteList(models.Model):
 class MissionCompleteList(models.Model):
     site = models.CharField(max_length=100);
     client = models.CharField(max_length=100);
-    price = models.FloatField();
+    price = models.FloatField();    
+    updateTime = models.DateTimeField(auto_now_add=True);
+    
+class DailyStatistics(models.Model):
+    site = models.CharField(max_length=100);
+    client = models.CharField(max_length=100);
+    gold = models.models.IntegerField();
+    date = models.CharField(max_length=100);
     updateTime = models.DateTimeField(auto_now_add=True);
     
 class WorkerPerformance(models.Model):

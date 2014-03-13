@@ -110,6 +110,33 @@ function main_search() {
             return list;
         }
     };
+    
+    getUrlParam = function(name,url)
+	{
+		var regexS;
+		var regexl;
+		var results;
+		
+        if(url=="")
+        {
+            url=location.href
+        }
+        
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		regexS = "[\\?&]"+name+"=([^&#]*)";
+		regex = new RegExp(regexS);
+		results = regex.exec (url);
+		//note: don't write space after command exec
+		
+		if ( results == null ) 
+		{
+			return "";
+		}
+		else 
+		{
+			return results[1];
+		}
+    }
 
     var retryTimes=0
     function ShowShopkeeper()
@@ -383,7 +410,149 @@ function main_search() {
             //    $(".item-box .summary")[i].insertBefore(numberNode,$(".item-box .summary")[i].firstChild)
             //}
         }
+        
+        GoNextPage = function()
+        {
+            if($("#jumpto ").length>0)
+            {
+                console.info("#jumpto ")
+                //$("#jumpto")[0].nextSibling.nextSibling.click()
+                setTimeout(function(){clickContainP.onclick($("#jumpto")[0].nextSibling.nextSibling)},1000)
+            }
+            else if($(".page-next").length>0)
+            {
+                console.info("page-next")
+                setTimeout(function(){clickContainP.onclick($(".page-next")[0])},1000)
+            }
+            else if($(".btn-jump").length>0)
+            {
+                console.info("btn-jump")
+                setTimeout(function(){clickContainP.onclick($(".btn-jump")[0])},1000)
+            }
+            else
+            {
+                setTimeout(function()
+                {
+                    GoNextPage()
+                },2000)
+            }
+        }
+
+        if($(".page-info").length>0)
+        {                
+            if($(".page-info strong ").length==0)
+            {
+                pageinfo=$(".page-info")[0].innerHTML.split("/")
+                pageIndex=parseInt(pageinfo[0],10)
+                pageTotalNum=parseInt(pageinfo[1],10)
+            }
+            else
+            {
+                pageIndex=parseInt($(".page-info strong ")[0].innerHTML)
+                pageTotalNum=parseInt($(".page-info ")[0].lastChild.textContent.replace(/\//,""))
+            }
+        }
+        else if($(".tb-pagination-new .pagination").length>0)
+        {               
+            pageTotalNum=parseInt($(".tb-pagination-new span.b")[0].innerHTML,10)
+            pageIndex=parseInt($(".tb-pagination-new span.page-cur")[0].innerHTML,10)
+        }
+        else
+        {
+            pageIndex=1
+            pageTotalNum=1
+        }
+        
+        keepGettingUrlsBtn=document.createElement("input")
+        keepGettingUrlsBtn.type="button"
+        keepGettingUrlsBtn.value="坚持获取urls"
+        keepGettingUrlsBtn.id="getUrlsBtn"
+        keepGettingUrlsBtn.onclick=function()
+        {
+            if($("#anchorOfUrls")[0].value=="")
+            {
+                GM_setValue("onKeepTrying","0")
+                return
+            }
+            
+            
+            var targetPageIndex=Math.round((pageIndex+8)/15)*15
+            
+            console.info("pageIndex=" + pageIndex +";pageTotalNum="+pageTotalNum +";targetPageIndex="+targetPageIndex)
+            $("#getUrlsBtn")[0].onclick()
+            if($("#resultUrls")[0].innerHTML!="不存在的掌柜名" && $("#resultUrls")[0].innerHTML!="")
+            {
+                GM_setValue("onKeepTrying","0")
+                return
+            }
+            
+            var param_q = getUrlParam("q","")
+            
+            GM_setValue("onKeepTrying","1")
+            GM_setValue("targetShopkeeper",$("#anchorOfUrls")[0].value)
+            GM_setValue("targetPageIndex",targetPageIndex)
+            GM_setValue("q",param_q)
+            
+            GoNextPage()
+        }
+        var blank = document.createTextNode("|||||||||||||||||||||||"); 
+        $("#page")[0].insertBefore(blank,addAreaIn)
+        $("#page")[0].insertBefore(keepGettingUrlsBtn,addAreaIn)
+
+        if("1"==GM_getValue("onKeepTrying","0") )
+        {
+            var param_q = GM_getValue("q", "")
+            if( getUrlParam("q","") != param_q )
+            {
+                //not this page skip now.
+                return
+            }
+            targetShopkeeper=GM_getValue("targetShopkeeper","")
+            $("#anchorOfUrls")[0].value=targetShopkeeper
+            $("#getUrlsBtn")[0].onclick()
+            if($("#resultUrls")[0].innerHTML!="不存在的掌柜名" && $("#resultUrls")[0].innerHTML!="")
+            {
+                GM_setValue("onKeepTrying","0")
+                return
+            }
+            if(pageIndex < GM_getValue("targetPageIndex",0))
+            {
+                GoNextPage()
+            }
+            else
+            {
+                GM_setValue("onKeepTrying","0")
+                return
+            }
+        }
     }
+    
+    var clickContainP=document.createElement("p");
+    clickContainP.id='clickContain';
+    clickContainP.onclick=function(obj)
+    {
+        if(typeof(obj.click)!="undefined")
+        {
+            console.info(obj.click)
+            obj.click();
+            return
+        }
+        var evt1 = document.createEvent("MouseEvents");
+        evt1.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt2 = document.createEvent("MouseEvents");
+        evt2.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt3 = document.createEvent("MouseEvents");     
+        evt3.initMouseEvent ("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        //$("#toClick")[0].dispatchEvent(evt1);
+        //$("#toClick")[0].dispatchEvent(evt2);
+        //$("#toClick")[0].dispatchEvent(evt3);
+		obj.dispatchEvent(evt1);
+		obj.dispatchEvent(evt2);
+		obj.dispatchEvent(evt3);
+		////setTimeout(function(){unsafeWindow.close()},50000)
+
+    }
+    document.body.insertBefore(clickContainP,document.body.firstChild); 
     
     setTimeout(function()
         {
