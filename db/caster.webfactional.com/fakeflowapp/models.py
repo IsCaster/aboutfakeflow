@@ -45,6 +45,6 @@ class WorkerPerformance(models.Model):
 class DailyStatistics(models.Model):
     site = models.CharField(max_length=100);
     client = models.CharField(max_length=100);
-    gold = models.models.IntegerField();
+    gold = models.IntegerField();
     date = models.CharField(max_length=100);
     updateTime = models.DateTimeField(auto_now_add=True);    
