@@ -36,15 +36,15 @@ class MissionCompleteList(models.Model):
     price = models.FloatField();    
     updateTime = models.DateTimeField(auto_now_add=True);
     
-class DailyStatistics(models.Model):
-    site = models.CharField(max_length=100);
-    client = models.CharField(max_length=100);
-    gold = models.models.IntegerField();
-    date = models.CharField(max_length=100);
-    updateTime = models.DateTimeField(auto_now_add=True);
-    
 class WorkerPerformance(models.Model):
     date = models.CharField(max_length=100);
     money = models.FloatField();
     checkoutTime = models.DateTimeField();
     updateTime = models.DateTimeField(auto_now=True);
+    
+class DailyStatistics(models.Model):
+    site = models.CharField(max_length=100);
+    client = models.CharField(max_length=100);
+    gold = models.models.IntegerField();
+    date = models.CharField(max_length=100);
+    updateTime = models.DateTimeField(auto_now_add=True);    
