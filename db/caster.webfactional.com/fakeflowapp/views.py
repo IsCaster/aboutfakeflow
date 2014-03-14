@@ -33,6 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 clientStatusBuffer=[]
+getMissionCheckTime=datetime.now()
 
 def missionQueueTrace(fn):
     def wrapped(*arg):
@@ -331,6 +332,7 @@ def getMissionList(request):
         
 @login_required()
 def getMission(request):
+    getMissionCheckTime=datetime.now()
     itemId = request.POST["itemId"]
     bFocus = "0"
     if request.POST.has_key("bFocus") :
@@ -1279,7 +1281,11 @@ def trimWord(keyword):
             # return_word=trim_keyword
         
     return return_word
-        
+
+def offThereTime(request):
+    timeoff=(datetime.now()-getMissionCheckTime).total_seconds()
+    return HttpResponse(str(timeoff))
+    
 def test(request):
     entries=MissionInfo.objects.exclude(
                 keyword=""
