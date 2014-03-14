@@ -5,6 +5,7 @@ import time
 import os
 
 import fcntl
+import sys
 
 pid_file = '/tmp/autobot.pid'
 fp = open(pid_file, 'w')
