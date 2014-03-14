@@ -13,9 +13,10 @@ try:
     fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
 except IOError:
     # another instance is running
+    print "another instance is running"
     sys.exit(1)
 
-socket.setdefaulttimeout(5)
+socket.setdefaulttimeout(10)
 def isWorkerThere():
     try:
         conn = httplib.HTTPConnection("caster.webfactional.com")
