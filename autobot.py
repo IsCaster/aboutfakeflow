@@ -31,6 +31,7 @@ while isWorkerThere() == False :
     print "check now"
 print "bot now"
 
+os.system("pkill firefox")
 os.system("export DISPLAY=localhost:1.0 ; firefox -private &")
 time.sleep(10)
 os.system("firefox -new-tab www.hiwinwin.com")
