@@ -7,6 +7,16 @@ import os
 import fcntl
 import sys
 
+import random
+
+total = len(sys.argv)
+cmdargs = str(sys.argv)
+if total == 0 :
+    sleepMaxTime = 600
+else:
+    sleepMaxTime = int(cmdargs)
+
+
 pid_file = '/tmp/autobot.pid'
 fp = open(pid_file, 'w')
 try:
@@ -46,6 +56,7 @@ print "bot now"
 os.system("pkill firefox")
 os.system("export DISPLAY=localhost:1.0 ; firefox -private &")
 time.sleep(10)
-os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab www.hiwinwin.com")
 #os.system("export DISPLAY=localhost:1.0 ;firefox -new-tab http://www.nmimi.com/Action/UserAction.aspx?act=login&n=acryan&p=2020_yxsj")
-    
+sleep_time=int(sleepMaxTime*random.random())
+time.sleep(sleep_time)
+os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab www.hiwinwin.com")
