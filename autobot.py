@@ -10,11 +10,10 @@ import sys
 import random
 
 total = len(sys.argv)
-cmdargs = str(sys.argv)
-if total == 0 :
+if total <= 1 :
     sleepMaxTime = 600
 else:
-    sleepMaxTime = int(cmdargs)
+    sleepMaxTime = int(sys.argv[1])
 
 
 pid_file = '/tmp/autobot.pid'
