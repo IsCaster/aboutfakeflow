@@ -4,6 +4,16 @@ import socket
 import time
 import os
 
+import fcntl
+
+pid_file = '/tmp/autobot.pid'
+fp = open(pid_file, 'w')
+try:
+    fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except IOError:
+    # another instance is running
+    sys.exit(1)
+
 socket.setdefaulttimeout(5)
 def isWorkerThere():
     try:
