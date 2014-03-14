@@ -14,7 +14,7 @@ def isWorkerThere():
         if response.status==200:
             data = response.read()
             timeoff=float(data)
-            print "timeoff="+timeoff
+            print "timeoff="+data
             if timeoff < 60 :
                 return True
             else :
