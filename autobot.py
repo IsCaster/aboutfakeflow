@@ -58,6 +58,6 @@ time.sleep(10)
 # for nmimi
 #os.system("export DISPLAY=localhost:1.0 ;firefox -new-tab '' ")
 sleep_time=int(sleepMaxTime*random.random())
-print "sleep "+sleep_time+"s"
+print "sleep "+str(sleep_time)+"s"
 time.sleep(sleep_time)
 os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab www.hiwinwin.com")
