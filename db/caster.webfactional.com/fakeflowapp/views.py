@@ -332,6 +332,7 @@ def getMissionList(request):
         
 @login_required()
 def getMission(request):
+    global getMissionCheckTime
     getMissionCheckTime=time()
     itemId = request.POST["itemId"]
     bFocus = "0"
