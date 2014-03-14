@@ -46,5 +46,5 @@ class DailyStatistics(models.Model):
     site = models.CharField(max_length=100);
     client = models.CharField(max_length=100);
     gold = models.IntegerField();
-    date = models.CharField(max_length=100);
+    date = models.CharField(max_length=100,db_index=True);
     updateTime = models.DateTimeField(auto_now_add=True);    
