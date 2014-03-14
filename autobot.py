@@ -11,7 +11,7 @@ import random
 
 total = len(sys.argv)
 if total <= 1 :
-    sleepMaxTime = 600
+        sleepMaxTime = 0
 else:
     sleepMaxTime = int(sys.argv[1])
 
