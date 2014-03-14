@@ -33,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 clientStatusBuffer=[]
-getMissionCheckTime
+getMissionCheckTime=time()
 
 def missionQueueTrace(fn):
     def wrapped(*arg):
