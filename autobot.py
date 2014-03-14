@@ -57,5 +57,6 @@ os.system("export DISPLAY=localhost:1.0 ; firefox -private &")
 time.sleep(10)
 #os.system("export DISPLAY=localhost:1.0 ;firefox -new-tab http://www.nmimi.com/Action/UserAction.aspx?act=login&n=acryan&p=2020_yxsj")
 sleep_time=int(sleepMaxTime*random.random())
+print "sleep "+sleep_time+"s"
 time.sleep(sleep_time)
 os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab www.hiwinwin.com")
