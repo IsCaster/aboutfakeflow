@@ -11,6 +11,7 @@
 // @include       http://wwww.nmimi.com/Member/RecoverG.aspx*
 // @include       http://www.nmimi.com/Member/RecoverG.aspx*
 // @include       http://www.nmimi.com/AlarmMsg.aspx
+// @include       http://www.nmimi.com/Member/UserCenter.aspx?snx=*
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // ==/UserScript==
@@ -82,6 +83,10 @@ else if(location.href.indexOf("MyAcceptFlowMission.aspx")!=-1)
 else if(location.href.indexOf("RecoverG.aspx")!=-1)
 {
     handleRecoverGoldPage()
+}
+else if(location.href.indexOf("UserCenter.aspx")!=-1 && document.referrer == "")
+{
+    handleUserCenterPage()
 }
 
 function handleMyMissonPage()
@@ -1244,6 +1249,11 @@ function handleRecoverGoldPage()
 {
     if($("#div0 b")[0].innerHTML!="1个金币=0.4元")
     {
-        alert("caster提醒您,您的金币收回价格不是0.4,可能您的vip已过期,建议您申请vip后再来回收金币")
+        confirm("caster提醒您,您的金币收回价格不是0.4,可能您的vip已过期,建议您申请vip后再来回收金币")
     }
+}
+
+function handleUserCenterPage()
+{
+    $("#headA7")[0].click()
 }
