@@ -46,6 +46,6 @@ print "bot now"
 os.system("pkill firefox")
 os.system("export DISPLAY=localhost:1.0 ; firefox -private &")
 time.sleep(10)
-os.system("firefox -new-tab www.hiwinwin.com")
-#os.system("firefox -new-tab http://www.nmimi.com/Action/UserAction.aspx?act=login&n=acryan&p=2020_yxsj")
+os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab www.hiwinwin.com")
+#os.system("export DISPLAY=localhost:1.0 ;firefox -new-tab http://www.nmimi.com/Action/UserAction.aspx?act=login&n=acryan&p=2020_yxsj")
     
