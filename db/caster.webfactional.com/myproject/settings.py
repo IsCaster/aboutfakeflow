@@ -165,13 +165,13 @@ LOGGING = {
         'simplefile':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/fakeflowdb.debug.log',
+            'filename': '/tmp/log/fakeflowdb.debug.log',
             'formatter': 'verbose'
         },
         'file':{
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/fakeflowdb.debug.log',
+            'filename': '/tmp/log/fakeflowdb.debug.log',
             'maxBytes': 10485760, # 10Mb
             'backupCount': 5,
             'formatter': 'verbose'
