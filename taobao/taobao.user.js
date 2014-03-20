@@ -507,6 +507,8 @@ function main_search() {
                 //not this page skip now.
                 return
             }
+            
+            
             targetShopkeeper=GM_getValue("targetShopkeeper","")
             $("#anchorOfUrls")[0].value=targetShopkeeper
             $("#getUrlsBtn")[0].onclick()
@@ -515,7 +517,7 @@ function main_search() {
                 GM_setValue("onKeepTrying","0")
                 return
             }
-            if(pageIndex < GM_getValue("targetPageIndex",0))
+            if(pageIndex < GM_getValue("targetPageIndex",0) && pageIndex < pageTotalNum)
             {
                 GoNextPage()
             }
