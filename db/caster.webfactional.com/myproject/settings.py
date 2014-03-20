@@ -17,7 +17,7 @@ DATABASES = {
         #'NAME': 'D:/Backup/caster_fakeflowdata',                      # Or path to database file if using sqlite3.
         'USER': 'caster_fakeflowdata',                      # Not used with sqlite3.
         'PASSWORD': 'nosqlite',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
