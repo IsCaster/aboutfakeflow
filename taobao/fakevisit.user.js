@@ -21,8 +21,8 @@ GM_log("enter GM script");
 db_server1="http://caster.webfactional.com"
 db_server2="http://www.fakeflowdb.com:9080"
 
-db_server_flag=GM_getValue("db_server_flag","undefined")
-
+//db_server_flag=GM_getValue("db_server_flag","undefined")
+db_server_flag=2
 if(db_server_flag=="undefined")
 {
     GM_setValue("db_server_flag",1)
