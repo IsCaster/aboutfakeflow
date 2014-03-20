@@ -39,7 +39,7 @@ Sub Main()
             ' objCurrentTab.Screen.WaitForString "rm: remove regular file `fakeflow.user.js'? "
             ' objCurrentTab.Screen.Send "y"  & chr(13)
             objCurrentTab.Screen.WaitForString "Better_to_get_fake_flow_mission# "
-            objCurrentTab.Screen.Send "wget http://caster.webfactional.com/static/fakeflow.user.js" & chr(13)
+            objCurrentTab.Screen.Send "wget http://www.fakeflowdb.com:9080/static/fakeflow.user.js" & chr(13)
             objCurrentTab.Screen.WaitForString "Better_to_get_fake_flow_mission# "
             objCurrentTab.Screen.Send "pkill firefox" & chr(13)
             objCurrentTab.Screen.WaitForString "Better_to_get_fake_flow_mission# "

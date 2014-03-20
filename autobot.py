@@ -28,7 +28,7 @@ except IOError:
 socket.setdefaulttimeout(10)
 def isWorkerThere():
     try:
-        conn = httplib.HTTPConnection("caster.webfactional.com")
+        conn = httplib.HTTPConnection("www.fakeflowdb.com:9080")
         #conn = httplib.HTTPConnection("twitter.com")
         conn.request("GET", "/off_there_time") 
         response = conn.getresponse()
