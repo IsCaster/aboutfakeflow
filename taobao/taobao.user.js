@@ -487,7 +487,7 @@ function main_search() {
             }
             
             var param_q = getUrlParam("q","")
-            
+            param_q=param_q.replace(/%20/g,"+")
             GM_setValue("onKeepTrying","1")
             GM_setValue("targetShopkeeper",$("#anchorOfUrls")[0].value)
             GM_setValue("targetPageIndex",targetPageIndex)
