@@ -225,7 +225,8 @@ def queryUrl(request):
     if  entries.count() >= 1 : 
         for entry in entries:
             if entry.url not in urls:
-                urls.append(entry.url)
+                entry_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",entry.url)
+                urls.append(entry_url_trim)
         response_data['status']=10002
         response_data['fetchResultTime']="0"
         response_data['urls']=urls
@@ -422,7 +423,14 @@ def submitUrl(request):
                         else:    
                             for index,url in enumerate(theMission.urls):
                                 new_url_trim=re.sub(r"&$","",new_url)
+                                #remove _u param
+                                new_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",new_url_trim)
+                                
+                                
                                 url_trim=re.sub(r"&$","",url)
+                                #remove _u param
+                                url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",url_trim)
+                                
                                 if new_url_trim== url_trim and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
                                     bAdd = False
                                     break
