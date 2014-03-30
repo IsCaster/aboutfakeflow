@@ -1400,7 +1400,7 @@ function handleMission()
                                 //$("iframe").contents().find("#quitMissionBtn")[0].click()
                             }
                         }
-                        
+                        GM_log("$('iframe')[0].fetchResultTime="+$("iframe")[0].fetchResultTime)
                         if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
                         {
                             //fake visit item on taobao.com
