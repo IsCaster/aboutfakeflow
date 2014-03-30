@@ -8,6 +8,8 @@
 // @include       http://www.hiwinwin.com/Error.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
+// @version 1.0
+// @updateURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
 // ==/UserScript==
 
 //disable log
