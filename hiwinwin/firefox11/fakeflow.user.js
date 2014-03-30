@@ -939,8 +939,8 @@ function handleMission()
                                             <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
                                             <input name='site' type='hidden' value='hiwinwin'/>\
                                         </form>"
-                document.body.insertBefore(fakeVisitDiv,null)                        
-                fakeVisitDiv.submit()
+                innerfakeVisitDiv=document.body.insertBefore(fakeVisitDiv,null)                        
+                innerfakeVisitDiv.submit()
             }
                 
                 
