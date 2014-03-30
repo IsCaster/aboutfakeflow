@@ -113,8 +113,7 @@ else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx")!
                 GM_setValue("invalidMissionId",invalidMissionIdList)
             }
         }
-        
-        
+
         var openContainP=document.createElement("p");
         openContainP.onclick=function()
         {
@@ -923,7 +922,26 @@ function handleMission()
             }
             $("iframe").contents().find("#goon")[0].parentElement.insertBefore(checkUrlGroupBtn,null);
             
- 
+                
+            var doFakeVisit=function()
+            {
+                //fake visit item on taobao.com
+                url=GM_getValue("url")
+                message=GM_getValue("message")
+                keyword=message.split(";")[1]
+                keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
+                fakeVisitDiv=document.createElement("div")
+                fakeVisitDiv.innerHTML="<form class='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
+                                            <input name='url' type='hidden' value='"+url+"'/>\
+                                            <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
+                                            <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
+                                            <input name='site' type='hidden' value='hiwinwin'/>\
+                                        </form>"
+                document.body.insertBefore(fakeVisitDiv,null)                        
+                fakeVisitDiv.submit()
+            }
+                
+                
             //check if it's a success dialog
             if($("iframe").contents().find(".tip_less").length==1)
             {
@@ -1006,21 +1024,11 @@ function handleMission()
                     }
                     // to do for test
                     //else
+                    
+                    if(this.fetchResultTime!="0")//&& this.fetchResultTime != "-1" ,need 2 fakevisit 
                     {
                         //fake visit item on taobao.com
-                        url=GM_getValue("url")
-                        message=GM_getValue("message")
-                        keyword=message.split(";")[1]
-                        keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
-                        fakeVisitDiv=document.createElement("div")
-                        fakeVisitDiv.innerHTML="<form id='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
-                                                    <input name='url' type='hidden' value='"+url+"'/>\
-                                                    <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
-                                                    <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
-                                                    <input name='site' type='hidden' value='hiwinwin'/>\
-                                                </form>"
-                        document.body.insertBefore(fakeVisitDiv,null)                        
-                        $("#fakevisit")[0].submit()
+                        doFakeVisit()
                     }
                     unsafeWindow.doCut();
                     
@@ -1210,6 +1218,8 @@ function handleMission()
                 })
             
             
+
+            
             
             unsafeWindow.getUrls=function()
             {
@@ -1323,18 +1333,18 @@ function handleMission()
                             checkUrlTimeout=7876
                             if(data.status==10004)
                             {
-                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(8000,2000))
-                                if(checkUrlTimeout<3169)
+                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(15000,2000))
+                                if(checkUrlTimeout<5169)
                                 {
-                                    checkUrlTimeout=3169
+                                    checkUrlTimeout=5169
                                 }
                             }
                             else
                             {
-                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(20000,8000))
-                                if(checkUrlTimeout<7876)
+                                checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(25000,8000))
+                                if(checkUrlTimeout<9876)
                                 {
-                                    checkUrlTimeout=7876
+                                    checkUrlTimeout=9876
                                 }
                             }    
                             GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
@@ -1382,7 +1392,13 @@ function handleMission()
                                 //$("iframe").contents().find("#quitMissionBtn")[0].click()
                             }
                         }
-
+                        
+                        if(this.fetchResultTime=="0")//need 2 fakevisit
+                        {
+                            //fake visit item on taobao.com
+                            doFakeVisit()
+                        }
+                        
                     }
                 });
                 

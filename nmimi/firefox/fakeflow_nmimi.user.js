@@ -963,6 +963,7 @@ function handleGetMissionPage()
     {
         unsafeWindow.myMissionPageWindow=unsafeWindow.open("/Mission/MyAcceptFlowMission.aspx")
     }
+    openContainP.id="openContain"
     document.body.insertBefore(openContainP,null);
     openContainP.click()
         
