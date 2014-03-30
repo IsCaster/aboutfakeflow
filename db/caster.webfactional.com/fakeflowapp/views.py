@@ -849,7 +849,7 @@ def fakeVisit(request):
     
     template_values=Context({
         'url':url,
-        'keyword':quote(keyword.encode("gbk"), safe='~()*!.\''),
+        'keyword':quote(keyword.encode("gbk"), safe='()*!.\''),
         'firstVisitUrl':firstVisitUrl,
         'inshopUrl':inshopUrl,
         'searchTips':searchTips,
@@ -1025,7 +1025,7 @@ def resetClientVisitTime(request):
     
 def utf8ToGbk(request):
     q=unquote(request.POST["q"].encode('ascii','ignore')).decode('utf8')
-    q_gbk=quote(q.encode("gbk"), safe='~()*!.\'')
+    q_gbk=quote(q.encode("gbk"), safe='()*!.\'')
     
     response_data={"r":q_gbk}
     return HttpResponse(simplejson.dumps(response_data))
