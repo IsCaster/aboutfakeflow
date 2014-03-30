@@ -923,10 +923,10 @@ function handleMission()
             $("iframe").contents().find("#goon")[0].parentElement.insertBefore(checkUrlGroupBtn,null);
             
                 
-            var doFakeVisit=function()
+            var doFakeVisit=function(var url)
             {
                 //fake visit item on taobao.com
-                url=GM_getValue("url")
+                //url=GM_getValue("url")
                 message=GM_getValue("message")
                 keyword=message.split(";")[1]
                 keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
@@ -1028,7 +1028,7 @@ function handleMission()
                     if(this.fetchResultTime!="0")//&& this.fetchResultTime != "-1" ,need 2 fakevisit 
                     {
                         //fake visit item on taobao.com
-                        doFakeVisit()
+                        doFakeVisit(GM_getValue("url"))
                     }
                     unsafeWindow.doCut();
                     
@@ -1193,14 +1193,20 @@ function handleMission()
                                 }
                                 else
                                 {
-                                    checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(7000,2000))
-                                    if(checkUrlTimeout<2169)
+                                    checkUrlTimeout=Math.round(unsafeWindow.gaussianGenerate(10000,2000))
+                                    if(checkUrlTimeout<5169)
                                     {
-                                        checkUrlTimeout=2169
+                                        checkUrlTimeout=5169
                                     }
                                     GM_log("route 1 : click,checkUrlTimeout="+checkUrlTimeout)
                                     
                                     setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
+                                    
+                                    if($("iframe")[0].fetchResultTime=="0") //need 2 fakevisit 
+                                    {
+                                        //fake visit item on taobao.com
+                                        doFakeVisit($("iframe").contents().find("#itemurl")[0].value)
+                                    }
                                 }
                                 break;
                             }
@@ -1396,7 +1402,7 @@ function handleMission()
                         if(this.fetchResultTime=="0")//need 2 fakevisit
                         {
                             //fake visit item on taobao.com
-                            doFakeVisit()
+                            doFakeVisit(data.urls[0])
                         }
                         
                     }
