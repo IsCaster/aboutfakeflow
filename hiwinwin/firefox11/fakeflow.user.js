@@ -1401,7 +1401,7 @@ function handleMission()
                             }
                         }
                         
-                        if(this.fetchResultTime=="0")//need 2 fakevisit
+                        if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
                         {
                             //fake visit item on taobao.com
                             doFakeVisit(data.urls[0])
