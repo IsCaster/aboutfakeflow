@@ -929,18 +929,27 @@ function handleMission()
             {
                 //fake visit item on taobao.com
                 //url=GM_getValue("url")
+                
+                
                 message=GM_getValue("message")
                 keyword=message.split(";")[1]
                 keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
                 fakeVisitDiv=document.createElement("div")
-                fakeVisitDiv.innerHTML="<form class='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
+                fakeVisitDiv.innerHTML="<form id='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
                                             <input name='url' type='hidden' value='"+url+"'/>\
                                             <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
                                             <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
                                             <input name='site' type='hidden' value='hiwinwin'/>\
                                         </form>"
-                innerfakeVisitDiv=document.body.insertBefore(fakeVisitDiv,null)                        
-                innerfakeVisitDiv.submit()
+                if($("#fakevisit").length==0)
+                {
+                    document.body.insertBefore(fakeVisitDiv,null) 
+                }
+                else
+                {
+                    $("#fakevisit")[0].innerHTML=fakeVisitDiv.innerHTML
+                }
+                $("#fakevisit")[0].submit()
             }
                 
                 
