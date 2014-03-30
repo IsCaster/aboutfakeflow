@@ -15,7 +15,7 @@
 // @include       http://www.taobao.com/go/*
 // @include       http://www.taobao.com/market/ae/fktz.php
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
-// @version 1.0
+// @version 1.01
 // @updateURL http://www.fakeflowdb.com:9080/static/fakevisit.user.js
 // ==/UserScript==
 
@@ -782,7 +782,7 @@ function handleTaobaoItemPage()
 		}
     }
  
-	if(unsafeWindow.opener && unsafeWindow.opener.location.href!="http://www.hiwinwin.com/task/count/Taskin.aspx")
+	if(unsafeWindow.opener )
     {
         unsafeWindow.opener.close()
     }  

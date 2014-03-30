@@ -8,7 +8,7 @@
 // @include       http://www.hiwinwin.com/Error.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
-// @version 1.0
+// @version 1.01
 // @updateURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
 // ==/UserScript==
 
@@ -853,17 +853,12 @@ function handleMission()
         //return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
         return dataURL
     }
-
-    //openContainA
-    var openContainA = document.createElement("a");
-    openContainA.target="_blank"
-    openContainA.rel="noreferrer"
-    openContainA.id="openContainA"
-    document.body.insertBefore(openContainA,null) 
     
 
     if($(".link_t ").length==2)
     {
+
+    
         $(".link_t ")[0].onclick();
         $("iframe")[0].loadtime=0
 		$("iframe")[0].urls=new Array()
@@ -886,6 +881,15 @@ function handleMission()
 				$(".link_t ")[1].click()
 			}
 			$("iframe").contents().find("#goon")[0].parentElement.insertBefore(quitMissionBtn,null)
+            
+            
+            
+            //openContainA
+            var openContainA = this.contentDocument.createElement("a");
+            openContainA.target="_blank"
+            openContainA.rel="noreferrer"
+            openContainA.id="openContainA"
+            this.contentDocument.body.insertBefore(openContainA,null) 
             
             //url group  to check
             //br=this.contentDocument.createElement("br")
@@ -1228,8 +1232,8 @@ function handleMission()
                                     else
                                     {
                                         // just open the item link
-                                        $("#openContainA")[0].href=$("iframe").contents().find("#itemurl")[0].value
-                                        $("#openContainA")[0].click()
+                                        $("iframe").contents().find("#openContainA")[0].href=$("iframe").contents().find("#itemurl")[0].value
+                                        $("iframe").contents().find("#openContainA")[0].click()
                                     }
                                 }
                                 break;
@@ -1391,8 +1395,8 @@ function handleMission()
                             else
                             {
                                 // just open the item link
-                                $("#openContainA")[0].href=data.urls[0]
-                                $("#openContainA")[0].click()
+                                $("iframe").contents().find("#openContainA")[0].href=data.urls[0]
+                                $("iframe").contents().find("#openContainA")[0].click()
                             }
                         }
                         else if(data.status>=20001&&data.status<30000)//no url retrieved and no one get the mission in N(default:5) minutes,just give up
