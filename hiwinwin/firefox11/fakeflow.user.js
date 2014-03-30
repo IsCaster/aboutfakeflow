@@ -854,6 +854,13 @@ function handleMission()
         return dataURL
     }
 
+    //openContainA
+    var openContainA = document.createElement("a");
+    openContainA.target="_blank"
+    openContainA.rel="noreferrer"
+    openContainA.id="openContainA"
+    document.body.insertBefore(openContainA,null) 
+    
 
     if($(".link_t ").length==2)
     {
@@ -1218,6 +1225,12 @@ function handleMission()
                                         //fake visit item on taobao.com
                                         doFakeVisit($("iframe").contents().find("#itemurl")[0].value)
                                     }
+                                    else
+                                    {
+                                        // just open the item link
+                                        $("#openContainA")[0].href=$("iframe").contents().find("#itemurl")[0].value
+                                        $("#openContainA")[0].click()
+                                    }
                                 }
                                 break;
                             }
@@ -1369,7 +1382,18 @@ function handleMission()
                             
                             setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
                             
-                            
+                            GM_log("$('iframe')[0].fetchResultTime="+$("iframe")[0].fetchResultTime)
+                            if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
+                            {
+                                //fake visit item on taobao.com
+                                doFakeVisit(data.urls[0])
+                            }
+                            else
+                            {
+                                // just open the item link
+                                $("#openContainA")[0].href=data.urls[0]
+                                $("#openContainA")[0].click()
+                            }
                         }
                         else if(data.status>=20001&&data.status<30000)//no url retrieved and no one get the mission in N(default:5) minutes,just give up
                         {
@@ -1409,12 +1433,7 @@ function handleMission()
                                 //$("iframe").contents().find("#quitMissionBtn")[0].click()
                             }
                         }
-                        GM_log("$('iframe')[0].fetchResultTime="+$("iframe")[0].fetchResultTime)
-                        if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
-                        {
-                            //fake visit item on taobao.com
-                            doFakeVisit(data.urls[0])
-                        }
+
                         
                     }
                 });
