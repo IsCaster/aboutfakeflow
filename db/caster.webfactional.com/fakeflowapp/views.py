@@ -904,7 +904,7 @@ def submitShopkeeper(request):
     if entries.count() >=1 :    
         return HttpResponse("<script> setTimeout(function(){window.close()},2000); </script>")
     else:    
-        return HttpResponse("something wrong there ,url no exist <script> setTimeout(function(){window.close()},60000); </script>")
+        return HttpResponse("something wrong there ,url no exist <script> setTimeout(function(){window.close()},10000); </script>")
 
 @login_required()        
 def clearDoneBuffer(request):        
