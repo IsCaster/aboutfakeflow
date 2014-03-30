@@ -925,7 +925,7 @@ function handleMission()
             $("iframe").contents().find("#goon")[0].parentElement.insertBefore(checkUrlGroupBtn,null);
             
                 
-            var doFakeVisit=function(var url)
+            var doFakeVisit=function(url)
             {
                 //fake visit item on taobao.com
                 //url=GM_getValue("url")
