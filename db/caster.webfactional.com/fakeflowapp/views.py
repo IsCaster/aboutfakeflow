@@ -510,6 +510,10 @@ def submitResultSuccess(request):
     itemId=raw_itemId
     url=raw_url
     
+    # remove _u , spm param
+    url=re.sub(r"&_u=[0-9a-zA-Z]*","",url)
+    url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",url)
+    url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",url)
     url=re.sub("&$","",url)
     
     
@@ -704,6 +708,11 @@ def submitResultFail(request):
         idInSite=""
     
     message=re.sub(r"\s*","",raw_message)
+
+    fail_url=re.sub(r"&_u=[0-9a-zA-Z]*","",fail_url)
+    fail_url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",fail_url)
+    fail_url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",fail_url)
+    fail_url=re.sub("&$","",fail_url)
     
     if len(itemId) != 0 :
         with GetMissionQueue().bufferLock:

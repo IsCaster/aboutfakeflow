@@ -863,6 +863,8 @@ function handleMission()
         $("iframe")[0].loadtime=0
 		$("iframe")[0].urls=new Array()
         $("iframe")[0].hi_mission_id=$(".link_t ")[0].parentNode.parentNode.firstChild.nextSibling.innerHTML
+        $("iframe")[0].fake_spm=""
+        
         GM_log("hi_mission_id="+$("iframe")[0].hi_mission_id)
         $("iframe")[0].onload = function()
         {		
@@ -1257,7 +1259,7 @@ function handleMission()
             
             
 
-            
+
             
             unsafeWindow.getUrls=function()
             {
@@ -1266,8 +1268,10 @@ function handleMission()
                 var site="hiwinwin";
                 var shopkeeper="";
                 client=$(".top_right .f_b_org")[0].innerHTML // username
+                var missionType="none"
                 if($("iframe").contents().find(".f_b_green + td")[1].innerHTML.indexOf("根据搜索提示打开搜索结果列表中掌柜名为：")>=0)
                 {
+                    missionType="inShop"
 					message+=$("iframe").contents().find(".main_dl strong")[1].innerHTML+";"//put the shopkeeper in front
                     message+=$("iframe").contents().find(".main_dl strong")[0].innerHTML+";"
                     shopkeeper=$("iframe").contents().find(".main_dl strong")[1].innerHTML+";"
@@ -1275,6 +1279,7 @@ function handleMission()
                 }
                 else
                 {
+                    missionType="inSearchPage"
                     for(var i=0;i<$("iframe").contents().find(".main_dl strong").length ;++i)
                     {
                         message+=$("iframe").contents().find(".main_dl strong")[i].innerHTML+";"
@@ -1285,6 +1290,75 @@ function handleMission()
                 }
                 GM_setValue("message",message)
                 GM_setValue("shopkeeper",shopkeeper.replace(/\s*/g,""))
+                
+                // generate fake spm param
+                if($("iframe")[0].fake_spm=="")
+                {
+                    var generateLetterOrNumber= function()
+                    {
+                        mark=Math.floor(Math.random()*(10+26*2))
+                        if(mark <10)
+                        {
+                            return mark+""
+                        }
+                        else if (mark >= 10 && mark <= 35)
+                        {
+                            nCharCode ="A".charCodeAt(0)+mark-10
+                            return String.fromCharCode(nCharCode)
+                        }
+                        else if(mark >= 36 && mark < 62)
+                        {
+                            nCharCode ="a".charCodeAt(0)+mark-36
+                            return String.fromCharCode(nCharCode)
+                        }
+                        else
+                        {
+                            return "z"
+                        }
+    
+                    }
+                    if(missionType=="inSearchPage")
+                    {
+                        part1=Math.floor(Math.random()*120)
+                        part2=generateLetterOrNumber()+generateLetterOrNumber()+generateLetterOrNumber()
+                            +generateLetterOrNumber()+generateLetterOrNumber()+generateLetterOrNumber()
+                        $("iframe")[0].fake_spm="a230r.1.14."+part1+"."+part2
+                    }
+                    else if(missionType=="inShop")
+                    {
+                        mark=Math.random()
+                        if(mark < 0.2 )
+                        {
+                            part1="3.w4011-"
+                        }
+                        else if(mark >= 0.2 && mark < 0.4)
+                        {
+                            part1="3.w4002-"
+                        }
+                        else if(mark >= 0.4 && mark < 0.6)
+                        {
+                            part1="1.w4004-"
+                        }
+                        else if(mark >= 0.6 && mark < 0.8)
+                        {
+                            part1="1.w5002-"
+                        }
+                        else
+                        {
+                            part1="4.w5003-"
+                        }
+                        part2=Math.floor(Math.random()*9000000000)+1000000000
+                        part3=Math.floor(Math.random()*100)
+                        part4=generateLetterOrNumber()+generateLetterOrNumber()+generateLetterOrNumber()
+                            +generateLetterOrNumber()+generateLetterOrNumber()+generateLetterOrNumber()
+                        $("iframe")[0].fake_spm="a1z10."+part1+part2+"."+part3+"."+part4
+                    }
+                    else
+                    {
+                        $("iframe")[0].fake_spm=""
+                    }
+                    GM_log('$("iframe")[0].fake_spm='+$("iframe")[0].fake_spm)
+                }
                 
                 //GM_log("post message")
                 input=	'message='+encodeURIComponent(message)+
@@ -1345,9 +1419,26 @@ function handleMission()
                         {
                             //GM_log("data.urls.length="+data.urls.length)
                             $("iframe")[0].urls=data.urls
+                            
+
+                            if($("iframe")[0].fake_spm!="")
+                            {
+                                for (var i =0 ;i< $("iframe")[0].urls.length; ++i)
+                                {
+                                    // replace spm
+                                    $("iframe")[0].urls[i]=$("iframe")[0].urls[i].replace(/&spm=[0-9a-zA-Z\.\-]*/,"&spm="+$("iframe")[0].fake_spm)
+                                    $("iframe")[0].urls[i]=$("iframe")[0].urls[i].replace(/\?spm=[0-9a-zA-Z\.\-]*&/,"?spm="+$("iframe")[0].fake_spm+"&")
+                                    
+                                    if($("iframe")[0].urls[i].indexOf($("iframe")[0].fake_spm) < 0)
+                                    {
+                                        // add fake_spm
+                                        $("iframe")[0].urls[i]=$("iframe")[0].urls[i].replace(/\?/,"?spm="+$("iframe")[0].fake_spm+"&")
+                                    }
+                                }
+                            }
                             $("iframe")[0].loadtime=1
                             GM_log("$('iframe')[0].urls.length="+$('iframe')[0].urls.length)
-                            $("iframe").contents().find("#itemurl")[0].value=data.urls[0];
+                            $("iframe").contents().find("#itemurl")[0].value=$("iframe")[0].urls[0];
                             GM_log('$("iframe").contents().find("#code")[0].value='+$("iframe").contents().find("#code")[0].value)
                             if(typeof(data.fetchResultTime)!="undefined")
                             {
@@ -1392,12 +1483,12 @@ function handleMission()
                             if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
                             {
                                 //fake visit item on taobao.com
-                                doFakeVisit(data.urls[0])
+                                doFakeVisit($("iframe")[0].urls[0])
                             }
                             else
                             {
                                 // just open the item link
-                                $("iframe").contents().find("#openContainA")[0].href=data.urls[0]
+                                $("iframe").contents().find("#openContainA")[0].href=$("iframe")[0].urls[0]
                                 $("iframe").contents().find("#openContainA")[0].click()
                             }
                             
