@@ -224,11 +224,11 @@ def queryUrl(request):
     urls=[]
     if  entries.count() >= 1 : 
         for entry in entries:
-            if entry.url not in urls:
-                #remove _u ,spm param
-                entry_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",entry.url)
-                entry_url_trim=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",entry_url_trim)
-                entry_url_trim=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",entry_url_trim)
+            #remove _u ,spm param
+            entry_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",entry.url)
+            entry_url_trim=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",entry_url_trim)
+            entry_url_trim=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",entry_url_trim)
+            if entry_url_trim not in urls:
                 urls.append(entry_url_trim)
         response_data['status']=10002
         response_data['fetchResultTime']="0"
@@ -427,15 +427,13 @@ def submitUrl(request):
                         bAdd=True
                         if re.search(r"^http://",new_url) == None :
                             bAdd=False
-                        else:    
-                            for index,url in enumerate(theMission.urls):
-                                
-                                #remove _u ,spm param
-                                new_url=re.sub(r"&_u=[0-9a-zA-Z]*","",new_url)
-                                new_url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",new_url)
-                                new_url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",new_url)
-                                new_url=re.sub(r"&$","",new_url)
-                                 
+                        else:
+                            #remove _u ,spm param
+                            new_url=re.sub(r"&_u=[0-9a-zA-Z]*","",new_url)
+                            new_url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",new_url)
+                            new_url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",new_url)
+                            new_url=re.sub(r"&$","",new_url)
+                            for index,url in enumerate(theMission.urls):  
                                 #remove _u ,spm param
                                 url=re.sub(r"&_u=[0-9a-zA-Z]*","",url)
                                 url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",url)
