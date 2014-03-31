@@ -425,12 +425,12 @@ def submitUrl(request):
                                 
                                 #remove _u param
                                 new_url=re.sub(r"&_u=[0-9a-zA-Z]*","",new_url)
-                                new_url_trim=re.sub(r"&$","",new_url)
+                                new_url=re.sub(r"&$","",new_url)
                                  
                                 #remove _u param
                                 url=re.sub(r"&_u=[0-9a-zA-Z]*","",url)
-                                url_trim=re.sub(r"&$","",url)
-                                if new_url_trim== url_trim and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
+                                url=re.sub(r"&$","",url)
+                                if new_url== url and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
                                     bAdd = False
                                     break
                         if bAdd :
