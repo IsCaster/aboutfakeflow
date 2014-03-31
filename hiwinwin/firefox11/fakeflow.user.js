@@ -943,7 +943,10 @@ function handleMission()
                 //fake visit item on taobao.com
                 //url=GM_getValue("url")
                 
-                
+                if(typeof(url)=="undefined" || url == "")
+                {
+                    confirm("doFakeVisit 出错，请联系程序员");
+                }
                 message=GM_getValue("message")
                 keyword=message.split(";")[1]
                 keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
@@ -1052,6 +1055,7 @@ function handleMission()
                     if(this.fetchResultTime!="0" && this.fetchResultTime != "-1" )//&& this.fetchResultTime != "-1" ,need 2 fakevisit 
                     {
                         //fake visit item on taobao.com
+                        GM_log("doFakeVisit 1")
                         doFakeVisit(GM_getValue("url"))
                     }
                     unsafeWindow.doCut();
@@ -1228,6 +1232,7 @@ function handleMission()
                                     if($("iframe")[0].fetchResultTime=="0") //need 2 fakevisit 
                                     {
                                         //fake visit item on taobao.com
+                                        GM_log("doFakeVisit 2")
                                         doFakeVisit($("iframe").contents().find("#itemurl")[0].value)
                                     }
                                     else
@@ -1483,6 +1488,7 @@ function handleMission()
                             if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
                             {
                                 //fake visit item on taobao.com
+                                GM_log("doFakeVisit 3")
                                 doFakeVisit($("iframe")[0].urls[0])
                             }
                             else
