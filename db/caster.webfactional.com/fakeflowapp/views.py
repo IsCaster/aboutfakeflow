@@ -225,7 +225,10 @@ def queryUrl(request):
     if  entries.count() >= 1 : 
         for entry in entries:
             if entry.url not in urls:
+                #remove _u ,spm param
                 entry_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",entry.url)
+                entry_url_trim=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",entry_url_trim)
+                entry_url_trim=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",entry_url_trim)
                 urls.append(entry_url_trim)
         response_data['status']=10002
         response_data['fetchResultTime']="0"
@@ -238,8 +241,12 @@ def queryUrl(request):
             entries=MissionInfo.objects.filter(message__startswith=shopkeeper,site=site,valid=True).order_by("-updateTime")[:30]
             if  entries.count() >= 1 : 
                 for entry in entries:
-                    if entry.url not in urls:
-                        urls.append(entry.url)
+                    #remove _u ,spm param
+                    entry_url_trim=re.sub(r"&_u=[0-9a-zA-Z]*","",entry.url)
+                    entry_url_trim=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",entry_url_trim)
+                    entry_url_trim=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",entry_url_trim)
+                    if entry_url_trim not in urls:
+                        urls.append(entry_url_trim)
                         if len(urls) >= 10: #max 10 tries
                             break
 
@@ -423,12 +430,16 @@ def submitUrl(request):
                         else:    
                             for index,url in enumerate(theMission.urls):
                                 
-                                #remove _u param
+                                #remove _u ,spm param
                                 new_url=re.sub(r"&_u=[0-9a-zA-Z]*","",new_url)
+                                new_url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",new_url)
+                                new_url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",new_url)
                                 new_url=re.sub(r"&$","",new_url)
                                  
-                                #remove _u param
+                                #remove _u ,spm param
                                 url=re.sub(r"&_u=[0-9a-zA-Z]*","",url)
+                                url=re.sub(r"&spm=[0-9a-zA-Z\.\-]*","",url)
+                                url=re.sub(r"\?spm=[0-9a-zA-Z\.\-]*&","?",url)
                                 url=re.sub(r"&$","",url)
                                 if new_url== url and not theMission.bTried[index] and theMission.fetchResultTimes[index]==0 :
                                     bAdd = False
