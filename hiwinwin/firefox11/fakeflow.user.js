@@ -1047,7 +1047,7 @@ function handleMission()
                     // to do for test
                     //else
                     
-                    if(this.fetchResultTime!="0")//&& this.fetchResultTime != "-1" ,need 2 fakevisit 
+                    if(this.fetchResultTime!="0" && this.fetchResultTime != "-1" )//&& this.fetchResultTime != "-1" ,need 2 fakevisit 
                     {
                         //fake visit item on taobao.com
                         doFakeVisit(GM_getValue("url"))
@@ -1220,9 +1220,8 @@ function handleMission()
                                     {
                                         checkUrlTimeout=5169
                                     }
-                                    GM_log("route 1 : click,checkUrlTimeout="+checkUrlTimeout)
                                     
-                                    setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
+                                    
                                     
                                     if($("iframe")[0].fetchResultTime=="0") //need 2 fakevisit 
                                     {
@@ -1235,6 +1234,11 @@ function handleMission()
                                         $("iframe").contents().find("#openContainA")[0].href=$("iframe").contents().find("#itemurl")[0].value
                                         $("iframe").contents().find("#openContainA")[0].click()
                                     }
+                                    
+                                    GM_log("route 1 : click,checkUrlTimeout="+checkUrlTimeout)
+
+                                    setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click();},checkUrlTimeout)
+  
                                 }
                                 break;
                             }
@@ -1384,8 +1388,6 @@ function handleMission()
                             GM_log("route 2 : check url checkUrlTimeout="+checkUrlTimeout)
                             //$("iframe").contents().find("#imgCode + input")[0].click()
                             
-                            setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
-                            
                             GM_log("$('iframe')[0].fetchResultTime="+$("iframe")[0].fetchResultTime)
                             if($("iframe")[0].fetchResultTime=="0")//need 2 fakevisit
                             {
@@ -1398,6 +1400,8 @@ function handleMission()
                                 $("iframe").contents().find("#openContainA")[0].href=data.urls[0]
                                 $("iframe").contents().find("#openContainA")[0].click()
                             }
+                            
+                            setTimeout(function(){$("iframe").contents().find("#imgCode + input")[0].click()},checkUrlTimeout)
                         }
                         else if(data.status>=20001&&data.status<30000)//no url retrieved and no one get the mission in N(default:5) minutes,just give up
                         {
