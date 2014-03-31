@@ -1276,7 +1276,7 @@ function handleMission()
                 var missionType="none"
                 if($("iframe").contents().find(".f_b_green + td")[1].innerHTML.indexOf("根据搜索提示打开搜索结果列表中掌柜名为：")>=0)
                 {
-                    missionType="inShop"
+                    missionType="inSearchPage"
 					message+=$("iframe").contents().find(".main_dl strong")[1].innerHTML+";"//put the shopkeeper in front
                     message+=$("iframe").contents().find(".main_dl strong")[0].innerHTML+";"
                     shopkeeper=$("iframe").contents().find(".main_dl strong")[1].innerHTML+";"
@@ -1284,7 +1284,7 @@ function handleMission()
                 }
                 else
                 {
-                    missionType="inSearchPage"
+                    missionType="inShop"
                     for(var i=0;i<$("iframe").contents().find(".main_dl strong").length ;++i)
                     {
                         message+=$("iframe").contents().find(".main_dl strong")[i].innerHTML+";"
