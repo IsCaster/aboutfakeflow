@@ -10,6 +10,7 @@
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // @version 1.02
 // @updateURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
+// @downloadURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
 // ==/UserScript==
 
 //disable log

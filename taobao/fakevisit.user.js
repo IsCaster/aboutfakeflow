@@ -17,6 +17,7 @@
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
 // @version 1.01
 // @updateURL http://www.fakeflowdb.com:9080/static/fakevisit.user.js
+// @downloadURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
 // ==/UserScript==
 
 GM_log("enter GM script");
