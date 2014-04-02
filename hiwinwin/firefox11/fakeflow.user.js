@@ -8,7 +8,7 @@
 // @include       http://www.hiwinwin.com/Error.aspx
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js
-// @version 1.01
+// @version 1.02
 // @updateURL http://www.fakeflowdb.com:9080/static/fakeflow.user.js
 // ==/UserScript==
 
@@ -1058,11 +1058,13 @@ function handleMission()
                         GM_log("doFakeVisit 1")
                         doFakeVisit(GM_getValue("url"))
                     }
+                    setTimeout(function(){
                     unsafeWindow.doCut();
                     
                     unsafeWindow.open("http://www.hiwinwin.com/task/count/")
                     //location.href='./'
                     //location.href="about:blank"
+                    },5000)
                     return
                 }
                 else
