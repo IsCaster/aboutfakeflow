@@ -234,7 +234,7 @@ def queryUrl(request):
         response_data['fetchResultTime']="0"
         response_data['urls']=urls
         return HttpResponse(simplejson.dumps(response_data))
-    elif shopkeeper != "" :
+    elif shopkeeper != "" and site == "hiwinwin":
         shopkeeperList=ShopkeeperWhiteList.objects.filter(shopkeeper=shopkeeper)
         #logger.debug("shopkeeperList.count()=%d,shopkeeper=%s"%(shopkeeperList.count(),quote(shopkeeper)))        
         if shopkeeperList.count() >=1 :
@@ -486,13 +486,16 @@ def submitResultSuccess(request):
         idInSite=""
     logger.debug("submitResultSuccess() idInSite="+idInSite)
     
-    if site=="nmimi" :
-        if request.POST.has_key("price") and request.POST["price"]!="" :
-            price=float(request.POST["price"])
-        else:
-            price=0.2
-    else:
+    if request.POST.has_key("price") and request.POST["price"]!="" :
+        price=float(request.POST["price"])
+        if price <= 0:
+            price = 1
+    elif site=="nmimi" :
+        price=0.2
+    elif site=="hiwinwin" :
         price = 1
+    else :
+        price = 1 
     
     if request.META.has_key("HTTP_X_FORWARDED_FOR"):
         updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
@@ -1025,13 +1028,17 @@ def heartBeat(request):
     site=request.POST["site"]
     client=request.POST["client"]
     
-    if site=="nmimi" :
-        if request.POST.has_key("price") and request.POST["price"]!="" :
-            price=float(request.POST["price"])
-        else:
-            price=0.2
-    else:
+    if request.POST.has_key("price") and request.POST["price"]!="" :
+        price=float(request.POST["price"])
+        if price <= 0:
+            price = 1
+    elif site=="nmimi" :
+        price=0.2
+    elif site=="hiwinwin" :
         price = 1
+    else :
+        price = 1 
+
     if request.META.has_key("HTTP_X_FORWARDED_FOR"):
         updateClientStatus(site,client,request.META['HTTP_X_FORWARDED_FOR'])
     elif request.META.has_key("REMOTE_ADDR"): 

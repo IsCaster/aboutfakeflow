@@ -178,6 +178,15 @@ function handleAutoJumpTaskCountPage(motherWindow,annoucePart)
                 },0)
             GM_setValue( "newGoPageToString","no gopage(6)")
         }
+        else if($("img.cursor").length <= 0 || 
+            $("img.cursor")[0].outerHTML != '<img src=\"../../images/task_reflesh.gif\" onclick=\"goPage(0);\" class=\"cursor\">')
+        {
+            //'<img src=\"../../images/task_reflesh.gif\" onclick=\"goPage(0);\" class=\"cursor\">'
+            GM_log("refresh button changed ")
+            setTimeout(function(){motherWindow.document.getElementById("annouceGoPageChange").onclick()
+                },0)
+            GM_setValue( "newGoPageToString","refresh button changed")
+        }
         else
         {    
             if(motherWindow==unsafeWindow.opener.top)
