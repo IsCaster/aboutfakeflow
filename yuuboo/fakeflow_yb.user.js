@@ -169,6 +169,9 @@ function handleGetQuestPage()
             GM_log("randomId= "+randomId)
             if(randomId==-1)
             {   
+                //no valid quest maybe jump to next page
+                confirm ("no valid quest maybe jump to next page")
+            
                 total_num=$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ").length
                 
                 GM_log("total_num= "+total_num)

@@ -1094,6 +1094,7 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
         dailydata.clientsData=[]
         dailydata.hi_sum=0
         dailydata.nmi_sum=0
+        dailydata.yb_sum=0
         for item in clients:
             # query database table DailyStatistics first, disclude today
             if start_time==6 and end_time== 6 and i > 0:
@@ -1122,13 +1123,16 @@ def missionStatisticsFun(dt_now,start_time,end_time,day_count):#dt_now may not b
                 dailydata.nmi_sum=dailydata.nmi_sum+gold
             if item.site=="hiwinwin" :
                 dailydata.hi_sum=dailydata.hi_sum+gold
+            if item.site=="yuuboo" :
+                dailydata.yb_sum=dailydata.yb_sum+gold
             dailyClientData=DailyClientData()
             dailyClientData.site=item.site
             dailyClientData.gold=gold
             dailydata.clientsData.append(dailyClientData)
         dailydata.hi_money=dailydata.hi_sum*0.2*0.4
         dailydata.nmi_money=dailydata.nmi_sum*0.4
-        dailydata.money=dailydata.hi_money+dailydata.nmi_money
+        dailydata.yb_money=dailydata.yb_sum/26*20*0.4
+        dailydata.money=dailydata.hi_money+dailydata.nmi_money+dailydata.yb_money
         daysStatisticsData.append(dailydata)
     return daysStatisticsData,clients
 
