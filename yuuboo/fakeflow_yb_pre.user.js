@@ -42,6 +42,25 @@ function handleGetQuestResultPage()
     {
         return
     }
+    else if( document.scripts[0].innerHTML.indexOf("接手任务失败！可能已被别人抢先接手！请重新接手其他任务！") >= 0 )
+    {
+        return
+    }
+    else if( document.scripts[0].innerHTML.indexOf("出于安全考虑，同一IP一天只能接手30个来路流量任务，你当前IP是") >= 0 )
+    {
+        newBody=document.createElement("body");        
+        document.body=newBody
+        
+        divContent=document.createElement("div");
+        divContent.innerHTML=document.scripts[0].innerHTML
+        divContent.id="js_content"
+        document.body.insertBefore(divContent,null)                        
+        
+        //document.body.innerHTML=document.scripts[0].innerHTML
+        document.scripts[0].innerHTML=""  
+        confirm("要换ip了")
+        return
+    }
     else if( document.scripts[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >= 0 )
     {
         newBody=document.createElement("body");        

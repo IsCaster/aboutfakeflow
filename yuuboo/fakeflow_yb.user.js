@@ -2,10 +2,12 @@
 // @name          Better to do fake flow mission of yuuboo
 // @namespace     http://www.caster.org
 // @description   used on fake flow Module of yuuboo.com 
-// @include       http://www.yuuboo.com/quest.php?type=pv
+// @include       http://www.yuuboo.com/quest.php?type=pv*
 // @include       http://www.yuuboo.com/member/doquest.php?type=pv&status=2
 // @include       http://www.yuuboo.com/member/questinfo.php?questid=*&type=pv&act=isend&idd=*
 // @include       http://www.yuuboo.com/doquest.php?publisher=*&number=*&type=pv&act=take
+// @include       http://www.yuuboo.com/member/login.php*
+// @include       http://www.yuuboo.com/member/index.php
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.min.js
 // @version 1.00
@@ -27,7 +29,8 @@ unsafeWindow.gaussianGenerate = function (mean, stdev)
     return rnd_snd()*stdev+mean
 }
 
-if(location.href=="http://www.yuuboo.com/quest.php?type=pv" )
+if(location.href.indexOf("http://www.yuuboo.com/quest.php?type=pv") == 0)
+    //include http://www.yuuboo.com/quest.php?type=pv&page=2
 {
     handleGetQuestPage()
 }
@@ -43,7 +46,14 @@ else if(location.href.replace(/http:\/\/www\.yuuboo\.com\/doquest\.php\?publishe
 {
     handleGetQuestResultPage()
 }
-
+else if(location.href.indexOf("http://www.yuuboo.com/member/login.php") == 0 )
+{
+    handleLoginPage()
+}
+else if(location.href=="http://www.yuuboo.com/member/index.php")
+{
+    handleMemberPage()
+}
 
 function doFakeVisit(url)
 {
@@ -57,12 +67,13 @@ function doFakeVisit(url)
     message=GM_getValue("message")
     keyword=message.split(";")[1]
     keyword=keyword.replace(/淘宝/g,"").replace(/关键词/g,"").replace(/搜索/g,"").replace(/搜/g,"").replace(/首页/g,"").replace(/所在地/g,"").replace(/地区/g,"")
+    //keyword=""
     fakeVisitDiv=document.createElement("div")
     fakeVisitDiv.innerHTML="<form id='fakevisit' action='"+db_server+"/fakevisit' method='post' target='_blank' >\
                                 <input name='url' type='hidden' value='"+url+"'/>\
                                 <input name='keyword' type='hidden' value='"+encodeURIComponent(keyword)+"'/>\
                                 <input name='message' type='hidden' value='"+encodeURIComponent(message)+"'/>\
-                                <input name='site' type='hidden' value='hiwinwin'/>\
+                                <input name='site' type='hidden' value='yuuboo'/>\
                             </form>"
     if($("#fakevisit").length==0)
     {
@@ -79,6 +90,22 @@ function doFakeVisit(url)
 function handleGetQuestPage()
 {
     GM_log("enter handleGetQuestPage")
+    
+    //check if it's 24:00:00 reset invalidMissionIdList oldMissionIdList
+    var d = new Date();
+    
+    if(d.getHours()==0 && d.getMinutes()<30 && GM_getValue("reset_date","") != ""+d.getFullYear()+d.getMonth()+d.getDate())
+    {
+        GM_setValue("reset_date",""+d.getFullYear()+d.getMonth()+d.getDate())
+        GM_log("reset invalidMissionIdList oldMissionIdList ,date : "+d.getFullYear()+d.getMonth()+d.getDate())
+        
+        GM_setValue("oldMissionId","")
+        if(d.getDay()==1)
+        {
+            //reset invalidMissionIdList weekly
+            GM_setValue("invalidMissionId","")
+        }
+    }
     
     var keepRefreshBtn=document.createElement("input");
     keepRefreshBtn.id="keepRefresh";
@@ -115,7 +142,7 @@ function handleGetQuestPage()
     $("div.dating")[0].insertBefore(keepRefreshBtn,$("div#questList")[0])
     
     
-    if($(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] :first-child").length < 0)
+    if($(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～']").length < 0)
     {
         GM_log("wrong tableList items, maybe site updated! ")
         GM_setValue("keepRefresh",1);//invalid keepRefresh
@@ -138,30 +165,13 @@ function handleGetQuestPage()
             var oldMissionIdList=GM_getValue("oldMissionId","")
               
 
-            //check oldMissionIdList second
-            GM_log("length= "+$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ").length)
-            if(randomId==-1)
-            {
-                for(var i=0;i<$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ").length;++i)
-                {   
-                    missionId=$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ")[i].childNodes[1].childNodes[4].textContent
-                    
-                    if(oldMissionIdList.indexOf(missionId+";")==-1)
-                    {
-                        randomId=i;
-                        break;
-                    }
-                }
-            }
-            
-
             for(var i=0;i<$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ").length;++i)
             {   
                 missionId=$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ")[i].childNodes[1].childNodes[4].textContent
-                GM_log("missionId="+missionId)
-                if(invalidMissionIdList.indexOf(missionId+";")==-1)
+                
+                if(invalidMissionIdList.indexOf(missionId+";")==-1 && oldMissionIdList.indexOf(missionId+";")==-1  )
                 {
-                    
+                    GM_log("missionId="+missionId)
                     randomId=i;
                     break;
                 }
@@ -170,13 +180,22 @@ function handleGetQuestPage()
             if(randomId==-1)
             {   
                 //no valid quest maybe jump to next page
-                confirm ("no valid quest maybe jump to next page")
-            
+                GM_log ("no valid quest maybe jump to next page")
+                
+                jumpNextTimeout=Math.round(unsafeWindow.gaussianGenerate(4000,6000))
+                if(jumpNextTimeout<2124)
+                {
+                    jumpNextTimeout=2124
+                }
+                setTimeout(function(){$("a.next")[0].click()},jumpNextTimeout);
+
+                return;
+                /*
                 total_num=$(".tableList tr[title='把鼠标放到任务要求的图标上，会显示详细的说明哦～'] ").length
                 
                 GM_log("total_num= "+total_num)
                 randomId=Math.floor(Math.random()*total_num)%total_num
-                
+                */
             }
             
             
@@ -680,11 +699,68 @@ function handleGetQuestResultPage()
         
         var missionId=unsafeWindow.getUrlParam("number")
         
-        var invalidMissionIdList=GM_getValue("invalidMissionId","")
-        if(invalidMissionIdList.indexOf(missionId+";")==-1)
+        var oldMissionIdList=GM_getValue("invalidMissionId","")
+        if(oldMissionIdList.indexOf(missionId+";")==-1)
         {
-            invalidMissionIdList=invalidMissionIdList+missionId+";"
-            GM_setValue("invalidMissionId",invalidMissionIdList)
+            oldMissionIdList=oldMissionIdList+missionId+";"
+            GM_setValue("invalidMissionId",oldMissionIdList)
         }
+        eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
+        
+    }
+}
+
+function handleLoginPage()
+{
+    if(GM_getValue("userName","")=="")
+    {
+        GM_setValue("userName","abc")
+        GM_setValue("password","1234")
+        GM_setValue("opPassword","4567")
+        GM_setValue("questionId","-1")
+        GM_setValue("answer","")
+    }
+    
+    userName=GM_getValue("userName","")
+    password=GM_getValue("password","")
+    opPassword=GM_getValue("opPassword","")
+    questionId=GM_getValue("questionId","")
+    answer=GM_getValue("answer","")
+    
+    if(userName!=""&&password!=""&&opPassword!=""&&(questionId=="0"||answer!=""))
+    {
+        $("#username")[0].value=userName
+        $("#password")[0].value=password
+        
+        if($("#question").length >=1 && questionId >= 0)
+        {
+            $("#question")[0].options[questionId].selected=true
+            $("#answer")[0].value=answer
+        }
+        /*if(userName!="abc")
+        {
+            setTimeout(function(){$("#btnSubmit").click()},1000+Math.random()*4000)
+        }*/
+    }
+    
+}
+
+function handleMemberPage()
+{
+    GM_log("enter handleMemberPage")
+    
+    if(document.referrer == "http://www.yuuboo.com/member/login.php")
+    {
+        if($(".aui_close").length>=1)
+        {
+            GM_log("close dialog")
+            $(".aui_close")[0].click()
+        }
+        var jumpTimeout=Math.round(unsafeWindow.gaussianGenerate(5000,5000))
+        if(jumpTimeout<2169)
+        {
+            jumpTimeout=2169
+        }
+        setTimeout(function(){$("#Head3")[0].click()},jumpTimeout)
     }
 }

@@ -329,6 +329,22 @@
                         }
                     }
                 }
+                else if(theMission.site=="yuuboo")
+                {
+                    for(var i=0;i<message_pieces.length;++i)
+                    {       
+                        if(i==message_pieces.length-1)
+                        {
+                            theMissionDivHtml=theMissionDivHtml+
+                                        "<li>"+message_pieces[i]+"&nbsp;<input value='快速搜索' type='button' onclick='quickSearch(\""+message_pieces[i]+"\")' />"+"</li>"
+                        }
+                        else
+                        {
+                            theMissionDivHtml=theMissionDivHtml+
+                                        "<li>"+message_pieces[i]+"</li>"
+                        }
+                    }
+                }
                 else
                 {
                     for(var i=0;i<message_pieces.length;++i)
@@ -687,7 +703,7 @@
                         "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                         "' type='button' value='删除' onclick='removeClient(this)' />"
                         
-                    if(clientStatusBuffer[i].site=='nmimi' && clientStatusBuffer[i].client=="67sskypool")
+                    if(clientStatusBuffer[i].site=='yuuboo' && clientStatusBuffer[i].client=="67sskypool")
                     {
                         localip=clientStatusBuffer[i].ip
                     }
