@@ -643,6 +643,7 @@
             var time_now = d.getTime()/1000.0
             var bWarn=false
             var localip="127.0.0.1"
+            
             for(var i = 0; i< clientStatusBuffer.length; ++i)
             {
                 var timeoff=Math.round(time_now-parseFloat(clientStatusBuffer[i].lastVisitTime))
@@ -702,8 +703,11 @@
                         "' type='button' value='重置' onclick='resetClientVisitTime(this)'  />"+
                         "<input name='"+clientStatusBuffer[i].site+":"+clientStatusBuffer[i].client+
                         "' type='button' value='删除' onclick='removeClient(this)' />"
-                        
-                    if(clientStatusBuffer[i].site=='yuuboo' && clientStatusBuffer[i].client=="67sskypool")
+                    if($("#localip").length>=1 && $("#localip")[0].value!="")
+                    {
+                        localip=$("#localip").value
+                    }
+                    else if(clientStatusBuffer[i].site=='nmimi' && clientStatusBuffer[i].client=="67sskypool")
                     {
                         localip=clientStatusBuffer[i].ip
                     }
@@ -1128,6 +1132,9 @@
         <audio id="playAudioGot"  preload="auto" src="/static/sound/alreadygot.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
         <audio id="playAudioNeed2Handle"  preload="auto" src="/static/sound/need2handle.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
         <audio id="playAudioClientOffline"  preload="auto" src="/static/sound/clientoffline.ogg" > <b>Your browser does not support the audio tag.</b> </audio> 
+    </div>
+    <div>
+        <input type="text" id="localip" size="40">
     </div>
     <div>
         <a id="openNewPage" target="_blank" rel="noreferrer"></a>

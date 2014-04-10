@@ -61,7 +61,9 @@ function handleGetQuestResultPage()
         confirm("要换ip了")
         return
     }
-    else if( document.scripts[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >= 0 )
+    else if( document.scripts[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >= 0 ||
+        document.scripts[0].innerHTML.indexOf("您被该用户列入黑名单，不能接该任务！") >= 0
+        )
     {
         newBody=document.createElement("body");        
         document.body=newBody
@@ -85,7 +87,8 @@ function handleCheckUrlResultPage()
     unsafeWindow.alert= function(){}
     GM_log(document.scripts[0].innerHTML);
     if( document.scripts[0].innerHTML.indexOf("你搜索到的网址不正确,请重新进行搜索！") >= 0 ||
-        document.scripts[0].innerHTML.indexOf("确认浏览已完成，你已经获得发布点，发布方的流量也获得增加。加油！") >= 0 
+        document.scripts[0].innerHTML.indexOf("确认浏览已完成，你已经获得发布点，发布方的流量也获得增加。加油！") >= 0 ||
+        document.scripts[0].innerHTML.indexOf("对不起，该任务不存在或者已经被撤销！请注意，来路流量区的任务必须在接手后30分钟内完成！") >= 0 
         )
     {
         newBody=document.createElement("body");        

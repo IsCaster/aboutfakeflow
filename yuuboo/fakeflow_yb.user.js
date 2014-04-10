@@ -671,11 +671,48 @@ function handleCheckUrlResultPage()
             })
         }
     }
+    else if($("#js_content")[0].innerHTML.indexOf("对不起，该任务不存在或者已经被撤销！请注意，来路流量区的任务必须在接手后30分钟内完成！") >=0 )
+    {
+        eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
+    }
 }
 
 function handleGetQuestResultPage()
 {
     if( $("#js_content").length >=1 && $("#js_content")[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >=0 )
+    {
+        //record old quest id
+        
+        unsafeWindow.getUrlParam = function (name) {
+            var regexS;
+            var regexl;
+            var results;
+         
+            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+            regexS = "[\\?&]"+name+"=([^&#]*)";
+            regex = new RegExp(regexS);
+            results = regex.exec (location.href);
+                    //note: don't write space after command exec
+         
+            if ( results == null ) {
+                return "";
+            } else {
+                return results[1];
+            }
+        }
+        
+        var missionId=unsafeWindow.getUrlParam("number")
+        
+        var oldMissionIdList=GM_getValue("oldMissionId","")
+        if(oldMissionIdList.indexOf(missionId+";")==-1)
+        {
+            oldMissionIdList=oldMissionIdList+missionId+";"
+            GM_setValue("oldMissionId",oldMissionIdList)
+        }
+        eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
+        
+    }
+    else if( $("#js_content").length >=1 && $("#js_content")[0].innerHTML.indexOf("您被该用户列入黑名单，不能接该任务！") >=0 )
     {
         //record invalid quest id
         
@@ -699,11 +736,11 @@ function handleGetQuestResultPage()
         
         var missionId=unsafeWindow.getUrlParam("number")
         
-        var oldMissionIdList=GM_getValue("invalidMissionId","")
-        if(oldMissionIdList.indexOf(missionId+";")==-1)
+        var invalidMissionIdList=GM_getValue("invalidMissionId","")
+        if(invalidMissionIdList.indexOf(missionId+";")==-1)
         {
-            oldMissionIdList=oldMissionIdList+missionId+";"
-            GM_setValue("invalidMissionId",oldMissionIdList)
+            invalidMissionIdList=invalidMissionIdList+missionId+";"
+            GM_setValue("invalidMissionId",invalidMissionIdList)
         }
         eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
         
