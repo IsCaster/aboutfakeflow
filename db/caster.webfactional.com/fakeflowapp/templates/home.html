@@ -333,7 +333,7 @@
                 {
                     for(var i=0;i<message_pieces.length;++i)
                     {       
-                        if(i==message_pieces.length-1)
+                        if(i==0)
                         {
                             theMissionDivHtml=theMissionDivHtml+
                                         "<li>"+message_pieces[i]+"&nbsp;<input value='快速查询' type='button' onclick='quickQuery(\""+message_pieces[i]+"\")' />"+"</li>"
@@ -705,7 +705,7 @@
                         "' type='button' value='删除' onclick='removeClient(this)' />"
                     if($("#localip").length>=1 && $("#localip")[0].value!="")
                     {
-                        localip=$("#localip").value
+                        localip=$("#localip")[0].value
                     }
                     else if(clientStatusBuffer[i].site=='nmimi' && clientStatusBuffer[i].client=="67sskypool")
                     {

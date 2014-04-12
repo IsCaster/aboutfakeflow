@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 clientStatusBuffer=[]
 getMissionCheckTime=time()
 
+httpProxyStatusBuffer=[]
+
 def missionQueueTrace(fn):
     def wrapped(*arg):
         logger.debug("enter "+fn.__name__)
@@ -1323,6 +1325,66 @@ def offThereTime(request):
     timeoff=time()-getMissionCheckTime
     return HttpResponse(str(timeoff))
     
+def reportValidIP(request):
+    if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+        ip = request.META['HTTP_X_FORWARDED_FOR']
+    elif request.META.has_key("REMOTE_ADDR"): 
+        ip = request.META['REMOTE_ADDR']
+    
+    bNew=True
+    for httpProxyStatus in httpProxyStatusBuffer:
+        if httpProxyStatus["ip"]==ip :
+            httpProxyStatus["valid"]=True
+            bNew=False
+    if bNew:
+        newHttpProxyStatus={}
+        newHttpProxyStatus["ip"]=ip
+        newHttpProxyStatus["valid"]=True
+        httpProxyStatusBuffer.append(newHttpProxyStatus)
+    return HttpResponse("done")
+        
+
+def reportInvalidIP(request):
+    if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+        ip = request.META['HTTP_X_FORWARDED_FOR']
+    elif request.META.has_key("REMOTE_ADDR"): 
+        ip = request.META['REMOTE_ADDR']
+        
+    bNew=True
+    for httpProxyStatus in httpProxyStatusBuffer:
+        if httpProxyStatus["ip"]==ip :
+            httpProxyStatus["valid"]=False
+            bNew=False
+    if bNew:
+        newHttpProxyStatus={}
+        newHttpProxyStatus["ip"]=ip
+        newHttpProxyStatus["valid"]=False
+        httpProxyStatusBuffer.append(newHttpProxyStatus)
+    return HttpResponse("done") 
+
+def checkHttpProxy(request):
+    ip=""
+    if request.GET.has_key("ip"):
+        ip=request.GET["ip"]
+        
+    if ip == '':
+        # use local ip
+        if request.META.has_key("HTTP_X_FORWARDED_FOR"):
+            ip = request.META['HTTP_X_FORWARDED_FOR']
+        elif request.META.has_key("REMOTE_ADDR"): 
+            ip = request.META['REMOTE_ADDR']
+    
+    if ip != "":
+        for httpProxyStatus in httpProxyStatusBuffer:
+            if httpProxyStatus["ip"]==ip :
+                if httpProxyStatus["valid"] :
+                    return HttpResponse("valid")
+                else:
+                    return HttpResponse("invalid")
+        return HttpResponse("none")
+    else:
+        return HttpResponse("error")
+        
 def test(request):
     entries=MissionInfo.objects.exclude(
                 keyword=""

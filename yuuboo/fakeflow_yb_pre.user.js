@@ -58,7 +58,21 @@ function handleGetQuestResultPage()
         
         //document.body.innerHTML=document.scripts[0].innerHTML
         document.scripts[0].innerHTML=""  
-        confirm("要换ip了")
+        
+        // annouce invalid ip
+        GM_xmlhttpRequest({
+                method: "GET",
+                url: db_server+"/reportinvalidip",
+                data: "",
+                headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+                },
+                onload: function(xhr) {
+                    GM_log('reportinvalidip return : response='+xhr.responseText)
+                    confirm("要换ip了")
+                }
+            })
         return
     }
     else if( document.scripts[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >= 0 ||

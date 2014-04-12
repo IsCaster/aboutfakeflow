@@ -51,4 +51,7 @@ urlpatterns = patterns('',
     url(r'^querynewcode$', 'fakeflowapp.views.queryNewCode'),
     url(r'^test$', 'fakeflowapp.views.test'),
     url(r'^off_there_time$', 'fakeflowapp.views.offThereTime'),
+    url(r'^reportvalidip$', 'fakeflowapp.views.reportValidIP'),
+    url(r'^reportinvalidip$', 'fakeflowapp.views.reportInvalidIP'),
+    url(r'^checkhttpproxy$', 'fakeflowapp.views.checkHttpProxy'),
 )

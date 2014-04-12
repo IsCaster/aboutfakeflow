@@ -780,6 +780,21 @@ function handleLoginPage()
         }*/
     }
     
+    // annouce valid ip
+    GM_xmlhttpRequest({
+            method: "GET",
+            url: db_server+"/reportvalidip",
+            data: "",
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+            },
+            onload: function(xhr) {
+                GM_log('reportvalidip return : response='+xhr.responseText)
+            }
+        })
+    
+    
 }
 
 function handleMemberPage()
