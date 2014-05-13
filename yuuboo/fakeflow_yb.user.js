@@ -8,6 +8,7 @@
 // @include       http://www.yuuboo.com/doquest.php?publisher=*&number=*&type=pv&act=take
 // @include       http://www.yuuboo.com/member/login.php*
 // @include       http://www.yuuboo.com/member/index.php
+// @include       http://www.yuuboo.com/member/key.php?forward=*
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.min.js
 // @version 1.00
@@ -19,6 +20,7 @@
 //GM_log=function(){}
 
 db_server="http://www.fakeflowdb.com:9080"
+//db_server="http://60.191.57.170:9080"
 
 
 unsafeWindow.gaussianGenerate = function (mean, stdev)
@@ -53,6 +55,10 @@ else if(location.href.indexOf("http://www.yuuboo.com/member/login.php") == 0 )
 else if(location.href=="http://www.yuuboo.com/member/index.php")
 {
     handleMemberPage()
+}
+else if(location.href.indexOf("http://www.yuuboo.com/member/key.php?forward=") == 0 )
+{
+    handleInputOppwdPage()
 }
 
 function doFakeVisit(url)
@@ -94,7 +100,7 @@ function handleGetQuestPage()
     //check if it's 24:00:00 reset invalidMissionIdList oldMissionIdList
     var d = new Date();
     
-    if(d.getHours()==0 && d.getMinutes()<30 && GM_getValue("reset_date","") != ""+d.getFullYear()+d.getMonth()+d.getDate())
+    if( d.getMinutes()<30 && GM_getValue("reset_date","") != ""+d.getFullYear()+d.getMonth()+d.getDate())
     {
         GM_setValue("reset_date",""+d.getFullYear()+d.getMonth()+d.getDate())
         GM_log("reset invalidMissionIdList oldMissionIdList ,date : "+d.getFullYear()+d.getMonth()+d.getDate())
@@ -219,11 +225,14 @@ function handleDoQuestPage()
 {
     if($(".tableList tr[title='点击“任务信息”按钮可以查看任务属性并对该任务进行操作！'] span.deeppurple a").length >= 1)
     {
-        var openContainA = document.createElement("a");
+        var openContainIframe = document.createElement("iframe");
+        openContainIframe.id="openContainIframe"
+        document.body.insertBefore(openContainIframe,null) 
+        var openContainA = $("#openContainIframe")[0].contentDocument.createElement("a");
         openContainA.target="_blank"
         openContainA.rel="noreferrer"
         openContainA.id="openContainA"
-        document.body.insertBefore(openContainA,null) 
+        $("#openContainIframe")[0].contentDocument.body.insertBefore(openContainA,null) 
     
         waitingTimeout=Math.round(unsafeWindow.gaussianGenerate(2000,2000))
         if(waitingTimeout<424)
@@ -327,8 +336,9 @@ function handleDoQuestPage()
                     if(url_index < urls.length)
                     {
                         // just open the item link
-                        $("#openContainA")[0].href=urls[url_index]
-                        $("#openContainA")[0].click()
+                        $("#openContainIframe").contents().find("#openContainA")[0].href=urls[url_index]
+                        $("#openContainIframe").contents().find("#openContainA")[0].click()
+                    
                     
                         GM_setValue("url_index",url_index+1)
                         GM_setValue("url",urls[url_index])
@@ -679,6 +689,24 @@ function handleCheckUrlResultPage()
 
 function handleGetQuestResultPage()
 {
+    unsafeWindow.getUrlParam = function (name) {
+        var regexS;
+        var regexl;
+        var results;
+     
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        regexS = "[\\?&]"+name+"=([^&#]*)";
+        regex = new RegExp(regexS);
+        results = regex.exec (location.href);
+                //note: don't write space after command exec
+     
+        if ( results == null ) {
+            return "";
+        } else {
+            return results[1];
+        }
+    }
+    
     if( $("#js_content").length >=1 && $("#js_content")[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >=0 )
     {
         //record old quest id
@@ -715,25 +743,7 @@ function handleGetQuestResultPage()
     else if( $("#js_content").length >=1 && $("#js_content")[0].innerHTML.indexOf("您被该用户列入黑名单，不能接该任务！") >=0 )
     {
         //record invalid quest id
-        
-        unsafeWindow.getUrlParam = function (name) {
-            var regexS;
-            var regexl;
-            var results;
-         
-            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-            regexS = "[\\?&]"+name+"=([^&#]*)";
-            regex = new RegExp(regexS);
-            results = regex.exec (location.href);
-                    //note: don't write space after command exec
-         
-            if ( results == null ) {
-                return "";
-            } else {
-                return results[1];
-            }
-        }
-        
+
         var missionId=unsafeWindow.getUrlParam("number")
         
         var invalidMissionIdList=GM_getValue("invalidMissionId","")
@@ -745,6 +755,38 @@ function handleGetQuestResultPage()
         eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
         
     }
+    else if( $("#js_content").length >=1 && $("#js_content")[0].innerHTML.indexOf("接手任务失败！可能已被别人抢先接手！请重新接手其他任务！") >= 0)
+    {
+        var missionId=unsafeWindow.getUrlParam("number")
+        var lastOuttimeMissionIdStr=GM_getValue("lastOuttimeMissionId",";;;")
+        lastOuttimeMissionIdList=lastOuttimeMissionIdStr.split(";")
+        for(i=lastOuttimeMissionIdList.length-1;i>=1;--i)
+        {
+            lastOuttimeMissionIdList[i]=lastOuttimeMissionIdList[i-1]
+        }
+        lastOuttimeMissionIdList[0]=missionId
+        
+        lastOuttimeMissionIdStr=lastOuttimeMissionIdList.join(";")
+        GM_setValue("lastOuttimeMissionId",lastOuttimeMissionIdStr)
+        
+        if( lastOuttimeMissionIdList[0]==lastOuttimeMissionIdList[1] && 
+            lastOuttimeMissionIdList[1]==lastOuttimeMissionIdList[2] && 
+            lastOuttimeMissionIdList[2]==lastOuttimeMissionIdList[3] 
+            )
+        {
+            //add to oldMissionIdList
+            GM_log("try too many times , add to oldMissionIdList")
+            var oldMissionIdList=GM_getValue("oldMissionId","")
+            if(oldMissionIdList.indexOf(missionId+";")==-1)
+            {
+                oldMissionIdList=oldMissionIdList+missionId+";"
+                GM_setValue("oldMissionId",oldMissionIdList)
+            }
+        } 
+        
+        eval($("#js_content")[0].innerHTML.replace(/alert/,"GM_log").replace(/&amp;/,"&"))
+    }
+    
 }
 
 function handleLoginPage()
@@ -815,4 +857,24 @@ function handleMemberPage()
         }
         setTimeout(function(){$("#Head3")[0].click()},jumpTimeout)
     }
+}
+
+
+function handleInputOppwdPage()
+{
+    GM_log("enter handleInputOppwdPage")
+    opPassword = GM_getValue("opPassword","")
+    
+    if($("input#actionpass").length > 0 && opPassword != "" )
+    {
+        $("input#actionpass")[0].value = opPassword
+        clickTimeout=Math.round(unsafeWindow.gaussianGenerate(3000,6000))
+        if(clickTimeout<2035)
+        {
+            clickTimeout=2035
+        }
+        
+        setTimeout(function(){$("#dosubmit")[0].click()},clickTimeout)
+    }
+
 }

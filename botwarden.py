@@ -12,8 +12,10 @@ import re
 import httplib, urllib
 import subprocess
 
+sleepMaxTime=0
 
 def init():
+    global  sleepMaxTime
     total = len(sys.argv)
     if total <= 1 :
             sleepMaxTime = 0
@@ -98,6 +100,8 @@ def getValidProxy():
             return getValidProxy()
 
 def openProxyFirefox(http_proxy):
+    global  sleepMaxTime
+    
     os.system("pkill firefox")
     
     if http_proxy == "":
@@ -114,7 +118,7 @@ def openProxyFirefox(http_proxy):
     os.system("export DISPLAY=localhost:1.0 ; firefox -new-tab 'http://www.yuuboo.com/member/login.php'")
 
 def isFirefoxRunning():
-    ps = subprocess.Popen("ps -eaf | grep firefox", shell=True, stdout=subprocess.PIPE)
+    ps = subprocess.Popen("ps -eaf | grep firefox | grep -v grep ", shell=True, stdout=subprocess.PIPE)
     output = ps.stdout.read()
     ps.stdout.close()
     ps.wait()
@@ -133,7 +137,7 @@ def checkHttpProxy(http_proxy):
             return True
     try:
         conn = httplib.HTTPConnection("www.fakeflowdb.com:9080")
-        conn.request("GET", "/checkHttpProxy?ip="+ip) 
+        conn.request("GET", "/checkhttpproxy?ip="+ip) 
         response = conn.getresponse()
         if response.status==200:
             data = response.read()
@@ -141,7 +145,8 @@ def checkHttpProxy(http_proxy):
             if data == "valid" :
                 return True
             else :
-                return False
+                # return False
+                return True
         else :
             print response.status
             return True

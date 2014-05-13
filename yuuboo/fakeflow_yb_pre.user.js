@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name          Better to do fake flow mission of yuuboo, run at start
 // @namespace     http://www.caster.org
-// @description   used on fake flow Module of yuuboo.com 
+// @description   used on fake flow Module of yuuboo.com ,,,&hiwinwin.com
 // @include       http://www.yuuboo.com/doquest.php?publisher=*&number=*&type=pv&act=take
 // @include       http://www.yuuboo.com/member/questinfo.php?questid=*&type=pv&act=isend&idd=*
 // @include       http://www.yuuboo.com/member/questinfo.php?questid=*&type=pv&act=remove
+// @include       http://www.hiwinwin.com/task/count/Taskin.aspx?id=*
+// @include       http://www.baidu.com/
 // @exclude       http://diveintogreasemonkey.org/*
 // @require       http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.min.js
 // @version 1.00
@@ -15,6 +17,8 @@
 
 //disable log
 //GM_log=function(){}
+db_server="http://www.fakeflowdb.com:9080"
+//db_server="http://60.191.57.170:9080"
 
 if(location.href.replace(/http:\/\/www\.yuuboo\.com\/doquest\.php\?publisher=[0-9]*&number=[0-9]*&type=pv&act=take/,"")=="")
 {
@@ -27,6 +31,14 @@ else if(location.href.replace(/http:\/\/www\.yuuboo\.com\/member\/questinfo.php\
 else if(location.href.replace(/http:\/\/www\.yuuboo\.com\/member\/questinfo.php\?questid=[0-9]*&type=pv&act=remove/,"")=="")
 {
     handleQuitQuestPage()
+}
+else if(location.href.indexOf("http://www.hiwinwin.com/task/count/Taskin.aspx?id=")==0)
+{
+    handleGetMissionResultPage()
+}
+else if(location.href=="http://www.baidu.com/")
+{
+    handleBaiduPage()
 }
 
 
@@ -42,10 +54,12 @@ function handleGetQuestResultPage()
     {
         return
     }
+    /*
     else if( document.scripts[0].innerHTML.indexOf("接手任务失败！可能已被别人抢先接手！请重新接手其他任务！") >= 0 )
     {
         return
     }
+    */
     else if( document.scripts[0].innerHTML.indexOf("出于安全考虑，同一IP一天只能接手30个来路流量任务，你当前IP是") >= 0 )
     {
         newBody=document.createElement("body");        
@@ -76,11 +90,15 @@ function handleGetQuestResultPage()
         return
     }
     else if( document.scripts[0].innerHTML.indexOf("出于安全交易的考虑，一个平台号一天只能接手同一个流量地址1次！") >= 0 ||
-        document.scripts[0].innerHTML.indexOf("您被该用户列入黑名单，不能接该任务！") >= 0
+        document.scripts[0].innerHTML.indexOf("您被该用户列入黑名单，不能接该任务！") >= 0 ||
+        document.scripts[0].innerHTML.indexOf("接手任务失败！可能已被别人抢先接手！请重新接手其他任务！") >= 0
         )
     {
-        newBody=document.createElement("body");        
-        document.body=newBody
+        if(document.body == null)
+        {
+            newBody=document.createElement("body");        
+            document.body=newBody
+        }
         
         divContent=document.createElement("div");
         divContent.innerHTML=document.scripts[0].innerHTML
@@ -132,3 +150,16 @@ function handleQuitQuestPage()
         confirm("未知的提示信息，请联系管理员")
     }
 }
+
+function handleGetMissionResultPage()
+{
+    unsafeWindow.alert= function(){ errorFun() }
+    GM_log(document.documentElement.innerHTML)
+    
+}
+
+function handleBaiduPage()
+{
+
+}
+

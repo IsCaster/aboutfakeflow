@@ -32,8 +32,6 @@ else if(db_server_flag==2)
     db_server=db_server2
 }
 
-
-
 //init
 if(GM_getValue("userName","")=="")
 {
@@ -43,6 +41,71 @@ if(GM_getValue("userName","")=="")
     GM_setValue("questionId","0")
     GM_setValue("answer","")
 }
+
+function init()
+{
+
+    var clickContainP=document.createElement("p");
+    clickContainP.id='clickContain';
+    clickContainP.onclick=function(obj)
+    {
+        /*if(typeof(obj.click)!="undefined")
+        {
+            GM_log(obj.click)
+            obj.click();
+            return
+        }*/
+        if(     (typeof(obj.onmouseover)!="undefined" && obj.onmouseover !=null ) ||
+                (typeof(obj.onmousedown)!="undefined" && obj.onmousedown !=null ) ||
+                (typeof(obj.onfocus)!="undefined" && obj.onfocus !=null ) ||
+                (typeof(obj.onblur)!="undefined" && obj.onblur !=null ) ||
+                (typeof(obj.onmouseup)!="undefined" && obj.onmouseup !=null ) ||
+                (typeof(obj.onmouseout)!="undefined" && obj.onmouseout !=null ) ||
+                (typeof(obj.onkeyup)!="undefined" && obj.onkeyup !=null ) ||
+                (typeof(obj.onkeydown)!="undefined" && obj.onkeydown !=null ) ||
+                (typeof(obj.onkeypress)!="undefined" && obj.onkeypress !=null ) ||
+                (typeof(obj.oninput)!="undefined" && obj.oninput !=null ) ||
+                (typeof(obj.onchange)!="undefined" && obj.onchange !=null ) ||
+                (typeof(obj.onpaste)!="undefined" && obj.onpaste !=null ) 
+            )
+        {
+            confirm("系统在检测外挂点击？？？")
+            return 
+        }
+        
+        if(obj.style.display!="" || obj.hidden )
+        {
+            confirm("点击目标不可见，系统在坑我吗？")
+            return 
+        }
+        
+        var evt1 = document.createEvent("MouseEvents");
+        evt1.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt2 = document.createEvent("MouseEvents");
+        evt2.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt3 = document.createEvent("MouseEvents");     
+        evt3.initMouseEvent ("mouseup", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt4 = document.createEvent("MouseEvents");     
+        evt4.initMouseEvent ("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt5 = document.createEvent("MouseEvents");     
+        evt5.initMouseEvent ("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+		obj.dispatchEvent(evt1);
+		obj.dispatchEvent(evt2);
+        obj.focus()
+		obj.dispatchEvent(evt3);
+        obj.dispatchEvent(evt4);
+        if( Math.random() > 0.5 )
+        {
+            obj.dispatchEvent(evt5);
+        }
+        //console.info("dispatch over")
+    }
+    document.body.insertBefore(clickContainP,document.body.firstChild);  	
+}
+
+
+init()
 
 unsafeWindow.gaussianGenerate = function (mean, stdev)
 {
@@ -58,23 +121,23 @@ if(location.href.indexOf("http://www.hiwinwin.com/member/Logon.aspx")!=-1)
 }
 else if(location.href=="http://www.hiwinwin.com/")
 {
-    $("a[href='http://www.hiwinwin.com/member/Logon.aspx']")[0].click()
+    $("#clickContain")[0].onclick($("a[href='http://www.hiwinwin.com/member/Logon.aspx']")[0])
 }
 else if(location.href=="http://www.hiwinwin.com/member/")
 {
     if(document.referrer=="http://www.hiwinwin.com/member/Logon.aspx")
     {
-        if(Math.random()>=0.5)//to do
+        /*if(Math.random()>=0.5)//to do
         {
             setTimeout(function(){
                     //$("#ff_ss")[0].click()
                     $("a[href='../finance/Exchange.aspx']")[0].click()
                 },1514+Math.random()*2000)
         }
-        else
+        else*/
         {
             setTimeout(function(){
-                    $("a[href='/task/count/']")[0].click()
+                    $("#clickContain")[0].onclick($("a[href='/task/count/']")[0])
                 },1514+Math.random()*2000)
         }
     }
@@ -85,7 +148,7 @@ else if(location.href.indexOf("http://www.hiwinwin.com/member/Password.aspx?")!=
     {
         setTimeout(function(){
                 $("#password")[0].value=GM_getValue("opPassword")
-                $("#btnSubmit")[0].click()
+                $("#clickContain")[0].onclick($("#btnSubmit")[0])
             },2324+Math.random()*2000)
     }
 }
@@ -94,7 +157,7 @@ else if(location.href=="http://www.hiwinwin.com/finance/Exchange.aspx?referrer=h
     if(document.referrer=="http://www.hiwinwin.com/member/Password.aspx?url=%2ffinance%2fExchange.aspx")
     {
         setTimeout(function(){
-                $("a[href='/task/count/']")[0].click()
+                $("#clickContain")[0].onclick($("a[href='/task/count/']")[0])
             },3123+Math.random()*2000)    
     }
 }
@@ -168,7 +231,9 @@ function handleLoginPage()
                     onload: function(xhr) {
                         data=eval('('+xhr.responseText+')')
                         $("#code")[0].value=data.code
-                        setTimeout(function(){$("#btnSubmit").click()},1000+Math.random()*4000)
+                        setTimeout(function(){ 
+                                $("#clickContain")[0].onclick($("#btnSubmit")[0])
+                            },1000+Math.random()*4000)
                     }
                 })
             }
